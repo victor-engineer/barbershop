@@ -1,0 +1,481 @@
+:root {
+    --primary: #eb0b0b;
+    --secondary: #191C24;
+    --light: #6C7293;
+    --dark: #000000;
+    --white: #FFFFFF;
+    --gray: #808080;
+}
+
+/* Estilo geral */
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(rgba(0, 0, 0, .85), rgba(0, 0, 0, .85)), 
+                url(../LuzIAImage-20250112-0000.jpg) no-repeat center center fixed;
+    background-size: cover;
+    color: var(--light);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/*** Spinner ***/
+#spinner {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .5s ease-out, visibility 0s linear .5s;
+    z-index: 99999;
+}
+
+#spinner.show {
+    transition: opacity .5s ease-out, visibility 0s linear 0s;
+    visibility: visible;
+    opacity: 1;
+}
+
+/*** Navbar ***/
+.navbar .dropdown-toggle::after {
+    border: none;
+    content: "\f107";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    vertical-align: middle;
+    margin-left: 8px;
+}
+
+.navbar .navbar-nav {
+    display: flex; /* Usar flexbox para organizar os itens */
+    justify-content: center; /* Centraliza os itens horizontalmente */
+    flex-grow: 1; /* Faz com que a navbar ocupe toda a largura disponível */
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.navbar .navbar-nav .nav-link {
+    margin-right: 30px;
+    padding: 40px 0;
+    color: var(--light);
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    outline: none;
+}
+
+.navbar .navbar-nav .nav-link:last-child {
+    margin-right: 0; /* Remove a margem direita do último link */
+}
+
+.navbar .navbar-nav .nav-link:hover,
+.navbar .navbar-nav .nav-link.active {
+    color: var(--primary);
+}
+
+.navbar.sticky-top {
+    top: 0; /* Mantém o topo fixo ao rolar a página */
+    transition: .5s;
+}
+
+@media (max-width: 991.98px) {
+    .navbar .navbar-nav .nav-link,
+    .navbar.shadow-sm .navbar-nav .nav-link {
+        margin-right: 0;
+        padding: 10px 0;
+    }
+
+    .navbar .navbar-nav {
+        margin-top: 8px;
+        border-top: 1px solid var(--light);
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar.shadow-sm .navbar-nav .nav-link {
+        padding: 20px 0;
+    }
+
+    .navbar .nav-item .dropdown-menu {
+        display: block;
+        border: none;
+        margin-top: 0;
+        top: 150%;
+        opacity: 0;
+        visibility: hidden;
+        transition: .5s;
+    }
+
+    .navbar .nav-item:hover .dropdown-menu {
+        top: 100%;
+        visibility: visible;
+        transition: .5s;
+        opacity: 1;
+    }
+}
+
+
+/* Remove margens e alinha o conteúdo do cabeçalho */
+header {
+    position: relative; /* Permite reposicionar elementos */
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    height: 100vh; /* Altura total da tela */
+    background: transparent; /* Fundo transparente */
+}
+
+/* Ajusta a imagem */
+header h1 .image-text img {
+    display: block; /* Exibe como bloco */
+    position: relative; /* Reposiciona a imagem no fluxo normal */
+    width: auto; /* Mantém proporção da largura */
+    max-width: 80%; /* Ajusta a largura máxima para 80% */
+    height: auto; /* Mantém proporção da altura */
+    animation: pulse 2s infinite ease-in-out; /* Efeito de pulsação */
+}
+
+/* Centraliza o nome */
+header h1 {
+    position: absolute; /* Permite reposicionar o título */
+    text-align: center; /* Centraliza o texto horizontalmente */
+    top: 50%; /* Posição vertical central */
+    left: 50%; /* Posição horizontal central */
+    transform: translate(-50%, -50%); /* Centraliza perfeitamente */
+    color: #ffffff; /* Cor do texto (ajustável) */
+    font-size: 2rem; /* Tamanho da fonte (ajustável) */
+    font-weight: bold; /* Deixa o texto em negrito */
+}
+
+/* Animação de "pulsação" */
+@keyframes pulse {
+    0% {
+        transform: scale(1); /* Tamanho original */
+    }
+    50% {
+        transform: scale(1.1); /* Aumenta o tamanho */
+    }
+    100% {
+        transform: scale(1); /* Retorna ao tamanho original */
+    }
+}
+
+/* Media query para dispositivos móveis */
+@media (max-width: 768px) {
+    header h1 .image-text img {
+        max-width: 90% !important; /* Garante que a largura da logo seja ajustada corretamente */
+        animation: pulse 1.5s infinite ease-in-out; /* Ajusta a animação no mobile, se necessário */
+    }
+
+    header h1 {
+        font-size: 3rem; /* Aumenta o tamanho da fonte em dispositivos móveis */
+    }
+}
+
+/* Área principal */
+main {
+    padding: 30px;
+    max-width: 1000px;
+    margin: 40px auto;
+    animation: slideIn 1.2s ease-in-out;
+}
+
+/* Seção de agendamento */
+section#schedule {
+    background: var(--dark);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px var(--shadow-light);
+    border: 3px solid var(--primary);
+    overflow: visible;
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto; /* Centraliza a seção */
+    text-align: center;
+}
+
+/* Título da seção */
+section#schedule h2 {
+    font-family: 'Merriweather', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+    color: var(--white);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    section#schedule h2 {
+        font-size: 1.8rem; /* Reduz o tamanho do título */
+        margin-bottom: 20px;
+    }
+
+    section#schedule h2::after {
+        width: 100px; /* Ajusta a linha decorativa */
+    }
+}
+
+/* Linha decorativa abaixo do título */
+section#schedule h2::after {
+    content: '';
+    display: block;
+    width: 150px;
+    height: 4px;
+    background: var(--primary);
+    margin: 20px auto;
+    border-radius: 5px;
+}
+
+/* Efeito hover no título */
+section#schedule h2:hover {
+    color: var(--primary);
+    transform: scale(1.05);
+}
+
+/* Formulário */
+form#booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+/* Campos de texto */
+form#booking-form input,
+form#booking-form select {
+    width: 100%;
+    max-width: 500px;
+    padding: 15px 20px;
+    font-size: 1rem;
+    color: var(--white);
+    background: var(--gray);
+    border: 2px solid var(--primary);
+    border-radius: 12px;
+    transition: all 0.4s ease;
+    box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Efeitos nos campos ao hover e foco */
+form#booking-form input:hover,
+form#booking-form select:hover,
+form#booking-form input:focus,
+form#booking-form select:focus {
+    border-color: var(--primary);
+    background: var(--light);
+    outline: none;
+    box-shadow: 0 0 10px var(--primary);
+    transform: scale(1.05);
+}
+
+/* Rótulos dos campos */
+form#booking-form label {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--white);
+    margin-bottom: -10px;
+}
+
+/* Botão de envio */
+form#booking-form button {
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--white);
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s ease;
+    text-transform: uppercase;
+    align-self: center;
+}
+
+form#booking-form button:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(135deg, var(--accent), var(--secondary));
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Ajusta o botão ao pressionar */
+form#booking-form button:active {
+    transform: translateY(0);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Define a cor azul para os dias disponíveis */
+.flatpickr-day.available {
+    color: #0099FF !important; /* Cor azul para os dias disponíveis */
+    background-color: transparent !important; /* Fundo transparente para os dias não selecionados */
+}
+
+/* Cor de fundo para o dia selecionado */
+.flatpickr-day.selected {
+    background-color: #0099FF !important; /* Cor de fundo azul para o dia selecionado */
+    color: #fff !important; /* Cor do texto do dia selecionado */
+}
+
+/* Efeito de hover para os dias disponíveis */
+.flatpickr-day:hover.available {
+    background-color: #E0F1FF !important; /* Cor de fundo clara ao passar o mouse sobre os dias disponíveis */
+}
+
+
+/* Título "Horários Reservados" */
+#reserved {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.5rem;
+    margin-top: 30px; /* Ajuste o valor conforme necessário */
+    margin-bottom: 80px; /* Afastamento do título para os campos abaixo */
+    text-align: center;
+    color: var(--white);
+    position: relative;
+}
+
+/* Lista de horários reservados */
+#reserved-times {
+    list-style: none;
+    padding: 0;
+    margin: 40px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Maior espaçamento entre os itens */
+    justify-content: center;
+}
+
+#reserved-times li {
+    background: linear-gradient(145deg, var(--primary), var(--dark));
+    color: var(--white);
+    padding: 20px 25px; /* Maior espaçamento interno */
+    border-radius: 30px; /* Bordas mais suaves */
+    font-size: 20px; /* Texto maior */
+    font-weight: bold; /* Texto em negrito para destaque */
+    text-align: center;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Sombra mais leve */
+    transition: all 0.3s ease-in-out; /* Transições suaves para todos os elementos */
+    cursor: pointer; /* Aponta que o item é interativo */
+}
+
+#reserved-times li:hover {
+    transform: translateY(-8px); /* Efeito de elevação */
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3); /* Sombra mais intensa */
+}
+
+/* Botões interativos */
+button {
+    background: linear-gradient(145deg, var(--primary), var(--dark));
+    color: var(--white);
+    border: 2px solid var(--primary-light); /* Borda fina para contraste */
+    padding: 12px 30px; /* Botão mais largo */
+    border-radius: 15px; /* Bordas suaves */
+    cursor: pointer;
+    font-size: 18px; /* Texto levemente maior */
+    font-weight: bold;
+    text-transform: uppercase; /* Letras em maiúsculas */
+    letter-spacing: 1.2px; /* Espaçamento entre as letras */
+    transition: all 0.3s ease-in-out; /* Transições suaves */
+}
+
+button:hover {
+    background: linear-gradient(145deg, var(--primary-light), var(--dark));
+    color: var(--dark); /* Inversão de cores no hover */
+    transform: scale(1.08); /* Efeito de aumento */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Sombra leve */
+}
+
+button:focus {
+    outline: none;
+    box-shadow: 0 0 8px var(--primary-light); /* Destaque no foco */
+}
+
+/* Transições suaves para o foco */
+button:active {
+    transform: scale(0.95); /* Efeito de clique */
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2); /* Efeito pressionado */
+}
+
+
+/*** Footer ***/
+.footer .btn.btn-link {
+    display: block;
+    margin-bottom: 5px;
+    padding: 0;
+    text-align: left;
+    color: var(--light);
+    font-size: 15px;
+    font-weight: normal;
+    text-transform: capitalize;
+    transition: .3s;
+}
+
+.footer .btn.btn-link::before {
+    position: relative;
+    content: "\f105";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    margin-right: 10px;
+}
+
+.footer .btn.btn-link:hover {
+    color: var(--primary);
+    letter-spacing: 1px;
+    box-shadow: none;
+}
+
+.footer .copyright {
+    padding: 1.5rem;
+    font-size: 15px;
+    background: var(--dark);
+}
+
+.footer .copyright a {
+    color: var(--light);
+}
+
+.footer .copyright a:hover {
+    color: var(--primary);
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    section#schedule {
+        padding: 20px;
+    }
+
+    form#booking-form button {
+        width: 100%;
+    }
+
+    #reserved-times {
+        flex-direction: column;
+        align-items: center;
+    }
+}

@@ -1,0 +1,121 @@
+/* Reset global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #e3e6ea, #cfd3d8);
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+/* Container do formulário com efeito 3D */
+form {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Efeito 3D */
+    max-width: 480px;
+    width: 100%;
+    position: relative;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Ícones nos inputs */
+.input-container {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.input-container i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 1.2rem;
+}
+
+/* Estilo das labels */
+form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #444;
+}
+
+/* Estilo dos inputs */
+form input[type="text"],
+form input[type="date"],
+form input[type="time"] {
+    width: 100%;
+    padding: 12px 40px; /* Ajustando para espaço do ícone */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Foco nos inputs */
+form input[type="text"]:focus,
+form input[type="date"]:focus,
+form input[type="time"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+}
+
+/* Botão estilizado com efeito 3D */
+form button {
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    text-transform: uppercase;
+    box-shadow: 0 5px 15px rgba(0, 91, 187, 0.4);
+}
+
+/* Efeito de hover no botão */
+form button:hover {
+    background: linear-gradient(135deg, #0056b3, #00429d);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 91, 187, 0.5);
+}
+
+/* Animação ao clicar no botão */
+form button:active {
+    transform: translateY(1px);
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    form {
+        padding: 2rem;
+    }
+}
+
+/* Animação de fade-in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
