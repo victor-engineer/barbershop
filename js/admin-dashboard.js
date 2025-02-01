@@ -1,7 +1,7 @@
 $(document).ready(function () {
     // Função para carregar os agendamentos via AJAX
     function loadAppointments() {
-        fetch("/admin/admin-dashboard.php")
+        fetch("https://franciscobarbearia.netlify.app/admin/admin-dashboard.php")
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
@@ -52,7 +52,7 @@ $(document).ready(function () {
 
         const data = { client_name: clientName, date, time };
 
-        fetch("/admin/add_appointment.php", {
+        fetch("https://franciscobarbearia.netlify.app/admin/add_appointment.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),

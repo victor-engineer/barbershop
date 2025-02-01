@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Função para carregar os horários reservados do servidor
     function fetchReservedTimes() {
-        fetch('/admin/admin-dashboard.php')
+        fetch('https://franciscobarbearia.netlify.app/admin/admin-dashboard.php')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
             time: selectedTime
         };
 
-        fetch('/admin/add_appointment.php', {
+        fetch('https://franciscobarbearia.netlify.app/admin/add_appointment.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

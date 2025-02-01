@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (pg_num_rows($result) === 1) {
             // Inicia a sessão e redireciona para o painel do administrador
             $_SESSION['admin_logged_in'] = true;
-            header("Location: /admin/admin-dashboard-ui.php");
+            header("Location: https://franciscobarbearia.netlify.app/admin/admin-dashboard-ui.php");
             exit();
         } else {
             // Mensagem de erro genérica caso as credenciais estejam incorretas
