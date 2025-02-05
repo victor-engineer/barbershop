@@ -1,39 +1,51 @@
 const { Client } = require('pg');
 
 // Função que será chamada pelo Netlify Function
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   const client = new Client({
-    connectionString: process.env.DATABASE_URL, // URL do seu banco de dados PostgreSQL
+    connectionString: process.env.DATABASE_URL, // URL do banco de dados PostgreSQL no Railway
+    ssl: { rejectUnauthorized: false }, // Necessário para Railway
   });
 
   await client.connect();
 
-  // Obtém a data e hora atual no formato Y-m-d H:i:s
-  const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  // Configurar cabeçalhos para CORS
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json',
+  };
+
+  // Responder requisições OPTIONS para evitar erro de CORS
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers };
+  }
 
   try {
+    // Obtém a data e hora atual no formato UTC (Y-m-d H:i:s)
+    const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
     // Consulta SQL para excluir agendamentos expirados
     const query = 'DELETE FROM appointments WHERE CONCAT(date, \' \', time) < $1';
     const result = await client.query(query, [now]);
 
-    if (result.rowCount > 0) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ success: true, message: 'Agendamentos expirados removidos.' }),
-      };
-    } else {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ success: true, message: 'Nenhum agendamento expirado encontrado.' }),
-      };
-    }
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        success: true,
+        message: result.rowCount > 0 ? 'Agendamentos expirados removidos.' : 'Nenhum agendamento expirado encontrado.',
+      }),
+    };
   } catch (err) {
     console.error('Erro ao remover agendamentos expirados:', err);
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({ success: false, error: 'Erro ao remover agendamentos: ' + err.message }),
     };
   } finally {
-    await client.end();
+    await client.end(); // Fechar conexão com o banco de dados
   }
 };

@@ -1,12 +1,11 @@
 const { Client } = require('pg');
 
-// Configuração da conexão com o banco de dados PostgreSQL
+// Configuração da conexão com o banco de dados PostgreSQL no Railway
 const client = new Client({
-    host: 'localhost',       // ou seu host remoto
-    port: 5432,              // Porta padrão do PostgreSQL
-    user: 'postgres',        // Usuário do PostgreSQL
-    password: 'postgres',    // Senha do PostgreSQL
-    database: 'barbershop',  // Nome do banco de dados
+    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway', // URL de conexão fornecida pelo Railway
+    ssl: {
+        rejectUnauthorized: false,  // Necessário para conexões SSL
+    }
 });
 
 exports.handler = async (event) => {

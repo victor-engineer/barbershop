@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Função para carregar os horários reservados do servidor
     function fetchReservedTimes() {
         console.log('Buscando horários reservados...');
-        fetch('http://localhost:8888/.netlify/functions/appointments-ui')
+        fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments-ui')
             .then(response => response.json())
             .then(data => {
                 console.log('Dados recebidos:', data); // Log para verificar os dados retornados do servidor
