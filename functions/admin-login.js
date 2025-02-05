@@ -4,17 +4,16 @@ const { Client } = require('pg');
 
 // Função para comparar a senha fornecida com o hash no banco de dados
 function encryptPassword(inputPassword, storedPasswordHash) {
-  // Usar bcrypt para comparar as senhas
   return bcrypt.compareSync(inputPassword, storedPasswordHash);
 }
 
 // Função principal da Netlify Function
 exports.handler = async (event) => {
-  // Configurações do banco de dados usando a variável de ambiente DATABASE_URL do Railway
+  // Configurações do banco de dados para o Railway
   const client = new Client({
-    connectionString:'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway', // URL de conexão do Railway
+    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway',  // URL de conexão do Railway
     ssl: {
-      rejectUnauthorized: false, // Para conexões seguras
+      rejectUnauthorized: false,  // Necessário para conexões SSL
     },
   });
 
@@ -48,7 +47,7 @@ exports.handler = async (event) => {
 
         if (passwordMatch) {
           // Se o login for bem-sucedido, armazena a sessão (Netlify não suporta sessões, então simulamos com um JWT)
-          const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY, { expiresIn: '1h' });
+          const token = jwt.sign({ userId: user.id }, 'your-secret-key', { expiresIn: '1h' });
 
           return {
             statusCode: 200,
