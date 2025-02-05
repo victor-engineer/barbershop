@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Agendamento</title>
+    <link rel="stylesheet" href="../css/edit_appointment.css">
+</head>
+<body>
+    <form id="editForm">
+        <input type="hidden" id="appointmentId">
+        
+        <label for="client_name">Nome do Cliente:</label>
+        <input type="text" id="client_name" name="client_name" required><br>
+
+        <label for="date">Data:</label>
+        <input type="date" id="date" name="date" required><br>
+
+        <label for="time">Hora:</label>
+        <input type="time" id="time" name="time" required><br>
+
+        <button type="submit">Atualizar</button>
+    </form>
+
+    <script>
+        // Recupera o ID da URL ou usa um valor fixo
+        const urlParams = new URLSearchParams(window.location.search);
+        const appointmentId = urlParams.get('id') || 1;
+
+        // Faz a requisição para obter os dados do agendamento
+        fetch(`/.netlify/functions/appointments?id=${appointmentId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.client_name) {
+                    document.getElementById('appointmentId').value = data.id;
+                    document.getElementById('client_name').value = data.client_name;
+                    document.getElementById('date').value = data.date;
+                    document.getElementById('time').value = data.time;
+                }
+            })
+            .catch(error => alert('Erro ao carregar agendamento'));
+
+        // Envia os dados do formulário ao servidor para atualização
+        document.getElementById('editForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = {
+                id: formData.get('id'),
+                client_name: formData.get('client_name'),
+                date: formData.get('date'),
+                time: formData.get('time'),
+            };
+
+            fetch('/.netlify/functions/appointments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Agendamento atualizado com sucesso!');
+                    window.location.href = '/admin-dashboard-ui.php';
+                } else {
+                    alert('Erro ao atualizar agendamento');
+                }
+            })
+            .catch(error => alert('Erro ao enviar dados'));
+        });
+    </script>
+</body>
+</html>

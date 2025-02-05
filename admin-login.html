@@ -17,7 +17,7 @@
     </header>
     <div class="login-container">
         <h2>Login de Administrador</h2>
-        <form action="/admin/admin-login.php" method="POST">
+        <form id="login-form" method="POST">
             <div class="input-group">
                 <i class="fas fa-user"></i>
                 <input type="text" name="username" placeholder="Usuário" required>
@@ -29,5 +29,8 @@
             <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
         </form>
     </div>
+
+    <script src="js/login.js"></script>
+
 </body>
 </html>

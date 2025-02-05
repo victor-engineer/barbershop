@@ -19,6 +19,12 @@ document.addEventListener("DOMContentLoaded", () => {
         return `${hour}:${minute}`; // Retorna no formato "08:00"
     }
 
+    // Função para formatar a data para o formato YYYY-MM-DD
+    function formatDate(date) {
+        const localDate = new Date(date);
+        return localDate.toISOString().split("T")[0]; // Exemplo: "2025-02-01"
+    }
+
     // Função para calcular e definir as datas disponíveis no input de data
     function setAvailableDates() {
         const today = new Date();
@@ -26,8 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
         tomorrow.setDate(today.getDate() + 1);
 
         // Formatando a data para o formato aceito pelo input date (YYYY-MM-DD)
-        const formatDate = (date) => date.toISOString().split("T")[0];
-
         const todayFormatted = formatDate(today);
         const tomorrowFormatted = formatDate(tomorrow);
 
@@ -39,12 +43,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Função para verificar se o horário já está reservado
     function isTimeReserved(selectedTime, selectedDate) {
         return reservedTimes.some(
-            (reserved) => reserved.time === selectedTime && reserved.date === selectedDate
+            (reserved) => reserved.time === selectedTime && formatDate(reserved.date) === selectedDate
         );
     }
 
     // Função para atualizar os horários disponíveis
     function updateAvailableTimes() {
+        console.log('Atualizando horários disponíveis...');
         timeSelect.innerHTML = ""; // Limpa as opções atuais
         const selectedDate = dateInput.value; // Obtém a data selecionada
 
@@ -53,14 +58,14 @@ document.addEventListener("DOMContentLoaded", () => {
             option.value = time;
 
             // Verifica se o horário está reservado
-            const reservedAppointment = reservedTimes.find(reserved => reserved.time === time && reserved.date === selectedDate);
+            const reservedAppointment = reservedTimes.find(reserved => reserved.time === time && formatDate(reserved.date) === selectedDate);
 
             if (reservedAppointment) {
-                // Se estiver reservado, exibe como "Indisponível"
+                console.log(`Horário ${time} está reservado para ${selectedDate}`);
                 option.textContent = `${time} - Indisponível`;
                 option.disabled = true; // Desabilita a seleção
             } else {
-                // Caso contrário, mantém o horário disponível
+                console.log(`Horário ${time} está disponível para ${selectedDate}`);
                 option.textContent = time;
             }
 
@@ -70,9 +75,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Função para carregar os horários reservados do servidor
     function fetchReservedTimes() {
-        fetch('/admin/admin-dashboard.php')
+        console.log('Buscando horários reservados...');
+        fetch('http://localhost:8888/.netlify/functions/appointments-ui')
             .then(response => response.json())
             .then(data => {
+                console.log('Dados recebidos:', data); // Log para verificar os dados retornados do servidor
                 if (data.success) {
                     // Carrega as reservas corretamente, com o formato de horário padronizado
                     reservedTimes = data.appointments.map(appointment => ({
@@ -100,6 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const selectedDate = dateInput.value;
         const selectedTime = timeSelect.value;
 
+        console.log('Formulário enviado:', { name, selectedDate, selectedTime });
+
         if (!name) {
             alert("Por favor, insira seu nome.");
             return;
@@ -121,32 +130,53 @@ document.addEventListener("DOMContentLoaded", () => {
         // Atualizar a interface com os horários disponíveis
         updateAvailableTimes();
 
-        // Fazer a requisição para adicionar a reserva
+        // Criando o objeto de dados da reserva
         const appointmentData = {
             client_name: name,
             date: selectedDate,
             time: selectedTime
         };
 
-        fetch('/admin/add_appointment.php', {
+        console.log('Enviando dados da reserva:', JSON.stringify(appointmentData)); // Log para verificar os dados enviados
+
+        fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(appointmentData)
         })
-            .then(response => response.json())
-            .then(data => {
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erro na resposta do servidor: ${response.status} - ${response.statusText}`);
+                }
+                return response.text();
+            })
+            .then(text => {
+                console.log('Resposta bruta da API:', text); // 📌 DEBUG - Verifica o retorno antes de converter
+        
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (error) {
+                    console.error("Erro ao tentar parsear o JSON:", error);
+                    alert("Erro inesperado ao processar a resposta.");
+                    return;
+                }
+        
+                console.log('Resposta processada da API:', data); // 📌 DEBUG - Exibe JSON final processado
+        
                 if (data.success) {
                     alert('Reserva feita com sucesso');
+                    fetchReservedTimes(); // Atualiza horários após reserva
                 } else {
                     alert(data.error || 'Erro ao agendar a reserva');
                 }
             })
             .catch(error => {
-                alert('Erro ao fazer a requisição de reserva');
-                console.error(error);
-            });
+                console.error('Erro ao enviar os dados:', error);
+                alert("Horário Já Reservado. Tente Outro Horário.");
+            });        
     });
 
     // Chama a função para definir a data ao carregar a página

@@ -185,30 +185,27 @@ body {
 /* Formulário de Novo Compromisso */
 .new-appointment-section {
     background-color: var(--white-color);
-    padding: 15px 25px;
-    border-radius: 6px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.new-appointment-section:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+    font-family: 'Arial', sans-serif;
 }
 
 .new-appointment-section h2 {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     color: var(--primary-color);
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     text-align: center;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .form-group label {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: var(--dark-color);
     font-weight: bold;
     margin-bottom: 5px;
@@ -217,10 +214,10 @@ body {
 
 .form-group input {
     width: 100%;
-    padding: 10px;
-    border-radius: 4px;
+    padding: 12px;
+    border-radius: 6px;
     border: 1px solid #ddd;
-    font-size: 0.95rem;
+    font-size: 1rem;
     transition: all 0.3s ease;
 }
 
@@ -228,7 +225,6 @@ body {
     border-color: var(--primary-color);
     outline: none;
     box-shadow: 0 0 8px rgba(218, 165, 32, 0.6);
-    transform: scale(1.02);
 }
 
 .form-group input::placeholder {
@@ -238,14 +234,15 @@ body {
 .dashboard-button {
     background-color: var(--primary-color);
     color: var(--white-color);
-    padding: 10px 20px;
-    border-radius: 4px;
+    padding: 12px 20px;
+    border-radius: 6px;
     border: none;
-    font-size: 1rem;
+    font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.3s ease;
     width: 100%;
     text-align: center;
+    display: block;
 }
 
 .dashboard-button:hover {

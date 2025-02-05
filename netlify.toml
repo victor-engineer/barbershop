@@ -1,0 +1,7 @@
+[build]
+  publish = "/"  # Ou qualquer diretório onde seus arquivos HTML, CSS, JS estão
+  functions = "functions"
+
+[dev]
+  port = 8888
+  functionsPort = 9999

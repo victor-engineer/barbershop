@@ -71,7 +71,7 @@
 <main>
     <section id="schedule">
         <h2>Agendamento</h2>
-        <form id="booking-form" method="post" action="/admin/add_appointment.php">
+        <form id="booking-form">
             <label for="client_name">Seu Nome:</label>
             <input type="text" id="client_name" name="client_name" placeholder="Digite seu nome" required autocomplete="off">
             
@@ -249,7 +249,7 @@
             };
 
             // Enviando dados para o backend usando fetch
-            fetch("/admin/add_appointment.php", {
+            fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments", {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
