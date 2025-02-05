@@ -1,6 +1,6 @@
 exports.handler = async (event) => {
   // Defina um valor fixo ou dinâmico para a origem
-  const allowedOrigin = "http://localhost:8888"; // Ou use logic para determinar a origem
+  const allowedOrigin = "https://franciscobarbearia.netlify.app"; // Ou use logic para determinar a origem
 
   if (!allowedOrigin) {
     return {

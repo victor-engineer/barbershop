@@ -10,13 +10,12 @@ function encryptPassword(inputPassword, storedPasswordHash) {
 
 // Função principal da Netlify Function
 exports.handler = async (event) => {
-  // Configurações do banco de dados
+  // Configurações do banco de dados usando a variável de ambiente DATABASE_URL do Railway
   const client = new Client({
-    user: 'postgres',  // Substitua com suas credenciais
-    host: 'localhost', // Altere para o host correto do seu banco de dados
-    database: 'barbershop',
-    password: 'postgres',
-    port: 5432,
+    connectionString:'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway', // URL de conexão do Railway
+    ssl: {
+      rejectUnauthorized: false, // Para conexões seguras
+    },
   });
 
   try {
@@ -49,7 +48,7 @@ exports.handler = async (event) => {
 
         if (passwordMatch) {
           // Se o login for bem-sucedido, armazena a sessão (Netlify não suporta sessões, então simulamos com um JWT)
-          const token = jwt.sign({ userId: user.id }, 'your-secret-key', { expiresIn: '1h' });
+          const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY, { expiresIn: '1h' });
 
           return {
             statusCode: 200,
