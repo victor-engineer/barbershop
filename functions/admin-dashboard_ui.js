@@ -34,9 +34,12 @@ async function getUpcomingAppointments(client) {
 
 // Função principal da Netlify Function
 exports.handler = async (event) => {
+  // Use a URL do Railway para a conexão ao banco de dados
   const client = new Client({
-    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway', // URL de conexão do Railway
-    ssl: { rejectUnauthorized: false } // Necessário para conexões seguras no Railway
+    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway',  // URL de conexão do Railway
+    ssl: {
+      rejectUnauthorized: false, // Desabilita a validação SSL
+    },
   });
 
   try {
