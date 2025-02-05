@@ -1,85 +1,63 @@
 const { Client } = require('pg');
 
-// Função que será chamada pelo Netlify Function
+// Configuração da conexão com o banco de dados PostgreSQL no Railway
+const client = new Client({
+    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway', // Usando a variável de ambiente para a URL do banco
+    ssl: {
+        rejectUnauthorized: false,  // Necessário para conexões SSL
+    }
+});
+
 exports.handler = async (event) => {
-  // Configuração da conexão com o banco de dados no Railway
-  const client = new Client({
-    connectionString: process.env.DATABASE_URL, // Use a variável de ambiente do Netlify
-    ssl: { rejectUnauthorized: false }, // Necessário para Railway
-  });
-
-  await client.connect();
-
-  // Configurar cabeçalhos para CORS
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json',
-  };
-
-  // Responder requisições OPTIONS para evitar erro de CORS
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers };
-  }
-
-  if (event.httpMethod === "DELETE" && event.queryStringParameters?.id) {
-    const id = parseInt(event.queryStringParameters.id);
-
-    // Validar se o ID é um número inteiro
-    if (isNaN(id)) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ success: false, error: 'ID inválido ou não fornecido!' }),
-      };
-    }
-
     try {
-      // Verificar se o agendamento existe
-      const checkQuery = 'SELECT id FROM appointments WHERE id = $1';
-      const checkResult = await client.query(checkQuery, [id]);
+        // Conecta ao banco de dados
+        await client.connect();
 
-      if (checkResult.rowCount === 0) {
-        return {
-          statusCode: 404,
-          headers,
-          body: JSON.stringify({ success: false, error: 'Agendamento não encontrado!' }),
-        };
-      }
+        // Se o método HTTP for DELETE
+        if (event.httpMethod === 'DELETE') {
+            const { id } = event.queryStringParameters; // Obtém o id do agendamento na query string
 
-      // Executar a exclusão do agendamento
-      const deleteQuery = 'DELETE FROM appointments WHERE id = $1';
-      const deleteResult = await client.query(deleteQuery, [id]);
+            if (!id) {
+                return {
+                    statusCode: 400,
+                    body: JSON.stringify({ error: 'ID do agendamento não fornecido.' }),
+                };
+            }
 
-      if (deleteResult.rowCount > 0) {
+            // Consulta SQL para excluir o agendamento
+            const deleteQuery = 'DELETE FROM appointments WHERE id = $1 RETURNING *';
+            const res = await client.query(deleteQuery, [id]);
+
+            if (res.rows.length === 0) {
+                return {
+                    statusCode: 404,
+                    body: JSON.stringify({ error: 'Agendamento não encontrado.' }),
+                };
+            }
+
+            // Retorna a resposta de sucesso
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    success: true,
+                    message: 'Agendamento excluído com sucesso!',
+                    deletedAppointment: res.rows[0],
+                }),
+            };
+        }
+
         return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({ success: true, message: 'Agendamento excluído com sucesso!' }),
+            statusCode: 405,
+            body: JSON.stringify({ error: 'Método não permitido.' }),
         };
-      } else {
+    } catch (error) {
+        // Caso haja erro na conexão ou na execução da consulta
         return {
-          statusCode: 500,
-          headers,
-          body: JSON.stringify({ success: false, error: 'Erro ao excluir o agendamento.' }),
+            statusCode: 500,
+            body: JSON.stringify({ error: 'Erro ao conectar ou consultar o banco de dados', message: error.message }),
         };
-      }
-    } catch (err) {
-      console.error("Erro no banco de dados: ", err);
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({ success: false, error: 'Erro ao processar a requisição.' }),
-      };
     } finally {
-      await client.end(); // Fechar conexão
+        // Fecha a conexão
+        await client.end();
     }
-  } else {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ success: false, error: 'ID não fornecido ou método incorreto.' }),
-    };
-  }
 };
