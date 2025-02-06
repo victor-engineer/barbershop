@@ -1,13 +1,22 @@
 exports.handler = async (event) => {
-  // Defina um valor fixo ou dinâmico para a origem
-  const allowedOrigin = "https://franciscobarbearia.netlify.app"; // Ou use logic para determinar a origem
+  // Defina origens permitidas
+  const allowedOrigins = [
+    "https://franciscobarbearia.netlify.app",
+    "http://localhost:8888" // Permitir chamadas locais
+  ];
+
+  // Pegue a origem da requisição
+  const requestOrigin = event.headers.origin || "";
+
+  // Verifique se a origem está na lista de permitidas
+  const allowedOrigin = allowedOrigins.includes(requestOrigin) ? requestOrigin : allowedOrigins[0];
 
   if (!allowedOrigin) {
     return {
       statusCode: 500,
       body: JSON.stringify({
         success: false,
-        error: 'Origem não permitida configurada corretamente.',
+        error: "Origem não permitida configurada corretamente.",
       }),
     };
   }
@@ -19,11 +28,11 @@ exports.handler = async (event) => {
     "Vary": "Origin",  // Evitar cache incorreto
   };
 
-  if (event.httpMethod === 'OPTIONS') {
+  if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
       headers: headers,
-      body: '',
+      body: "",
     };
   }
 
