@@ -138,28 +138,30 @@ $(document).ready(function () {
     }
 
     // Lógica para excluir um agendamento
-    $(document).on("click", ".btn-danger", function (event) {
-        event.preventDefault();
+$(document).on("click", ".btn-danger", function (event) {
+    event.preventDefault();
 
-        const appointmentId = $(this).attr("href").split("=")[1]; // Pega o ID da URL
+    const appointmentId = $(this).attr("href").split("=")[1]; // Pega o ID da URL
 
-        if (confirm("Tem certeza que deseja excluir este agendamento?")) {
-            fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/appointment-ui?id=${appointmentId}`, {
-                method: "DELETE", // Corrigido o método
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        alert("Agendamento excluído com sucesso!");
-                        loadAppointments(); // Atualiza a lista
-                    } else {
-                        alert(data.error || "Erro ao excluir o agendamento.");
-                    }
-                })
-                .catch((error) => console.error("Erro ao excluir o agendamento:", error));
-        }
-    });
-
+    if (confirm("Tem certeza que deseja excluir este agendamento?")) {
+        fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment?id=${appointmentId}`, {
+            method: "DELETE", // Método DELETE
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                alert("Agendamento excluído com sucesso!");
+                loadAppointments(); // Atualiza a lista de agendamentos
+            } else {
+                alert(data.error || "Erro ao excluir o agendamento.");
+            }
+        })
+        .catch((error) => {
+            console.error("Erro ao excluir o agendamento:", error);
+            alert("Erro ao excluir o agendamento.");
+        });
+    }
+});
     // Verificar periodicamente se algum agendamento passou
     setInterval(loadAppointments, 60000); // A cada 60 segundos
 

@@ -13,9 +13,10 @@ exports.handler = async (event) => {
         // Conecta ao banco de dados
         await client.connect();
 
-        // Se o método HTTP for DELETE
+        // Verifica se o método é DELETE
         if (event.httpMethod === 'DELETE') {
-            const { id } = event.queryStringParameters; // Obtém o id do agendamento na query string
+            // Aqui estamos utilizando o query string para pegar o ID
+            const id = event.queryStringParameters?.id; // Usando optional chaining para prevenir erro se não houver id
 
             if (!id) {
                 return {
