@@ -117,40 +117,19 @@
     }
 });
 
-// admin-dashboard.js
-
-async function loadAppointments() {
-    console.log("Carregando agendamentos...");
-    // Lógica para carregar os agendamentos
-}
-
-// A função deleteAppointment também pode estar aqui, se necessário
-async function deleteAppointment(id, appointmentDate, appointmentTime, clientName) {
-    console.log("ID:", id);
-    
-    // Verificar se clientName não é undefined ou vazio
-    if (!clientName) {
-        console.warn("Nome do cliente não fornecido ou está vazio.");
-        clientName = "Cliente não identificado";  // Atribui um valor padrão
-    }
-
+async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
     console.log("Cliente:", clientName);
     console.log("Data recebida:", appointmentDate);
     console.log("Hora recebida:", appointmentTime);
 
-    if (!id) {
-        alert("Erro: ID do agendamento não encontrado.");
-        return;
+    if (!clientName || clientName.trim() === "") {
+        console.warn("Nome do cliente não fornecido ou está vazio.");
+        clientName = "Cliente não identificado";  // Atribui um valor padrão
     }
 
-    if (appointmentDate && appointmentDate.includes(":") && !appointmentTime) {
-        console.warn("Parece que a data recebida é um horário. Corrigindo...");
-        appointmentTime = appointmentDate; // A data recebida é, na verdade, o horário
-        appointmentDate = null; // A data precisa ser corrigida
-    }
-
-    if (!appointmentDate) {
-        alert("Erro: Data do agendamento não encontrada.");
+    // Validando a data e hora
+    if (!appointmentDate || !appointmentTime) {
+        alert("Erro: Data ou hora não fornecidas.");
         return;
     }
 
@@ -169,7 +148,6 @@ async function deleteAppointment(id, appointmentDate, appointmentTime, clientNam
     const formattedDateString = formattedDate.toLocaleDateString('pt-BR');
     const formattedTime = appointmentTime ? appointmentTime : 'Horário não especificado';
 
-    // Usando o nome do cliente corretamente aqui
     if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${formattedDateString} às ${formattedTime}?`)) {
         return;
     }
@@ -178,14 +156,14 @@ async function deleteAppointment(id, appointmentDate, appointmentTime, clientNam
         const response = await fetch('https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: id })
+            body: JSON.stringify({ clientName, appointmentDate, appointmentTime })  // Passando os dados corretos
         });
 
         const data = await response.json();
 
         if (response.ok) {
             alert(data.message || 'Agendamento excluído com sucesso!');
-            location.reload();
+            location.reload();  // Atualiza a página após exclusão
         } else {
             alert(data.error || 'Erro ao excluir o agendamento.');
         }
