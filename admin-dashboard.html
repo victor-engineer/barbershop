@@ -163,7 +163,7 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
 
         if (response.ok) {
             alert(data.message || 'Agendamento excluído com sucesso!');
-            location.reload();  // Atualiza a página após exclusão
+            loadAppointments();  // Recarrega os agendamentos após exclusão
         } else {
             alert(data.error || 'Erro ao excluir o agendamento.');
         }
@@ -173,11 +173,54 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
     }
 }
 
+// Função para carregar os agendamentos
+async function loadAppointments() {
+    fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments")  // Atualize para o endpoint da API RESTful configurado em appointments.js
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                const tbody = $("#appointments-body");
+                tbody.empty(); // Limpa a tabela antes de adicionar os novos dados
+
+                data.appointments.forEach((appointment) => {
+                    const appointmentTime = new Date(`${appointment.date} ${appointment.time}`);
+                    const currentTime = new Date();
+
+                    // Verificar se o horário já passou
+                    if (appointmentTime < currentTime) {
+                        // Deletar o agendamento automaticamente
+                        deleteAppointment(appointment.client_name, appointment.date, appointment.time);
+                    } else {
+                        const row = `
+                            <tr id="appointment-${appointment.id}">
+                                <td>${appointment.client_name}</td>
+                                <td>${appointment.date}</td>
+                                <td>${appointment.time}</td>
+                                <td>
+                                    <a href="edit_appointment.js?id=${appointment.id}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                    <a href="delete_appointment.js?id=${appointment.id}" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i> Excluir
+                                    </a>
+                                </td>
+                            </tr>`;
+                        tbody.append(row);
+                    }
+                });
+            } else {
+                $("#response-message").html(
+                    `<div class="alert alert-danger">${data.error}</div>`
+                );
+            }
+        })
+        .catch((error) => console.error("Erro ao carregar agendamentos:", error));
+}
+
+
 // Verificar periodicamente se algum agendamento passou
 setInterval(loadAppointments, 60000); // A cada 60 segundos
 
   </script>
-  <script src="js/admin-dashboard.js" defer></script>
-
 </body>
 </html>
