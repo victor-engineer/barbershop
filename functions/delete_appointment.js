@@ -15,8 +15,9 @@ exports.handler = async (event) => {
 
         // Verifica se o método é DELETE
         if (event.httpMethod === 'DELETE') {
-            // Aqui estamos utilizando o query string para pegar o ID
-            const id = event.queryStringParameters?.id; // Usando optional chaining para prevenir erro se não houver id
+            // Aqui estamos utilizando o corpo da requisição para pegar o ID
+            const data = JSON.parse(event.body);  // Converte o corpo da requisição em JSON
+            const id = data.id;  // Obtém o ID do corpo
 
             if (!id) {
                 return {
