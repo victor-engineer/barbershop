@@ -117,32 +117,39 @@
     }
 });
 
-async function deleteAppointment(id, clientName, date, time) {
+// admin-dashboard.js
+
+async function loadAppointments() {
+    console.log("Carregando agendamentos...");
+    // Lógica para carregar os agendamentos
+}
+
+// A função deleteAppointment também pode estar aqui, se necessário
+async function deleteAppointment(id, appointmentDate, appointmentTime, clientName) {
     console.log("ID:", id);
     console.log("Cliente:", clientName);
-    console.log("Data recebida:", date);
-    console.log("Hora recebida:", time);
+    console.log("Data recebida:", appointmentDate);
+    console.log("Hora recebida:", appointmentTime);
 
     if (!id) {
         alert("Erro: ID do agendamento não encontrado.");
         return;
     }
 
-    // Se "date" for apenas um horário (ex: "17:00:00"), precisamos corrigir
-    if (date && date.includes(":") && !time) {
+    if (appointmentDate && appointmentDate.includes(":") && !appointmentTime) {
         console.warn("Parece que a data recebida é um horário. Corrigindo...");
-        time = date;
-        date = null; // A data precisa ser corrigida
+        appointmentTime = appointmentDate;
+        appointmentDate = null;
     }
 
-    if (!date) {
+    if (!appointmentDate) {
         alert("Erro: Data do agendamento não encontrada.");
         return;
     }
 
     let formattedDate;
     try {
-        formattedDate = new Date(date);
+        formattedDate = new Date(appointmentDate);
         if (isNaN(formattedDate.getTime())) {
             throw new Error("Data inválida");
         }
@@ -153,7 +160,7 @@ async function deleteAppointment(id, clientName, date, time) {
     }
 
     const formattedDateString = formattedDate.toLocaleDateString('pt-BR');
-    const formattedTime = time ? time : 'Horário não especificado';
+    const formattedTime = appointmentTime ? appointmentTime : 'Horário não especificado';
 
     if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${formattedDateString} às ${formattedTime}?`)) {
         return;
@@ -182,9 +189,12 @@ async function deleteAppointment(id, clientName, date, time) {
 
 
 
+
 // Verificar periodicamente se algum agendamento passou
 setInterval(loadAppointments, 60000); // A cada 60 segundos
 
   </script>
+  <script src="js/admin-dashboard.js" defer></script>
+
 </body>
 </html>
