@@ -1,7 +1,7 @@
 $(document).ready(function () {
     // Função para carregar os agendamentos via AJAX
     function loadAppointments() {
-        fetch("http://localhost:8888/.netlify/functions/appointments")  // Atualize para o endpoint da API RESTful configurado em appointments.js
+        fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments")  // Atualize para o endpoint da API RESTful configurado em appointments.js
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
