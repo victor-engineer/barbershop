@@ -29,7 +29,8 @@ exports.handler = async (event) => {
     } 
     
     else if (event.httpMethod === "DELETE") {
-      const { id } = JSON.parse(event.body);
+      // Alteração para pegar o ID da query string
+      const { id } = event.queryStringParameters;
       
       if (!id) {
         return { statusCode: 400, body: JSON.stringify({ success: false, error: "ID do agendamento é obrigatório!" }) };

@@ -106,7 +106,8 @@ $(document).ready(function () {
                             console.error("Erro ao enviar o agendamento:", error)
                         );
                 } else {
-                    // Se o horário não estiver disponível
+                    // Se o horário não estiver disponível, salva no localStorage
+                    localStorage.setItem('appointmentUnavailable', 'true');
                     $("#response-message").html(
                         `<div class="alert alert-danger">Este horário já está reservado. Por favor, escolha outro horário.</div>`
                     );
@@ -143,7 +144,7 @@ $(document).ready(function () {
         const appointmentId = $(this).attr("href").split("=")[1]; // Pega o ID da URL
 
         if (confirm("Tem certeza que deseja excluir este agendamento?")) {
-            fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment?id=${appointmentId}`, {
+            fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/appointment-ui?id=${appointmentId}`, {
                 method: "DELETE", // Corrigido o método
             })
                 .then((response) => response.json())
@@ -161,4 +162,13 @@ $(document).ready(function () {
 
     // Verificar periodicamente se algum agendamento passou
     setInterval(loadAppointments, 60000); // A cada 60 segundos
+
+    // Manter a mensagem de indisponibilidade após o recarregamento da página
+    if (localStorage.getItem('appointmentUnavailable') === 'true') {
+        $("#response-message").html(
+            `<div class="alert alert-danger">Este horário já está reservado. Por favor, escolha outro horário.</div>`
+        );
+        // Remover após exibir a mensagem
+        localStorage.removeItem('appointmentUnavailable');
+    }
 });
