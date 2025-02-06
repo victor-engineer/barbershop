@@ -9,10 +9,7 @@ exports.handler = async (event) => {
   try {
     if (event.httpMethod === "GET") {
       const res = await pool.query('SELECT * FROM appointments ORDER BY date, time');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ success: true, appointments: res.rows }),
-      };
+      return { statusCode: 200, body: JSON.stringify({ success: true, appointments: res.rows }) };
     } 
     
     else if (event.httpMethod === "POST") {
@@ -22,7 +19,6 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: JSON.stringify({ success: false, error: "Todos os campos são obrigatórios!" }) };
       }
 
-      // Verifica se o horário já está reservado
       const check = await pool.query('SELECT * FROM appointments WHERE date = $1 AND time = $2', [date, time]);
       if (check.rows.length > 0) {
         return { statusCode: 409, body: JSON.stringify({ success: false, error: "Horário já reservado!" }) };
