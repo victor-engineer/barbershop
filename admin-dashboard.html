@@ -124,7 +124,7 @@ async function deleteAppointment(clientName, date, time) {
     }
 
     try {
-        const response = await fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments', {
+        const response = await fetch('https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ client_name: clientName, date: date, time: time }),

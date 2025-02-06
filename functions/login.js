@@ -106,3 +106,4 @@ exports.handler = async (event) => {
     await client.end(); // Fecha conexão com o PostgreSQL
   }
 };
+
