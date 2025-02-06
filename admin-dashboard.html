@@ -117,8 +117,34 @@
     }
 });
 
+// Evento de clique nos botões de exclusão
+$(document).on("click", ".btn-danger", function (event) {
+    event.preventDefault();
+
+    // Captura os dados do botão
+    const appointmentId = $(this).data("id");
+    const clientName = $(this).data("client-name");
+    const date = $(this).data("date");
+    const time = $(this).data("time");
+
+    // Verificar se os dados foram capturados corretamente
+    console.log("ID do agendamento:", appointmentId);
+    console.log("Cliente:", clientName);
+    console.log("Data:", date);
+    console.log("Hora:", time);
+
+    // Chama a função para excluir o agendamento
+    deleteAppointment(appointmentId, clientName, date, time);
+});
+
+// Função para excluir um agendamento
 async function deleteAppointment(id, clientName, date, time) {
-    // Formatação da data (se necessário)
+    if (!id) {
+        alert("Erro: ID do agendamento não encontrado.");
+        return;
+    }
+
+    // Formatação da data
     const formattedDate = new Date(date);
     const formattedDateString = formattedDate instanceof Date && !isNaN(formattedDate) ? 
         formattedDate.toLocaleDateString('pt-BR') : 'Data inválida';
@@ -128,30 +154,29 @@ async function deleteAppointment(id, clientName, date, time) {
 
     // Exibe a confirmação com a data e a hora formatadas
     if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${formattedDateString} às ${formattedTime}?`)) {
-        return; // Se o usuário cancelar, não faz nada
+        return;
     }
 
     try {
-        const response = await fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointment-ui', {
+        const response = await fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment?id=${id}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: id }), // Envia o ID do agendamento para exclusão
+            headers: { 'Content-Type': 'application/json' }
         });
 
         const data = await response.json();
 
         if (response.ok) {
             alert(data.message || 'Agendamento excluído com sucesso!');
-            location.reload(); // Recarrega a página para atualizar a lista
+            loadAppointments(); // Atualiza a lista de agendamentos sem recarregar a página
         } else {
             alert(data.error || 'Erro ao excluir o agendamento.');
         }
 
     } catch (error) {
         console.error('Erro ao excluir agendamento:', error);
+        alert('Erro ao excluir o agendamento.');
     }
 }
-
 
 // Verificar periodicamente se algum agendamento passou
 setInterval(loadAppointments, 60000); // A cada 60 segundos
