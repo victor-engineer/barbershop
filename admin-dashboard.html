@@ -117,9 +117,12 @@
     }
 });
 
-// Função para deletar um agendamento
 async function deleteAppointment(id, clientName, date, time) {
-    if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${date} às ${time}?`)) {
+    // Certifique-se de que `date` e `time` estão no formato correto
+    const formattedDate = new Date(date).toLocaleDateString('pt-BR'); // Formata a data
+    const formattedTime = new Date(`1970-01-01T${time}Z`).toLocaleTimeString('pt-BR'); // Formata a hora
+
+    if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${formattedDate} às ${formattedTime}?`)) {
         return; // Se o usuário cancelar, não faz nada
     }
 
