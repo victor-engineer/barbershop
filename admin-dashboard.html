@@ -117,8 +117,16 @@
     }
 });
 
-async function deleteAppointment(id, clientName, date, time) {
-    // Formatação da data (se necessário)
+// Lógica para excluir um agendamento
+$(document).on("click", ".btn-danger", async function (event) {
+    event.preventDefault();
+
+    const appointmentId = $(this).attr("href").split("=")[1]; // Pega o ID da URL
+    const clientName = $(this).data("client-name"); // Pegando o nome do cliente, se disponível
+    const date = $(this).data("date"); // Pegando a data do agendamento
+    const time = $(this).data("time"); // Pegando o horário do agendamento
+
+    // Formatação da data
     const formattedDate = new Date(date);
     const formattedDateString = formattedDate instanceof Date && !isNaN(formattedDate) ? 
         formattedDate.toLocaleDateString('pt-BR') : 'Data inválida';
@@ -132,25 +140,29 @@ async function deleteAppointment(id, clientName, date, time) {
     }
 
     try {
-        const response = await fetch('https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment', {
+        const response = await fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment?id=${appointmentId}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: id }), // Envia o ID do agendamento para exclusão
         });
 
         const data = await response.json();
 
         if (response.ok) {
             alert(data.message || 'Agendamento excluído com sucesso!');
-            location.reload(); // Recarrega a página para atualizar a lista
+            loadAppointments(); // Atualiza a lista de agendamentos
         } else {
             alert(data.error || 'Erro ao excluir o agendamento.');
         }
 
     } catch (error) {
-        console.error('Erro ao excluir agendamento:', error);
+        console.error('Erro ao excluir o agendamento:', error);
+        alert('Erro ao excluir o agendamento.');
     }
-}
+});
+
+// Verificar periodicamente se algum agendamento passou
+setInterval(loadAppointments, 60000); // A cada 60 segundos
+
 
   </script>
 </body>
