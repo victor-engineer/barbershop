@@ -118,9 +118,9 @@
 });
 
 async function deleteAppointment(id, clientName, date, time) {
-    // Certifique-se de que `date` e `time` estão no formato correto
+    // Verifica se a data e a hora são válidas antes de tentar formatá-las
     const formattedDate = new Date(date).toLocaleDateString('pt-BR'); // Formata a data
-    const formattedTime = new Date(`1970-01-01T${time}Z`).toLocaleTimeString('pt-BR'); // Formata a hora
+    const formattedTime = time ? new Date(`1970-01-01T${time}:00Z`).toLocaleTimeString('pt-BR') : 'Horário não especificado'; // Formata a hora
 
     if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${formattedDate} às ${formattedTime}?`)) {
         return; // Se o usuário cancelar, não faz nada
