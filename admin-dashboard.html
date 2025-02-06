@@ -118,12 +118,18 @@
 });
 
 async function deleteAppointment(id, clientName, date, time) {
-    // Formata a data para remover a parte indesejada (T00:00:00.000Z)
-    const formattedDate = new Date(date).toLocaleDateString('pt-BR'); // Formata apenas a data
-    const formattedTime = time ? time : 'Horário não especificado'; // Se não houver horário, mostra "Horário não especificado"
+    // Converte a data para o formato correto
+    const formattedDate = new Date(date);
+    
+    // Se a data for inválida, definimos uma data padrão
+    const formattedDateString = formattedDate instanceof Date && !isNaN(formattedDate) ? 
+        formattedDate.toLocaleDateString('pt-BR') : 'Data inválida';
+
+    // Verifica se o horário foi fornecido, caso contrário, coloca "Horário não especificado"
+    const formattedTime = time ? time : 'Horário não especificado';
 
     // Exibe a confirmação com a data e a hora formatadas
-    if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${formattedDate} às ${formattedTime}?`)) {
+    if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${formattedDateString} às ${formattedTime}?`)) {
         return; // Se o usuário cancelar, não faz nada
     }
 
@@ -147,7 +153,6 @@ async function deleteAppointment(id, clientName, date, time) {
         console.error('Erro ao excluir agendamento:', error);
     }
 }
-
   </script>
 </body>
 </html>
