@@ -126,6 +126,12 @@ $(document).on("click", ".btn-danger", async function (event) {
     const date = $(this).data("date"); // Pegando a data do agendamento
     const time = $(this).data("time"); // Pegando o horário do agendamento
 
+    // Verificar se os dados estão corretos
+    console.log("appointmentId:", appointmentId);
+    console.log("clientName:", clientName);
+    console.log("date:", date);
+    console.log("time:", time);
+
     // Formatação da data
     const formattedDate = new Date(date);
     const formattedDateString = formattedDate instanceof Date && !isNaN(formattedDate) ? 
@@ -162,7 +168,6 @@ $(document).on("click", ".btn-danger", async function (event) {
 
 // Verificar periodicamente se algum agendamento passou
 setInterval(loadAppointments, 60000); // A cada 60 segundos
-
 
   </script>
 </body>
