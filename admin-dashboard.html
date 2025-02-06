@@ -118,7 +118,7 @@
 });
 
 // Função para deletar um agendamento
-async function deleteAppointment(clientName, date, time) {
+async function deleteAppointment(id, clientName, date, time) {
     if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${date} às ${time}?`)) {
         return; // Se o usuário cancelar, não faz nada
     }
@@ -127,7 +127,7 @@ async function deleteAppointment(clientName, date, time) {
         const response = await fetch('https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ client_name: clientName, date: date, time: time }),
+            body: JSON.stringify({ id: id }), // Envia o id no corpo da requisição
         });
 
         const data = await response.json();
