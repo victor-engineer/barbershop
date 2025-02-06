@@ -127,6 +127,13 @@ async function loadAppointments() {
 // A função deleteAppointment também pode estar aqui, se necessário
 async function deleteAppointment(id, appointmentDate, appointmentTime, clientName) {
     console.log("ID:", id);
+    
+    // Verificar se clientName não é undefined ou vazio
+    if (!clientName) {
+        console.warn("Nome do cliente não fornecido ou está vazio.");
+        clientName = "Cliente não identificado";  // Atribui um valor padrão
+    }
+
     console.log("Cliente:", clientName);
     console.log("Data recebida:", appointmentDate);
     console.log("Hora recebida:", appointmentTime);
@@ -138,8 +145,8 @@ async function deleteAppointment(id, appointmentDate, appointmentTime, clientNam
 
     if (appointmentDate && appointmentDate.includes(":") && !appointmentTime) {
         console.warn("Parece que a data recebida é um horário. Corrigindo...");
-        appointmentTime = appointmentDate;
-        appointmentDate = null;
+        appointmentTime = appointmentDate; // A data recebida é, na verdade, o horário
+        appointmentDate = null; // A data precisa ser corrigida
     }
 
     if (!appointmentDate) {
@@ -162,6 +169,7 @@ async function deleteAppointment(id, appointmentDate, appointmentTime, clientNam
     const formattedDateString = formattedDate.toLocaleDateString('pt-BR');
     const formattedTime = appointmentTime ? appointmentTime : 'Horário não especificado';
 
+    // Usando o nome do cliente corretamente aqui
     if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${formattedDateString} às ${formattedTime}?`)) {
         return;
     }
@@ -186,9 +194,6 @@ async function deleteAppointment(id, appointmentDate, appointmentTime, clientNam
         alert('Erro ao excluir o agendamento.');
     }
 }
-
-
-
 
 // Verificar periodicamente se algum agendamento passou
 setInterval(loadAppointments, 60000); // A cada 60 segundos
