@@ -70,7 +70,9 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        if (reservedTimes.some(reserved => reserved.time === selectedTime && formatDate(reserved.date) === selectedDate)) {
+        const isTimeReserved = reservedTimes.some(reserved => reserved.time === selectedTime && formatDate(reserved.date) === selectedDate);
+
+        if (isTimeReserved) {
             alert(`O horário ${selectedTime} já está reservado. Escolha outro.`);
             return;
         }
@@ -86,7 +88,9 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(data => {
             if (data.success) {
                 alert('Reserva feita com sucesso');
-                fetchReservedTimes();
+                // Atualiza os horários reservados após a reserva
+                reservedTimes.push({ time: selectedTime, date: selectedDate });
+                updateAvailableTimes();
             } else {
                 alert(data.error || 'Erro ao agendar a reserva');
             }
