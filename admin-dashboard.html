@@ -128,7 +128,18 @@ async function deleteAppointment(id, clientName, date, time) {
         return;
     }
 
-    // Converte a string da data para um objeto Date válido
+    // Se "date" for apenas um horário (ex: "17:00:00"), precisamos corrigir
+    if (date && date.includes(":") && !time) {
+        console.warn("Parece que a data recebida é um horário. Corrigindo...");
+        time = date;
+        date = null; // A data precisa ser corrigida
+    }
+
+    if (!date) {
+        alert("Erro: Data do agendamento não encontrada.");
+        return;
+    }
+
     let formattedDate;
     try {
         formattedDate = new Date(date);
@@ -141,10 +152,7 @@ async function deleteAppointment(id, clientName, date, time) {
         return;
     }
 
-    // Formata a data corretamente para exibição
     const formattedDateString = formattedDate.toLocaleDateString('pt-BR');
-
-    // Se o horário não for fornecido, usamos "Horário não especificado"
     const formattedTime = time ? time : 'Horário não especificado';
 
     if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${formattedDateString} às ${formattedTime}?`)) {
@@ -155,7 +163,7 @@ async function deleteAppointment(id, clientName, date, time) {
         const response = await fetch('https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: id }) // Envia o ID do agendamento
+            body: JSON.stringify({ id: id })
         });
 
         const data = await response.json();
