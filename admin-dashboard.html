@@ -117,10 +117,17 @@
     }
 });
 
-async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
+async function deleteAppointment(appointmentId, clientName, appointmentDate, appointmentTime) {
+    console.log("ID do agendamento:", appointmentId);  // Verifique se o ID está sendo passado corretamente
     console.log("Cliente:", clientName);
     console.log("Data recebida:", appointmentDate);
     console.log("Hora recebida:", appointmentTime);
+
+    if (!appointmentId) {
+        console.warn("ID do agendamento não fornecido.");
+        alert("Erro: ID do agendamento não fornecido.");
+        return;
+    }
 
     if (!clientName || clientName.trim() === "") {
         console.warn("Nome do cliente não fornecido ou está vazio.");
@@ -156,7 +163,7 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
         const response = await fetch('https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ clientName, appointmentDate, appointmentTime })  // Passando os dados corretos
+            body: JSON.stringify({ appointmentId, clientName, appointmentDate, appointmentTime })  // Passando o ID agora
         });
 
         const data = await response.json();
@@ -175,7 +182,7 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
 
 // Função para carregar os agendamentos
 async function loadAppointments() {
-    fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments")  // Atualize para o endpoint da API RESTful configurado em appointments.js
+    fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments")
         .then((response) => response.json())
         .then((data) => {
             if (data.success) {
@@ -188,8 +195,8 @@ async function loadAppointments() {
 
                     // Verificar se o horário já passou
                     if (appointmentTime < currentTime) {
-                        // Deletar o agendamento automaticamente
-                        deleteAppointment(appointment.client_name, appointment.date, appointment.time);
+                        // Deletar o agendamento automaticamente, agora com o ID
+                        deleteAppointment(appointment.id, appointment.client_name, appointment.date, appointment.time);
                     } else {
                         const row = `
                             <tr id="appointment-${appointment.id}">
