@@ -60,9 +60,10 @@ exports.handler = async (event) => {
         };
     } catch (error) {
         // Caso haja erro na conexão ou na execução da consulta
+        console.error('Erro ao conectar ou consultar o banco de dados:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Erro ao conectar ou consultar o banco de dados', message: error.message }),
+            body: JSON.stringify({ error: 'Erro ao conectar ou consultar o banco de dados', message: error.message, stack: error.stack }),
         };
     } finally {
         // Fecha a conexão
