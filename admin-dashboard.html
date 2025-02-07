@@ -146,6 +146,7 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
         return;
     }
 
+    // Formatação da data e hora para o fuso horário de São Paulo
     const formattedDateString = formattedDate.toLocaleDateString('pt-BR', { timeZone: "America/Sao_Paulo" });
     const formattedTime = new Date(`1970-01-01T${appointmentTime}Z`).toLocaleTimeString('pt-BR', {
         timeZone: "America/Sao_Paulo",
@@ -177,6 +178,7 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
         alert('Erro ao excluir o agendamento.');
     }
 }
+
 
 // Função para carregar os agendamentos
 async function loadAppointments() {
@@ -229,8 +231,6 @@ async function loadAppointments() {
         })
         .catch((error) => console.error("Erro ao carregar agendamentos:", error));
 }
-
-
 
 // Verificar periodicamente se algum agendamento passou
 setInterval(loadAppointments, 60000); // A cada 60 segundos
