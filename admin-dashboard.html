@@ -146,8 +146,12 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
         return;
     }
 
-    const formattedDateString = formattedDate.toLocaleDateString('pt-BR');
-    const formattedTime = appointmentTime ? appointmentTime : 'Horário não especificado';
+    const formattedDateString = formattedDate.toLocaleDateString('pt-BR', { timeZone: "America/Sao_Paulo" });
+    const formattedTime = new Date(`1970-01-01T${appointmentTime}Z`).toLocaleTimeString('pt-BR', {
+        timeZone: "America/Sao_Paulo",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
 
     if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${formattedDateString} às ${formattedTime}?`)) {
         return;
@@ -176,7 +180,7 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
 
 // Função para carregar os agendamentos
 async function loadAppointments() {
-    fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments")  // Atualize para o endpoint da API RESTful configurado em appointments.js
+    fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments")  // Atualize para o endpoint correto
         .then((response) => response.json())
         .then((data) => {
             if (data.success) {
@@ -184,19 +188,27 @@ async function loadAppointments() {
                 tbody.empty(); // Limpa a tabela antes de adicionar os novos dados
 
                 data.appointments.forEach((appointment) => {
-                    const appointmentTime = new Date(`${appointment.date} ${appointment.time}`);
+                    // Convertendo para fuso horário de São Paulo
+                    const appointmentDateTime = new Date(`${appointment.date}T${appointment.time}Z`);
+                    const localDate = appointmentDateTime.toLocaleDateString('pt-BR', { timeZone: "America/Sao_Paulo" });
+                    const localTime = appointmentDateTime.toLocaleTimeString('pt-BR', {
+                        timeZone: "America/Sao_Paulo",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    });
+
                     const currentTime = new Date();
 
                     // Verificar se o horário já passou
-                    if (appointmentTime < currentTime) {
+                    if (appointmentDateTime < currentTime) {
                         // Deletar o agendamento automaticamente, passando os dados sem o ID
                         deleteAppointment(appointment.client_name, appointment.date, appointment.time);
                     } else {
                         const row = `
                             <tr id="appointment-${appointment.client_name}-${appointment.date}-${appointment.time}">
                                 <td>${appointment.client_name}</td>
-                                <td>${appointment.date}</td>
-                                <td>${appointment.time}</td>
+                                <td>${localDate}</td>
+                                <td>${localTime}</td>
                                 <td>
                                     <a href="edit_appointment.js?clientName=${appointment.client_name}&date=${appointment.date}&time=${appointment.time}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-edit"></i> Editar
@@ -217,6 +229,7 @@ async function loadAppointments() {
         })
         .catch((error) => console.error("Erro ao carregar agendamentos:", error));
 }
+
 
 
 // Verificar periodicamente se algum agendamento passou
