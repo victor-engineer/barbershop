@@ -182,7 +182,7 @@ async function deleteAppointment(appointmentId, clientName, appointmentDate, app
 
 // Função para carregar os agendamentos
 async function loadAppointments() {
-    fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments")
+    fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments")  // Atualize para o endpoint da API RESTful configurado em appointments.js
         .then((response) => response.json())
         .then((data) => {
             if (data.success) {
@@ -223,7 +223,6 @@ async function loadAppointments() {
         })
         .catch((error) => console.error("Erro ao carregar agendamentos:", error));
 }
-
 
 // Verificar periodicamente se algum agendamento passou
 setInterval(loadAppointments, 60000); // A cada 60 segundos
