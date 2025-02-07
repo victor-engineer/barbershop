@@ -15,20 +15,26 @@ exports.handler = async (event) => {
 
         // Verifica se o método é DELETE
         if (event.httpMethod === 'DELETE') {
-            // Aqui estamos utilizando o corpo da requisição para pegar o ID
+            // Aqui estamos utilizando o corpo da requisição para pegar os dados do agendamento
             const data = JSON.parse(event.body);  // Converte o corpo da requisição em JSON
-            const id = data.id;  // Obtém o ID do corpo
+            const { clientName, appointmentDate, appointmentTime } = data;  // Obtém os dados do corpo
 
-            if (!id) {
+            if (!clientName || !appointmentDate || !appointmentTime) {
                 return {
                     statusCode: 400,
-                    body: JSON.stringify({ error: 'ID do agendamento não fornecido.' }),
+                    body: JSON.stringify({ error: 'Nome do cliente, data ou hora não fornecidos.' }),
                 };
             }
 
-            // Consulta SQL para excluir o agendamento
-            const deleteQuery = 'DELETE FROM appointments WHERE id = $1 RETURNING *';
-            const res = await client.query(deleteQuery, [id]);
+            // Consulta SQL para excluir o agendamento com base no cliente, data e hora
+            const deleteQuery = `
+                DELETE FROM appointments 
+                WHERE client_name = $1 
+                AND appointment_date = $2 
+                AND appointment_time = $3 
+                RETURNING *`;
+                
+            const res = await client.query(deleteQuery, [clientName, appointmentDate, appointmentTime]);
 
             if (res.rows.length === 0) {
                 return {
