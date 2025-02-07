@@ -1,5 +1,4 @@
 const { Client } = require('pg');
-const moment = require('moment-timezone');
 
 // Configuração da conexão com o banco de dados PostgreSQL no Railway
 const client = new Client({
@@ -27,9 +26,6 @@ exports.handler = async (event) => {
                 };
             }
 
-            // Convertendo a data e hora para o fuso horário de São Paulo
-            const appointmentDateTime = moment.tz(`${appointmentDate}T${appointmentTime}:00`, 'America/Sao_Paulo').toDate();
-
             // Consulta SQL para excluir o agendamento com base no cliente, data e hora
             const deleteQuery = `
                 DELETE FROM appointments 
@@ -38,7 +34,7 @@ exports.handler = async (event) => {
                 AND appointment_time = $3 
                 RETURNING *`;
                 
-            const res = await client.query(deleteQuery, [clientName, appointmentDateTime, appointmentTime]);
+            const res = await client.query(deleteQuery, [clientName, appointmentDate, appointmentTime]);
 
             if (res.rows.length === 0) {
                 return {
