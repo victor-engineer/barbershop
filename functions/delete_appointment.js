@@ -1,23 +1,32 @@
 const { Client } = require('pg');
 
-// Configuração da URL do banco
-const connectionString = 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway';
+// Configuração da conexão com o banco de dados
+const client = new Client({
+    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway',
+    ssl: {
+        rejectUnauthorized: false,  // Necessário para conexões SSL
+    }
+});
 
 exports.handler = async (event) => {
-    // Criando um novo cliente para cada requisição
-    const client = new Client({
-        connectionString: connectionString,
-        ssl: { rejectUnauthorized: false },
-    });
-
     try {
-        await client.connect(); // Conectando ao banco
+        console.log("Iniciando a conexão ao banco de dados...");
 
+        // Conectar ao banco de dados
+        await client.connect();
+
+        // Log do evento recebido
+        console.log("Evento recebido:", event);
+
+        // Verifica se o método é DELETE
         if (event.httpMethod === 'DELETE') {
-            const data = JSON.parse(event.body);
-            const { clientName, appointmentDate, appointmentTime } = data;
+            const data = JSON.parse(event.body); // Converte o corpo da requisição
+            const { clientName, date, time } = data;  // Obtém os dados
 
-            if (!clientName || !appointmentDate || !appointmentTime) {
+            console.log("Dados recebidos no backend:", data);  // Log para ver os dados recebidos
+
+            if (!clientName || !date || !time) {
+                console.warn("Faltando dados:", { clientName, date, time });
                 return {
                     statusCode: 400,
                     body: JSON.stringify({ error: 'Nome do cliente, data ou hora não fornecidos.' }),
@@ -31,15 +40,18 @@ exports.handler = async (event) => {
                 AND appointment_date = $2 
                 AND appointment_time = $3 
                 RETURNING *`;
-
-            const res = await client.query(deleteQuery, [clientName, appointmentDate, appointmentTime]);
+                
+            const res = await client.query(deleteQuery, [clientName, date, time]);
 
             if (res.rows.length === 0) {
+                console.log("Nenhum agendamento encontrado.");
                 return {
                     statusCode: 404,
                     body: JSON.stringify({ error: 'Agendamento não encontrado.' }),
                 };
             }
+
+            console.log("Agendamento excluído com sucesso:", res.rows[0]);
 
             return {
                 statusCode: 200,
@@ -59,9 +71,10 @@ exports.handler = async (event) => {
         console.error('Erro ao conectar ou consultar o banco de dados:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Erro ao conectar ou consultar o banco de dados', message: error.message }),
+            body: JSON.stringify({ error: 'Erro ao conectar ou consultar o banco de dados', message: error.message, stack: error.stack }),
         };
     } finally {
-        await client.end(); // Fecha a conexão corretamente
+        // Fecha a conexão
+        await client.end();
     }
 };
