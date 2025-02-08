@@ -133,23 +133,20 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
         return;
     }
 
-    // Removendo o "T00:00:00.000Z" da data
-    const formattedDateString = appointmentDate.split('T')[0].split('-').reverse().join('/');
+    // Criando a data no formato esperado pelo backend
+    const [year, month, day] = appointmentDate.split('T')[0].split('-'); 
+    const [hours, minutes] = appointmentTime.split(':'); 
 
-    // Criando a data sem fuso horário UTC
-    const [year, month, day] = appointmentDate.split('T')[0].split('-'); // Pegando YYYY-MM-DD
-    const [hours, minutes] = appointmentTime.split(':'); // Pegando HH:mm
+    // Formatando a data para YYYY-MM-DD
+    const formattedDate = `${year}-${month}-${day}`;
 
-    // Criando uma nova data diretamente no fuso horário local
-    const appointmentDateTime = new Date(year, month - 1, day, hours, minutes); // month -1 porque em JS os meses vão de 0-11
+    // Formatando a hora para HH:mm:ss (caso o banco precise de segundos)
+    const formattedTime = `${hours}:${minutes}:00`;
 
-    // Formatando corretamente para o fuso de São Paulo sem alterar o horário
-    const formattedTime = appointmentDateTime.toLocaleTimeString('pt-BR', {
-        hour: "2-digit",
-        minute: "2-digit"
-    });
+    console.log("Data formatada para envio:", formattedDate);
+    console.log("Hora formatada para envio:", formattedTime);
 
-    if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${formattedDateString} às ${formattedTime}?`)) {
+    if (!confirm(`Deseja excluir o agendamento de ${clientName} no dia ${day}/${month}/${year} às ${hours}:${minutes}?`)) {
         return;
     }
 
@@ -157,7 +154,11 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
         const response = await fetch('https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ clientName, appointmentDate, appointmentTime })  
+            body: JSON.stringify({ 
+                clientName, 
+                appointmentDate: formattedDate, 
+                appointmentTime: formattedTime 
+            })  
         });
 
         const data = await response.json();
@@ -166,6 +167,7 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
             alert(data.message || 'Agendamento excluído com sucesso!');
             loadAppointments();  
         } else {
+            console.error("Erro ao excluir:", data);
             alert(data.error || 'Erro ao excluir o agendamento.');
         }
     } catch (error) {
@@ -173,7 +175,6 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
         alert('Erro ao excluir o agendamento.');
     }
 }
-
 
 // Função para carregar os agendamentos
 async function loadAppointments() {
