@@ -118,24 +118,24 @@
 });
 
 // Função para deletar o agendamento baseado no corpo
-async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
+async function deleteAppointment(clientName, date, time) {
     console.log("Cliente:", clientName);
-    console.log("Data recebida:", appointmentDate);
-    console.log("Hora recebida:", appointmentTime);
+    console.log("Data recebida:", date);
+    console.log("Hora recebida:", time);
 
     if (!clientName || clientName.trim() === "") {
         console.warn("Nome do cliente não fornecido ou está vazio.");
         clientName = "Cliente não identificado";  
     }
 
-    if (!appointmentDate || !appointmentTime) {
+    if (!date || !time) {
         alert("Erro: Data ou hora não fornecidas.");
         return;
     }
 
     // Criando a data no formato esperado pelo backend
-    const [year, month, day] = appointmentDate.split('T')[0].split('-'); 
-    const [hours, minutes] = appointmentTime.split(':'); 
+    const [year, month, day] = date.split('T')[0].split('-'); 
+    const [hours, minutes] = time.split(':'); 
 
     // Formatando a data para YYYY-MM-DD
     const formattedDate = `${year}-${month}-${day}`;
