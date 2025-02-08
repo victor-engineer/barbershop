@@ -155,9 +155,9 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                clientName, 
-                appointmentDate: formattedDate, 
-                appointmentTime: formattedTime 
+                client_name: clientName,  // Usando o nome correto da coluna no banco
+                date: formattedDate,      // Alterado para "date" conforme o banco
+                time: formattedTime       // Alterado para "time" conforme o banco
             })  
         });
 
@@ -175,6 +175,7 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
         alert('Erro ao excluir o agendamento.');
     }
 }
+
 
 // Função para carregar os agendamentos
 async function loadAppointments() {
