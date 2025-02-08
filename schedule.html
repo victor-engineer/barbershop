@@ -76,36 +76,35 @@
             <input type="text" id="client_name" name="client_name" placeholder="Digite seu nome" required autocomplete="off">
     
             <label for="whatsapp">WhatsApp:</label>
-            <div style="position: relative; display: flex; align-items: center;">
-                <i class="fa-brands fa-whatsapp" style="position: absolute; left: 10px; color: green;"></i>
+            <div class="input-container">
+                <i class="fa-brands fa-whatsapp"></i>
                 <input type="tel" id="whatsapp" name="whatsapp" placeholder="Digite seu WhatsApp" required 
-                    pattern="^\+?\d{10,15}$" title="Digite um número válido com DDD"
-                    style="padding-left: 35px;">
+                    pattern="^\+?\d{10,15}$" title="Digite um número válido com DDD">
             </div>
-
-    
+            
             <label>Escolha os serviços:</label>
-            <div>
-                <input type="checkbox" id="corte_masculino" name="service" value="corte_masculino">
-                <label for="corte_masculino">Corte Masculino</label>
+            <div class="checkbox-group">
+                <div>
+                    <input type="checkbox" id="corte_masculino" name="service" value="corte_masculino">
+                    <label for="corte_masculino">Corte Masculino</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="corte_feminino" name="service" value="corte_feminino">
+                    <label for="corte_feminino">Corte Feminino</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="barba" name="service" value="barba">
+                    <label for="barba">Barba</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="pintura" name="service" value="pintura">
+                    <label for="pintura">Pintura</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="hidratacao" name="service" value="hidratacao">
+                    <label for="hidratacao">Hidratação</label>
+                </div>
             </div>
-            <div>
-                <input type="checkbox" id="corte_feminino" name="service" value="corte_feminino">
-                <label for="corte_feminino">Corte Feminino</label>
-            </div>
-            <div>
-                <input type="checkbox" id="barba" name="service" value="barba">
-                <label for="barba">Barba</label>
-            </div>
-            <div>
-                <input type="checkbox" id="pintura" name="service" value="pintura">
-                <label for="pintura">Pintura</label>
-            </div>
-            <div>
-                <input type="checkbox" id="hidratacao" name="service" value="hidratacao">
-                <label for="hidratacao">Hidratação</label>
-            </div>
-
     
             <label for="date">Selecione a data:</label>
             <input type="text" id="date" name="date" placeholder="Escolha uma data" required>

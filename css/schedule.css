@@ -244,6 +244,87 @@ form#booking-form {
     gap: 20px;
     align-items: center;
 }
+/* Estilo do rótulo */
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-color);
+}
+
+/* Estilo do campo de entrada com ícone */
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.input-container i {
+    position: absolute;
+    left: 12px;
+    color: var(--primary-color);
+    font-size: 18px;
+}
+
+.input-container input {
+    width: 100%;
+    padding: var(--input-padding);
+    padding-left: 40px; /* Espaço para o ícone */
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.input-container input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+/* Estilização dos checkboxes */
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.checkbox-group div {
+    display: flex;
+    align-items: center;
+    background: var(--secondary-color);
+    padding: 8px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.checkbox-group input[type="checkbox"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--primary-color);
+    border-radius: 4px;
+    position: relative;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"]:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.checkbox-group input[type="checkbox"]:checked::before {
+    content: "✔";
+    font-size: 14px;
+    color: white;
+    position: absolute;
+    left: 3px;
+    top: -1px;
+}
+
 
 /* Campos de texto */
 form#booking-form input,
