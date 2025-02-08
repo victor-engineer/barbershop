@@ -147,7 +147,8 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
     }
 
     // Removendo a parte `T00:00:00.000Z` e formatando para `YYYY-MM-DD`
-    const formattedDateString = formattedDate.toISOString().split("T")[0];
+    const formattedDateString = formattedDate.toISOString().split('T')[0].split('-').reverse().join('/');
+
 
     // Formatando a hora corretamente para fuso horário de São Paulo
     const formattedTime = new Date(`1970-01-01T${appointmentTime}Z`).toLocaleTimeString("pt-BR", {
