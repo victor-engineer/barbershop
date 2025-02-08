@@ -136,13 +136,15 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
     // Removendo o "T00:00:00.000Z" da data
     const formattedDateString = appointmentDate.split('T')[0].split('-').reverse().join('/');
 
-    // Corrigindo o problema da conversão do horário UTC para o fuso correto
-    const [hours, minutes] = appointmentTime.split(':'); 
-    const appointmentDateTime = new Date(appointmentDate);
-    appointmentDateTime.setHours(hours, minutes);
+    // Criando a data sem fuso horário UTC
+    const [year, month, day] = appointmentDate.split('T')[0].split('-'); // Pegando YYYY-MM-DD
+    const [hours, minutes] = appointmentTime.split(':'); // Pegando HH:mm
 
+    // Criando uma nova data diretamente no fuso horário local
+    const appointmentDateTime = new Date(year, month - 1, day, hours, minutes); // month -1 porque em JS os meses vão de 0-11
+
+    // Formatando corretamente para o fuso de São Paulo sem alterar o horário
     const formattedTime = appointmentDateTime.toLocaleTimeString('pt-BR', {
-        timeZone: "America/Sao_Paulo",
         hour: "2-digit",
         minute: "2-digit"
     });
@@ -171,6 +173,7 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
         alert('Erro ao excluir o agendamento.');
     }
 }
+
 
 // Função para carregar os agendamentos
 async function loadAppointments() {
