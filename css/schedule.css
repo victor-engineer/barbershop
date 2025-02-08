@@ -361,6 +361,24 @@ form#booking-form label {
     margin-bottom: -10px;
 }
 
+form#booking-form input:required,
+form#booking-form select:required {
+    border-color: var(--primary);
+}
+
+/* Efeito visual para campos obrigatórios não preenchidos */
+form#booking-form input:required:invalid,
+form#booking-form select:required:invalid {
+    border-color: red;
+    box-shadow: 0 0 5px red;
+}
+
+form#booking-form input:required:valid,
+form#booking-form select:required:valid {
+    border-color: var(--primary);
+    box-shadow: 0 0 5px var(--primary);
+}
+
 /* Botão de envio */
 form#booking-form button {
     padding: 15px 40px;

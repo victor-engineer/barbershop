@@ -71,7 +71,7 @@
 <main>
     <section id="schedule">
         <h2>Agendamento</h2>
-        <form id="booking-form">
+        <form id="booking-form" onsubmit="return validarServicos()">
             <label for="client_name">Seu Nome:</label>
             <input type="text" id="client_name" name="client_name" placeholder="Digite seu nome" required autocomplete="off">
     
@@ -81,8 +81,8 @@
                 <input type="tel" id="whatsapp" name="whatsapp" placeholder="Digite seu WhatsApp" required 
                     pattern="^\+?\d{10,15}$" title="Digite um número válido com DDD">
             </div>
-            
-            <label>Escolha os serviços:</label>
+    
+            <label for="service1">Escolha os serviços:</label>
             <div class="checkbox-group">
                 <div>
                     <input type="checkbox" id="corte_masculino" name="service" value="corte_masculino">
@@ -223,6 +223,28 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <!-- Incluindo o arquivo de locale para português -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
+<script>
+    function validarServicos() {
+        // Verificar se pelo menos um checkbox está selecionado
+        const checkboxes = document.getElementsByName('service');
+        let selecionado = false;
+    
+        for (let checkbox of checkboxes) {
+            if (checkbox.checked) {
+                selecionado = true;
+                break;
+            }
+        }
+    
+        if (!selecionado) {
+            alert('Por favor, selecione pelo menos um serviço.');
+            return false; // Impede o envio do formulário
+        }
+    
+        return true; // Permite o envio do formulário
+    }
+    </script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
