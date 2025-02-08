@@ -125,33 +125,23 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
 
     if (!clientName || clientName.trim() === "") {
         console.warn("Nome do cliente não fornecido ou está vazio.");
-        clientName = "Cliente não identificado"; // Atribui um valor padrão
+        clientName = "Cliente não identificado";  
     }
 
-    // Validando a data e hora
     if (!appointmentDate || !appointmentTime) {
         alert("Erro: Data ou hora não fornecidas.");
         return;
     }
 
-    let formattedDate;
-    try {
-        formattedDate = new Date(appointmentDate);
-        if (isNaN(formattedDate.getTime())) {
-            throw new Error("Data inválida");
-        }
-    } catch (error) {
-        console.error("Erro ao converter data:", error);
-        alert("Erro ao processar a data do agendamento.");
-        return;
-    }
+    // Removendo o "T00:00:00.000Z" da data
+    const formattedDateString = appointmentDate.split('T')[0].split('-').reverse().join('/');
 
-    // Removendo a parte `T00:00:00.000Z` e formatando para `YYYY-MM-DD`
-    const formattedDateString = formattedDate.toISOString().split('T')[0].split('-').reverse().join('/');
+    // Corrigindo o problema da conversão do horário UTC para o fuso correto
+    const [hours, minutes] = appointmentTime.split(':'); 
+    const appointmentDateTime = new Date(appointmentDate);
+    appointmentDateTime.setHours(hours, minutes);
 
-
-    // Formatando a hora corretamente para fuso horário de São Paulo
-    const formattedTime = new Date(`1970-01-01T${appointmentTime}Z`).toLocaleTimeString("pt-BR", {
+    const formattedTime = appointmentDateTime.toLocaleTimeString('pt-BR', {
         timeZone: "America/Sao_Paulo",
         hour: "2-digit",
         minute: "2-digit"
@@ -165,14 +155,14 @@ async function deleteAppointment(clientName, appointmentDate, appointmentTime) {
         const response = await fetch('https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ clientName, appointmentDate: formattedDateString, appointmentTime }) // Enviando a data formatada
+            body: JSON.stringify({ clientName, appointmentDate, appointmentTime })  
         });
 
         const data = await response.json();
 
         if (response.ok) {
             alert(data.message || 'Agendamento excluído com sucesso!');
-            loadAppointments(); // Recarrega os agendamentos após exclusão
+            loadAppointments();  
         } else {
             alert(data.error || 'Erro ao excluir o agendamento.');
         }
