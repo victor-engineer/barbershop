@@ -34,8 +34,8 @@ exports.handler = async (event) => {
             const deleteQuery = `
                 DELETE FROM appointments 
                 WHERE client_name = $1 
-                AND appointment_date = $2 
-                AND appointment_time = $3 
+                AND date = $2 
+                AND time = $3 
                 RETURNING *`;
                 
             const res = await client.query(deleteQuery, [clientName, date, time]);
