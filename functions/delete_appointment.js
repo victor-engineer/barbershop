@@ -1,29 +1,25 @@
-const { Client } = require('pg');
+const { Pool } = require('pg');
 
-// Configuração da conexão com o banco de dados PostgreSQL
-const client = new Client({
+// Criando a pool de conexões
+const pool = new Pool({
     connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway',
     ssl: {
-        rejectUnauthorized: false,  // Necessário para conexões SSL
-    }
+        rejectUnauthorized: false,
+    },
 });
 
+// Função para excluir o agendamento
 exports.handler = async (event) => {
+    const client = await pool.connect(); // Obtém uma conexão da pool
+
     try {
-        // Conectar ao banco de dados
-        await client.connect();
-
-        console.log("Recebendo evento:", event); // Log para ver o conteúdo do evento
-
         // Verifica se o método é DELETE
         if (event.httpMethod === 'DELETE') {
-            const data = JSON.parse(event.body); // Converte o corpo da requisição
-            const { clientName, date, time } = data;  // Obtém os dados
-
-            console.log("Dados recebidos:", data);  // Log para ver os dados recebidos
+            // Converte o corpo da requisição
+            const data = JSON.parse(event.body);
+            const { clientName, date, time } = data;
 
             if (!clientName || !date || !time) {
-                console.warn("Faltando dados:", { clientName, date, time });
                 return {
                     statusCode: 400,
                     body: JSON.stringify({ error: 'Nome do cliente, data ou hora não fornecidos.' }),
@@ -32,10 +28,10 @@ exports.handler = async (event) => {
 
             // Consulta SQL para excluir o agendamento
             const deleteQuery = `
-                DELETE FROM appointments 
-                WHERE client_name = $1 
-                AND date = $2 
-                AND time = $3 
+                DELETE FROM appointments
+                WHERE client_name = $1
+                AND date = $2
+                AND time = $3
                 RETURNING *`;
                 
             const res = await client.query(deleteQuery, [clientName, date, time]);
@@ -47,6 +43,7 @@ exports.handler = async (event) => {
                 };
             }
 
+            // Retorna a resposta de sucesso
             return {
                 statusCode: 200,
                 body: JSON.stringify({
@@ -62,13 +59,14 @@ exports.handler = async (event) => {
             body: JSON.stringify({ error: 'Método não permitido.' }),
         };
     } catch (error) {
+        // Caso haja erro na conexão ou na execução da consulta
         console.error('Erro ao conectar ou consultar o banco de dados:', error);
         return {
             statusCode: 500,
             body: JSON.stringify({ error: 'Erro ao conectar ou consultar o banco de dados', message: error.message, stack: error.stack }),
         };
     } finally {
-        // Fecha a conexão
-        await client.end();
+        // Libera a conexão de volta para a pool
+        client.release();
     }
 };
