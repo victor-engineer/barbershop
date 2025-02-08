@@ -106,18 +106,18 @@ exports.handler = async (event) => {
       // Verifica se o horário já está reservado
       const checkQuery = "SELECT 1 FROM appointments WHERE date = $1 AND time = $2";
       const checkResult = await client.query(checkQuery, [date, formatted_time]);
-
+      
       if (checkResult.rowCount > 0) {
         return {
           statusCode: 400,
           body: JSON.stringify({ error: 'O horário já está reservado!' }),
         };
       }
-
-      // Inserção no banco de dados
+      
+      // Inserção no banco de dados após a verificação
       const insertQuery = "INSERT INTO appointments (client_name, date, time) VALUES ($1, $2, $3)";
       await client.query(insertQuery, [client_name, date, formatted_time]);
-
+      
       return {
         statusCode: 200,
         body: JSON.stringify({
