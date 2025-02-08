@@ -204,7 +204,7 @@ async function loadAppointments() {
                                     <a href="edit_appointment.js?clientName=${appointment.client_name}&date=${localDate}&time=${appointment.time}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-                                    <a href="delete_appointment.js?clientName=${appointment.client_name}&date=${localDate}&time=${appointment.time}" class="btn btn-danger btn-sm">
+                                    <a href="https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment?clientName=${appointment.client_name}&date=${localDate}&time=${appointment.time}" class="btn btn-danger btn-sm">
                                         <i class="fas fa-trash"></i> Excluir
                                     </a>
                                 </td>

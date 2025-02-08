@@ -1,6 +1,6 @@
 const { Client } = require('pg');
 
-// Configuração da conexão com o banco de dados
+// Configuração da conexão com o banco de dados PostgreSQL
 const client = new Client({
     connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway',
     ssl: {
@@ -10,20 +10,17 @@ const client = new Client({
 
 exports.handler = async (event) => {
     try {
-        console.log("Iniciando a conexão ao banco de dados...");
-
         // Conectar ao banco de dados
         await client.connect();
 
-        // Log do evento recebido
-        console.log("Evento recebido:", event);
+        console.log("Recebendo evento:", event); // Log para ver o conteúdo do evento
 
         // Verifica se o método é DELETE
         if (event.httpMethod === 'DELETE') {
             const data = JSON.parse(event.body); // Converte o corpo da requisição
             const { clientName, date, time } = data;  // Obtém os dados
 
-            console.log("Dados recebidos no backend:", data);  // Log para ver os dados recebidos
+            console.log("Dados recebidos:", data);  // Log para ver os dados recebidos
 
             if (!clientName || !date || !time) {
                 console.warn("Faltando dados:", { clientName, date, time });
@@ -44,14 +41,11 @@ exports.handler = async (event) => {
             const res = await client.query(deleteQuery, [clientName, date, time]);
 
             if (res.rows.length === 0) {
-                console.log("Nenhum agendamento encontrado.");
                 return {
                     statusCode: 404,
                     body: JSON.stringify({ error: 'Agendamento não encontrado.' }),
                 };
             }
-
-            console.log("Agendamento excluído com sucesso:", res.rows[0]);
 
             return {
                 statusCode: 200,
