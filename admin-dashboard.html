@@ -130,11 +130,12 @@
 });
 
 // Função para deletar o agendamento baseado no corpo
-async function deleteAppointment(clientName, date, time, whatsapp) {
+async function deleteAppointment(clientName, date, time, whatsapp, services) {
     console.log("Cliente:", clientName);
     console.log("WhatsApp:", whatsapp);
     console.log("Data recebida:", date);
     console.log("Hora recebida:", time);
+    console.log("Serviços:", services);
 
     if (!clientName || clientName.trim() === "") {
         console.warn("Nome do cliente não fornecido ou está vazio.");
@@ -154,7 +155,8 @@ async function deleteAppointment(clientName, date, time, whatsapp) {
         clientName, 
         whatsapp,
         date: formattedDate, 
-        time: formattedTime 
+        time: formattedTime,
+        services
     });
 
     try {
@@ -165,7 +167,8 @@ async function deleteAppointment(clientName, date, time, whatsapp) {
                 clientName, 
                 whatsapp,
                 date: formattedDate, 
-                time: formattedTime 
+                time: formattedTime,
+                services
             })
         });
 
@@ -208,15 +211,29 @@ async function loadAppointments() {
                     // Verificar se o horário já passou
                     if (appointmentDateTime < currentTime) {
                         // Deletar o agendamento automaticamente, passando os dados formatados
-                        deleteAppointment(appointment.client_name, localDate, appointment.time, appointment.whatsapp);
+                        deleteAppointment(
+                            appointment.client_name, 
+                            localDate, 
+                            appointment.time, 
+                            appointment.whatsapp, 
+                            appointment.services || []
+                        );
                     } else {
+                        // Ajustar exibição dos serviços (caso seja um array)
+                        let servicesDisplay = "Não informado";
+                        if (appointment.services) {
+                            servicesDisplay = Array.isArray(appointment.services) 
+                                ? appointment.services.join(", ") 
+                                : appointment.services;
+                        }
+
                         const row = `
                             <tr id="appointment-${appointment.client_name}-${localDate}-${appointment.time}">
                                 <td>${appointment.client_name}</td>
                                 <td>${localDate}</td>
                                 <td>${localTime}</td>
                                 <td>${appointment.whatsapp || 'Não informado'}</td>
-                                <td>${appointment.service || 'Não informado'}</td> <!-- Alterado para refletir a nova coluna 'service' -->
+                                <td>${servicesDisplay}</td> <!-- Exibir serviços corretamente -->
                                 <td>
                                     <a href="edit_appointment.js?clientName=${appointment.client_name}&date=${localDate}&time=${appointment.time}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-edit"></i> Editar
@@ -237,6 +254,9 @@ async function loadAppointments() {
         })
         .catch((error) => console.error("Erro ao carregar agendamentos:", error));
 }
+
+// Verificar periodicamente se algum agendamento passou
+setInterval(loadAppointments, 60000); // A cada 60 segundos
 </script>
 
 
