@@ -11,14 +11,25 @@ const client = new Client({
 
 client.connect(); // Conecta ao banco de dados
 
-// Função para obter os agendamentos
+// Função para obter os agendamentos, incluindo os serviços
 async function getScheduledAppointments() {
-    const res = await client.query('SELECT date, time, client_name FROM appointments');
-    return res.rows; // Retorna os agendamentos
+    const query = `
+        SELECT 
+            a.date, 
+            a.time, 
+            a.client_name, 
+            a.whatsapp, 
+            array_agg(aservice.service) AS services 
+        FROM appointments a
+        LEFT JOIN appointment_services aservice ON a.id = aservice.appointment_id
+        GROUP BY a.id
+    `;
+    const res = await client.query(query);
+    return res.rows; // Retorna os agendamentos com os serviços
 }
 
 // Função para inserir um novo agendamento
-async function createAppointment(clientName, date, time) {
+async function createAppointment(clientName, date, time, whatsapp, services) {
     const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time = $2';
     const checkResult = await client.query(queryCheck, [date, time]);
 
@@ -30,16 +41,28 @@ async function createAppointment(clientName, date, time) {
     }
 
     const formattedTime = time + ':00'; // Adiciona segundos ao horário
-    const query = 'INSERT INTO appointments (client_name, date, time) VALUES ($1, $2, $3)';
-    const result = await client.query(query, [clientName, date, formattedTime]);
+    const query = 'INSERT INTO appointments (client_name, date, time, whatsapp) VALUES ($1, $2, $3, $4) RETURNING id';
+    const result = await client.query(query, [clientName, date, formattedTime, whatsapp]);
 
     if (result.rowCount > 0) {
+        const appointmentId = result.rows[0].id;
+
+        // Inserir os serviços na tabela appointment_services
+        const serviceQueries = services.map(service => {
+            return client.query('INSERT INTO appointment_services (appointment_id, service) VALUES ($1, $2)', [appointmentId, service]);
+        });
+
+        // Aguarda todas as inserções dos serviços
+        await Promise.all(serviceQueries);
+
         return {
             success: true,
             message: 'Reserva realizada com sucesso!',
             client_name: clientName,
             date: date,
             time: formattedTime,
+            whatsapp: whatsapp,
+            services: services,
         };
     } else {
         return {
@@ -97,7 +120,7 @@ exports.handler = async (event) => {
         try {
             const data = JSON.parse(event.body);
 
-            if (!data.client_name || !data.date || !data.time) {
+            if (!data.client_name || !data.date || !data.time || !data.whatsapp || !data.services) {
                 return {
                     statusCode: 400,
                     headers,
@@ -105,8 +128,8 @@ exports.handler = async (event) => {
                 };
             }
 
-            const { client_name, date, time } = data;
-            const result = await createAppointment(client_name, date, time);
+            const { client_name, date, time, whatsapp, services } = data;
+            const result = await createAppointment(client_name, date, time, whatsapp, services);
 
             return {
                 statusCode: result.success ? 200 : 400,
