@@ -8,22 +8,19 @@ const pool = new Pool({
 exports.handler = async (event) => {
   try {
     if (event.httpMethod === "GET") {
-      // Modificado para incluir os serviços associados aos agendamentos
+      // Modificado para incluir os serviços diretamente da coluna 'service' na tabela 'appointments'
       const res = await pool.query(`
-        SELECT a.id, a.date, a.time, a.client_name, a.whatsapp, 
-               array_agg(asv.service) AS services
-        FROM appointments a
-        LEFT JOIN appointment_services asv ON a.id = asv.appointment_id
-        GROUP BY a.id
-        ORDER BY a.date, a.time
+        SELECT id, date, time, client_name, whatsapp, service
+        FROM appointments
+        ORDER BY date, time
       `);
       return { statusCode: 200, body: JSON.stringify({ success: true, appointments: res.rows }) };
     } 
     
     else if (event.httpMethod === "POST") {
-      const { client_name, date, time, services } = JSON.parse(event.body);
+      const { client_name, date, time, service } = JSON.parse(event.body);
       
-      if (!client_name || !date || !time || !services) {
+      if (!client_name || !date || !time || !service) {
         return { statusCode: 400, body: JSON.stringify({ success: false, error: "Todos os campos são obrigatórios!" }) };
       }
 
@@ -32,17 +29,8 @@ exports.handler = async (event) => {
         return { statusCode: 409, body: JSON.stringify({ success: false, error: "Horário já reservado!" }) };
       }
 
-      // Inserção do agendamento
-      const result = await pool.query('INSERT INTO appointments (client_name, date, time) VALUES ($1, $2, $3) RETURNING id', [client_name, date, time]);
-      const appointmentId = result.rows[0].id;
-
-      // Inserção dos serviços associados ao agendamento
-      const serviceQueries = services.map(service => {
-        return pool.query('INSERT INTO appointment_services (appointment_id, service) VALUES ($1, $2)', [appointmentId, service]);
-      });
-
-      // Executa todas as inserções de serviços
-      await Promise.all(serviceQueries);
+      // Inserção do agendamento com o serviço
+      await pool.query('INSERT INTO appointments (client_name, date, time, service) VALUES ($1, $2, $3, $4)', [client_name, date, time, service]);
 
       return { statusCode: 200, body: JSON.stringify({ success: true, message: 'Agendamento criado com sucesso!' }) };
     } 
@@ -55,7 +43,6 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: JSON.stringify({ success: false, error: "ID do agendamento é obrigatório!" }) };
       }
 
-      await pool.query('DELETE FROM appointment_services WHERE appointment_id = $1', [id]); // Exclui os serviços associados
       await pool.query('DELETE FROM appointments WHERE id = $1', [id]); // Exclui o agendamento
       return { statusCode: 200, body: JSON.stringify({ success: true, message: 'Agendamento removido com sucesso!' }) };
     } 

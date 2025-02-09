@@ -17,8 +17,9 @@ exports.handler = async (event) => {
         if (event.httpMethod === 'DELETE') {
             // Converte o corpo da requisição
             const data = JSON.parse(event.body);
-            const { clientName, date, time, whatsapp, services } = data;
+            const { clientName, date, time, whatsapp, service } = data;
 
+            // Verifica se os campos obrigatórios estão presentes
             if (!clientName || !date || !time) {
                 return {
                     statusCode: 400,
@@ -26,7 +27,7 @@ exports.handler = async (event) => {
                 };
             }
 
-            // Consulta SQL para excluir o agendamento
+            // Consulta SQL para excluir o agendamento considerando o serviço
             const deleteQuery = `
                 DELETE FROM appointments
                 WHERE client_name = $1
@@ -36,8 +37,9 @@ exports.handler = async (event) => {
                 AND (services = $5 OR $5 IS NULL)
                 RETURNING *`;
                 
-            const res = await client.query(deleteQuery, [clientName, date, time, whatsapp, services]);
+            const res = await client.query(deleteQuery, [clientName, date, time, whatsapp, service]);
 
+            // Verifica se o agendamento foi encontrado e excluído
             if (res.rows.length === 0) {
                 return {
                     statusCode: 404,
@@ -45,7 +47,7 @@ exports.handler = async (event) => {
                 };
             }
 
-            // Retorna a resposta de sucesso
+            // Retorna a resposta de sucesso com o agendamento excluído
             return {
                 statusCode: 200,
                 body: JSON.stringify({
@@ -56,6 +58,7 @@ exports.handler = async (event) => {
             };
         }
 
+        // Caso o método HTTP não seja DELETE
         return {
             statusCode: 405,
             body: JSON.stringify({ error: 'Método não permitido.' }),

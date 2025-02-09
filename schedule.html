@@ -316,7 +316,7 @@ document.querySelector('form').addEventListener('submit', validarFormulario);
             whatsapp: whatsapp,
             date: date,
             time: time,
-            services: selectedServices
+            service: selectedServices.join(", ")  // Alterado de 'services' para 'service'
         };
 
         // Enviando dados para o backend usando fetch
@@ -368,7 +368,7 @@ document.querySelector('form').addEventListener('submit', validarFormulario);
         });
     });
 });
-
 </script>
+
 </body>
 </html>

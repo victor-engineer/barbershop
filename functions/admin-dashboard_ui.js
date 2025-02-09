@@ -22,11 +22,9 @@ async function getUpcomingAppointments(client) {
 
   // Consulta os agendamentos futuros e seus serviços
   const query = `
-    SELECT a.id, a.client_name, a.date, a.time, a.whatsapp, array_agg(asv.service) AS services
+    SELECT a.id, a.client_name, a.date, a.time, a.whatsapp, a.service
     FROM appointments a
-    LEFT JOIN appointment_services asv ON a.id = asv.appointment_id
     WHERE a.date || ' ' || a.time >= $1
-    GROUP BY a.id
     ORDER BY a.date, a.time
   `;
   const result = await client.query(query, [now]);
@@ -37,7 +35,7 @@ async function getUpcomingAppointments(client) {
     date: row.date,
     time: row.time,
     whatsapp: row.whatsapp,  // Inclui o whatsapp
-    services: row.services || []  // Inclui os serviços, se houver
+    services: row.service || []  // Inclui os serviços, se houver
   }));
 }
 
@@ -81,7 +79,7 @@ exports.handler = async (event) => {
       const data = JSON.parse(event.body);
 
       // Valida os dados recebidos
-      if (!data.client_name || !data.date || !data.time || !data.services) {
+      if (!data.client_name || !data.date || !data.time || !data.service) {
         return {
           statusCode: 400,
           body: JSON.stringify({ error: 'Dados inválidos ou incompletos!' }),
@@ -91,7 +89,7 @@ exports.handler = async (event) => {
       const client_name = data.client_name.trim();
       const date = data.date.trim();
       const time = data.time.trim();
-      const services = data.services;  // Lista de serviços associados
+      const service = data.service;  // Serviço associado
       const whatsapp = data.whatsapp ? data.whatsapp.trim() : null;  // Whatsapp é opcional
 
       // Validação de formato de data (YYYY-MM-DD) e hora (HH:MM)
@@ -126,17 +124,9 @@ exports.handler = async (event) => {
       }
 
       // Inserção no banco de dados após a verificação
-      const insertQuery = "INSERT INTO appointments (client_name, date, time, whatsapp) VALUES ($1, $2, $3, $4) RETURNING id";
-      const result = await client.query(insertQuery, [client_name, date, formatted_time, whatsapp]);
+      const insertQuery = "INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id";
+      const result = await client.query(insertQuery, [client_name, date, formatted_time, whatsapp, service]);
       const appointmentId = result.rows[0].id;
-
-      // Inserção dos serviços associados ao agendamento
-      const serviceQueries = services.map(service => {
-        return client.query('INSERT INTO appointment_services (appointment_id, service) VALUES ($1, $2)', [appointmentId, service]);
-      });
-
-      // Executa todas as inserções de serviços
-      await Promise.all(serviceQueries);
 
       return {
         statusCode: 200,
@@ -146,7 +136,7 @@ exports.handler = async (event) => {
           client_name,
           date,
           time: formatted_time,
-          services,
+          service,
           whatsapp,  // Inclui o whatsapp na resposta
         }),
       };

@@ -19,10 +19,8 @@ async function getScheduledAppointments() {
             a.time, 
             a.client_name, 
             a.whatsapp, 
-            array_agg(aservice.service) AS services 
+            a.service 
         FROM appointments a
-        LEFT JOIN appointment_services aservice ON a.id = aservice.appointment_id
-        GROUP BY a.id
     `;
     const res = await client.query(query);
     return res.rows; // Retorna os agendamentos com os serviços
@@ -41,20 +39,10 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
     }
 
     const formattedTime = time + ':00'; // Adiciona segundos ao horário
-    const query = 'INSERT INTO appointments (client_name, date, time, whatsapp) VALUES ($1, $2, $3, $4) RETURNING id';
-    const result = await client.query(query, [clientName, date, formattedTime, whatsapp]);
+    const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
+    const result = await client.query(query, [clientName, date, formattedTime, whatsapp, services]);
 
     if (result.rowCount > 0) {
-        const appointmentId = result.rows[0].id;
-
-        // Inserir os serviços na tabela appointment_services
-        const serviceQueries = services.map(service => {
-            return client.query('INSERT INTO appointment_services (appointment_id, service) VALUES ($1, $2)', [appointmentId, service]);
-        });
-
-        // Aguarda todas as inserções dos serviços
-        await Promise.all(serviceQueries);
-
         return {
             success: true,
             message: 'Reserva realizada com sucesso!',
@@ -62,7 +50,7 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
             date: date,
             time: formattedTime,
             whatsapp: whatsapp,
-            services: services,
+            service: services,
         };
     } else {
         return {

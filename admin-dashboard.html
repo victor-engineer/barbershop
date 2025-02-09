@@ -116,7 +116,7 @@
             row.innerHTML = `
                 <td>${appointment.client_name}</td>
                 <td>${appointment.whatsapp}</td>
-                <td>${appointment.service}</td>
+                <td>${appointment.service}</td> <!-- Alterado de 'services' para 'service' -->
                 <td>${appointment.date}</td>
                 <td>${appointment.time}</td>
                 <td><button onclick="deleteAppointment('${appointment.client_name}', '${appointment.date}', '${appointment.time}')">Excluir</button></td>
@@ -183,7 +183,7 @@ async function deleteAppointment(clientName, date, time, whatsapp) {
         alert('Erro ao excluir o agendamento.');
     }
 }
- 
+
 // Função para carregar os agendamentos
 async function loadAppointments() {
     fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments") // Atualize para o endpoint correto
@@ -216,7 +216,7 @@ async function loadAppointments() {
                                 <td>${localDate}</td>
                                 <td>${localTime}</td>
                                 <td>${appointment.whatsapp || 'Não informado'}</td>
-                                <td>${appointment.services ? appointment.services.join(", ") : 'Não informado'}</td>
+                                <td>${appointment.service || 'Não informado'}</td> <!-- Alterado para refletir a nova coluna 'service' -->
                                 <td>
                                     <a href="edit_appointment.js?clientName=${appointment.client_name}&date=${localDate}&time=${appointment.time}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-edit"></i> Editar
@@ -237,6 +237,7 @@ async function loadAppointments() {
         })
         .catch((error) => console.error("Erro ao carregar agendamentos:", error));
 }
+</script>
 
 
 // Verificar periodicamente se algum agendamento passou
