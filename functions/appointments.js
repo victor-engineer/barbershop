@@ -1,6 +1,7 @@
 const { Client } = require('pg'); // Importa o cliente PostgreSQL
 const cors = require('cors'); // Para lidar com CORS (Cross-Origin Resource Sharing)
 
+console.log('Iniciando conexão com o banco de dados...');
 const client = new Client({
     connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway', 
     ssl: {
@@ -8,9 +9,12 @@ const client = new Client({
     }
 });
 
-client.connect();
+client.connect()
+    .then(() => console.log('Conectado ao banco de dados com sucesso!'))
+    .catch(err => console.error('Erro ao conectar ao banco de dados:', err));
 
 async function getScheduledAppointments() {
+    console.log('Buscando agendamentos no banco de dados...');
     const query = `
         SELECT 
             a.date, 
@@ -26,12 +30,13 @@ async function getScheduledAppointments() {
 }
 
 async function createAppointment(clientName, date, time, whatsapp, services) {
+    console.log('Verificando disponibilidade do horário...');
     const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time = $2';
     const checkResult = await client.query(queryCheck, [date, time]);
-
     console.log('Resultado da verificação do agendamento:', checkResult.rows); // Log da verificação
 
     if (checkResult.rows.length > 0) {
+        console.log('Horário já está reservado!');
         return {
             success: false,
             error: 'O horário já está reservado!',
@@ -39,12 +44,14 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
     }
 
     const formattedTime = time + ':00'; // Adiciona segundos ao horário
+    console.log('Inserindo novo agendamento no banco de dados...');
     const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
     const result = await client.query(query, [clientName, date, formattedTime, whatsapp, services]);
 
     console.log('Resultado da inserção no banco de dados:', result); // Log da inserção
-
+    
     if (result.rowCount > 0) {
+        console.log('Reserva realizada com sucesso!');
         return {
             success: true,
             message: 'Reserva realizada com sucesso!',
@@ -55,6 +62,7 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
             service: services,
         };
     } else {
+        console.log('Erro ao salvar a reserva no banco de dados.');
         return {
             success: false,
             error: 'Erro ao salvar a reserva no banco de dados.',
@@ -63,6 +71,7 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
 }
 
 exports.handler = async (event) => {
+    console.log('Requisição recebida:', event);
     const allowedOrigins = ['http://localhost:5501', 'https://franciscobarbearia.netlify.app', 'http://localhost:8888'];
     const origin = event.headers.origin;
 
@@ -74,6 +83,7 @@ exports.handler = async (event) => {
     };
 
     if (event.httpMethod === 'OPTIONS') {
+        console.log('Respondendo a uma solicitação OPTIONS');
         return {
             statusCode: 204,
             headers,
@@ -82,6 +92,7 @@ exports.handler = async (event) => {
 
     if (event.httpMethod === 'GET') {
         try {
+            console.log('Requisição GET recebida. Obtendo agendamentos...');
             const appointments = await getScheduledAppointments();
             return {
                 statusCode: 200,
@@ -103,10 +114,12 @@ exports.handler = async (event) => {
 
     if (event.httpMethod === 'POST' && event.headers['content-type'] === 'application/json') {
         try {
+            console.log('Requisição POST recebida. Processando reserva...');
             const data = JSON.parse(event.body);
             console.log('Dados recebidos no POST:', data); // Log dos dados recebidos
 
             if (!data.client_name || !data.date || !data.time || !data.whatsapp || !data.services) {
+                console.log('Dados inválidos ou incompletos!');
                 return {
                     statusCode: 400,
                     headers,
@@ -116,6 +129,7 @@ exports.handler = async (event) => {
 
             const { client_name, date, time, whatsapp, services } = data;
             const result = await createAppointment(client_name, date, time, whatsapp, services);
+            console.log('Resultado da criação do agendamento:', result);
 
             return {
                 statusCode: result.success ? 200 : 400,
@@ -132,6 +146,7 @@ exports.handler = async (event) => {
         }
     }
 
+    console.log('Método não permitido:', event.httpMethod);
     return {
         statusCode: 405,
         headers,
