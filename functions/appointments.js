@@ -21,7 +21,7 @@ async function getScheduledAppointments() {
             a.time, 
             a.client_name, 
             a.whatsapp, 
-            a.service 
+            a.services 
         FROM appointments a
     `;
     const res = await client.query(query);
@@ -45,8 +45,8 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
 
     const formattedTime = time + ':00'; // Adiciona segundos ao horário
     console.log('Inserindo novo agendamento no banco de dados...');
-    const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-    const result = await client.query(query, [clientName, date, formattedTime, whatsapp, services]);
+    const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, services) VALUES ($1, $2, $3, $4, $5) RETURNING id';
+    const result = await client.query(query, [clientName, date, formattedTime, whatsapp, JSON.stringify(services)]);
 
     console.log('Resultado da inserção no banco de dados:', result); // Log da inserção
     
@@ -59,7 +59,7 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
             date: date,
             time: formattedTime,
             whatsapp: whatsapp,
-            service: services,
+            services: services,
         };
     } else {
         console.log('Erro ao salvar a reserva no banco de dados.');
@@ -118,7 +118,7 @@ exports.handler = async (event) => {
             const data = JSON.parse(event.body);
             console.log('Dados recebidos no POST:', data); // Log dos dados recebidos
 
-            if (!data.client_name || !data.date || !data.time || !data.whatsapp || !data.services) {
+            if (!data.client_name || !data.date || !data.time || !data.whatsapp || !Array.isArray(data.services)) {
                 console.log('Dados inválidos ou incompletos!');
                 return {
                     statusCode: 400,
