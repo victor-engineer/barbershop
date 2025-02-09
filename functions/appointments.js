@@ -39,6 +39,7 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
     }
 
     const formattedTime = time + ':00'; // Adiciona segundos ao horário
+    // Passa o array de serviços diretamente, pois a coluna 'service' é do tipo TEXT[]
     const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
     const result = await client.query(query, [clientName, date, formattedTime, whatsapp, services]);
 
@@ -50,7 +51,7 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
             date: date,
             time: formattedTime,
             whatsapp: whatsapp,
-            service: services,
+            service: services, // Retorna o array de serviços
         };
     } else {
         return {
