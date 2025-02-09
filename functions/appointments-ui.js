@@ -18,10 +18,10 @@ exports.handler = async (event) => {
     } 
     
     else if (event.httpMethod === "POST") {
-      const { client_name, date, time, service } = JSON.parse(event.body);
+      const { client_name, date, time, service, whatsapp } = JSON.parse(event.body);
       
       if (!client_name || !date || !time || !service) {
-        return { statusCode: 400, body: JSON.stringify({ success: false, error: "Todos os campos são obrigatórios!" }) };
+        return { statusCode: 400, body: JSON.stringify({ success: false, error: "Todos os campos são obrigatórios, exceto 'whatsapp'!" }) };
       }
 
       const check = await pool.query('SELECT * FROM appointments WHERE date = $1 AND time = $2', [date, time]);
@@ -30,7 +30,7 @@ exports.handler = async (event) => {
       }
 
       // Inserção do agendamento com o serviço
-      await pool.query('INSERT INTO appointments (client_name, date, time, service) VALUES ($1, $2, $3, $4)', [client_name, date, time, service]);
+      await pool.query('INSERT INTO appointments (client_name, whatsapp, date, time, service) VALUES ($1, $2, $3, $4, $5)', [client_name, whatsapp, date, time, service]);
 
       return { statusCode: 200, body: JSON.stringify({ success: true, message: 'Agendamento criado com sucesso!' }) };
     } 

@@ -1,17 +1,15 @@
 const { Client } = require('pg'); // Importa o cliente PostgreSQL
 const cors = require('cors'); // Para lidar com CORS (Cross-Origin Resource Sharing)
 
-// Configuração da URL de conexão no Railway
 const client = new Client({
-    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway',  // URL de conexão do Railway
+    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway', 
     ssl: {
-        rejectUnauthorized: false, // Necessário para a conexão segura com o Railway
+        rejectUnauthorized: false, 
     }
 });
 
-client.connect(); // Conecta ao banco de dados
+client.connect();
 
-// Função para obter os agendamentos, incluindo os serviços
 async function getScheduledAppointments() {
     const query = `
         SELECT 
@@ -23,13 +21,15 @@ async function getScheduledAppointments() {
         FROM appointments a
     `;
     const res = await client.query(query);
-    return res.rows; // Retorna os agendamentos com os serviços
+    console.log('Agendamentos recuperados:', res.rows); // Log para verificar os agendamentos
+    return res.rows;
 }
 
-// Função para inserir um novo agendamento
 async function createAppointment(clientName, date, time, whatsapp, services) {
     const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time = $2';
     const checkResult = await client.query(queryCheck, [date, time]);
+
+    console.log('Resultado da verificação do agendamento:', checkResult.rows); // Log da verificação
 
     if (checkResult.rows.length > 0) {
         return {
@@ -39,9 +39,10 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
     }
 
     const formattedTime = time + ':00'; // Adiciona segundos ao horário
-    // Passa o array de serviços diretamente, pois a coluna 'service' é do tipo TEXT[]
     const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
     const result = await client.query(query, [clientName, date, formattedTime, whatsapp, services]);
+
+    console.log('Resultado da inserção no banco de dados:', result); // Log da inserção
 
     if (result.rowCount > 0) {
         return {
@@ -51,7 +52,7 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
             date: date,
             time: formattedTime,
             whatsapp: whatsapp,
-            service: services, // Retorna o array de serviços
+            service: services,
         };
     } else {
         return {
@@ -62,19 +63,16 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
 }
 
 exports.handler = async (event) => {
-    // Habilita o CORS para permitir requisições de diferentes origens
     const allowedOrigins = ['http://localhost:5501', 'https://franciscobarbearia.netlify.app', 'http://localhost:8888'];
     const origin = event.headers.origin;
 
-    // Verifica se a origem está na lista de permitidas
     const headers = {
-        'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : 'null', // Permite apenas as origens permitidas
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', // Permite os métodos
-        'Access-Control-Allow-Headers': 'Content-Type', // Permite o cabeçalho Content-Type
-        'Content-Type': 'application/json', // Define o tipo de conteúdo
+        'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : 'null',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Content-Type': 'application/json',
     };
 
-    // Se for uma requisição OPTIONS (preflight), apenas retorne os cabeçalhos
     if (event.httpMethod === 'OPTIONS') {
         return {
             statusCode: 204,
@@ -83,7 +81,6 @@ exports.handler = async (event) => {
     }
 
     if (event.httpMethod === 'GET') {
-        // Se for GET, retorna todos os agendamentos
         try {
             const appointments = await getScheduledAppointments();
             return {
@@ -105,9 +102,9 @@ exports.handler = async (event) => {
     }
 
     if (event.httpMethod === 'POST' && event.headers['content-type'] === 'application/json') {
-        // Se for POST, processa a inserção de um novo agendamento
         try {
             const data = JSON.parse(event.body);
+            console.log('Dados recebidos no POST:', data); // Log dos dados recebidos
 
             if (!data.client_name || !data.date || !data.time || !data.whatsapp || !data.services) {
                 return {
