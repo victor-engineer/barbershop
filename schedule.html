@@ -259,6 +259,36 @@
 </script>
 
 <script>
+    // Função para validar os serviços selecionados
+    function validarServicos() {
+    const servicos = document.querySelectorAll('input[name="service"]:checked');
+    
+    // Verifica se pelo menos um serviço foi selecionado
+    if (servicos.length === 0) {
+        alert('Por favor, selecione pelo menos um serviço.');
+        return false;
+    }
+    
+    return true;
+    }
+
+    // Função para validar o formulário antes de enviar
+    function validarFormulario(event) {
+    // Verifica se a função validarServicos retornou verdadeiro
+    if (!validarServicos()) {
+        event.preventDefault(); // Impede o envio do formulário se a validação falhar
+        return false;
+    }
+
+    // Adicione outras validações do formulário aqui (por exemplo, data, hora, etc.)
+    return true;
+    }
+
+// Adiciona o evento de validação no envio do formulário
+document.querySelector('form').addEventListener('submit', validarFormulario);
+</script>
+
+<script>
     $(document).ready(function() {
     $("#booking-form").on("submit", function(event) {
         event.preventDefault(); // Impede o envio padrão do formulário
