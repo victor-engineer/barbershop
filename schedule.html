@@ -238,15 +238,6 @@
 </script>
 <script>
     $(document).ready(function() {
-    // Função para validar o campo de serviço
-    const validarServicos = function(service) {
-        if (!service || service.trim() === "") {
-            alert("O campo 'Serviço' é obrigatório.");
-            return false; // Retorna falso se o campo estiver vazio
-        }
-        return true; // Retorna verdadeiro se o campo for válido
-    };
-
     $("#booking-form").on("submit", function(event) {
         event.preventDefault(); // Impede o envio padrão do formulário
 
@@ -267,11 +258,6 @@
         if (!clientName || !whatsapp || !date || !time || !service) {
             alert("Todos os campos são obrigatórios.");
             return;
-        }
-
-        // Chamando a função de validação do serviço
-        if (!validarServicos(service)) {
-            return; // Se a validação falhar, interrompe o envio
         }
 
         // Montando os dados a serem enviados
