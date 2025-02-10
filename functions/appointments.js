@@ -31,7 +31,7 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
     const formattedTime = time + ':00';
     console.log('Inserindo novo agendamento no banco de dados...');
     const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-    const result = await client.query(query, [clientName, date, formattedTime, whatsapp, service]);
+    const result = await client.query(query, [clientName, date, formattedTime, whatsapp || null, service]);
 
     console.log('Resultado da inserção:', result);
 
@@ -78,19 +78,13 @@ exports.handler = async (event) => {
             const data = JSON.parse(event.body);
             console.log('Dados recebidos:', data);
 
-            // Verifica se os campos obrigatórios estão preenchidos corretamente
-            const requiredFields = ['client_name', 'date', 'time', 'whatsapp', 'service'];
+            // Verifica se os campos obrigatórios estão preenchidos corretamente (exceto whatsapp)
+            const requiredFields = ['client_name', 'date', 'time', 'service'];
             for (const field of requiredFields) {
                 if (!data[field] || typeof data[field] !== 'string' || !data[field].trim()) {
                     console.log(`Campo inválido ou ausente: ${field}`);
                     return { statusCode: 400, headers, body: JSON.stringify({ error: `Campo inválido ou ausente: ${field}` }) };
                 }
-            }
-
-            // Permitir qualquer formato de número para whatsapp
-            if (typeof data.whatsapp !== 'string' || !data.whatsapp.trim()) {
-                console.log('Campo inválido ou ausente: whatsapp');
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Campo inválido ou ausente: whatsapp' }) };
             }
 
             const { client_name, date, time, whatsapp, service } = data;
