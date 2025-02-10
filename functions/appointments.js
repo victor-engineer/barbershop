@@ -84,8 +84,15 @@ exports.handler = async (event) => {
             const requiredFields = ['client_name', 'date', 'time', 'whatsapp', 'service'];
             for (const field of requiredFields) {
                 if (!data[field] || typeof data[field] !== 'string' || !data[field].trim()) {
-                    console.log(`Campo inválido ou ausente: ${field}`);
-                    return { statusCode: 400, headers, body: JSON.stringify({ error: `Campo inválido ou ausente: ${field}` }) };
+                    console.log(`Campo inválido ou ausente: ${field}, Valor recebido: ${JSON.stringify(data[field])}`);
+                    return { 
+                        statusCode: 400, 
+                        headers, 
+                        body: JSON.stringify({ 
+                            error: `Campo inválido ou ausente: ${field}`, 
+                            receivedValue: data[field] 
+                        }) 
+                    };
                 }
             }
     
@@ -99,7 +106,6 @@ exports.handler = async (event) => {
             return { statusCode: 500, headers, body: JSON.stringify({ error: 'Erro ao processar a reserva.' }) };
         }
     }
-    
 
     console.log('Método não permitido:', event.httpMethod);
     return { statusCode: 405, headers, body: JSON.stringify({ error: 'Método não permitido!' }) };
