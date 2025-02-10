@@ -8,9 +8,9 @@ const pool = new Pool({
 exports.handler = async (event) => {
   try {
     if (event.httpMethod === "GET") {
-      // Removido a parte de 'service' da consulta
+      // Agora a consulta inclui o campo 'service'
       const res = await pool.query(`
-        SELECT id, date, time, client_name, whatsapp
+        SELECT id, date, time, client_name, whatsapp, service
         FROM appointments
         ORDER BY date, time
       `);
@@ -18,21 +18,30 @@ exports.handler = async (event) => {
     } 
     
     else if (event.httpMethod === "POST") {
-      const { client_name, date, time, whatsapp } = JSON.parse(event.body);
+      const { client_name, date, time, whatsapp, service } = JSON.parse(event.body);
       
-      if (!client_name || !date || !time) {
-        return { statusCode: 400, body: JSON.stringify({ success: false, error: "Todos os campos são obrigatórios, exceto 'whatsapp'!" }) };
+      if (!client_name || !date || !time || !service) {
+        return { 
+          statusCode: 400, 
+          body: JSON.stringify({ success: false, error: "Todos os campos são obrigatórios!" })
+        };
       }
 
       const check = await pool.query('SELECT * FROM appointments WHERE date = $1 AND time = $2', [date, time]);
       if (check.rows.length > 0) {
-        return { statusCode: 409, body: JSON.stringify({ success: false, error: "Horário já reservado!" }) };
+        return { 
+          statusCode: 409, 
+          body: JSON.stringify({ success: false, error: "Horário já reservado!" }) 
+        };
       }
 
-      // Inserção do agendamento sem o campo 'service'
-      await pool.query('INSERT INTO appointments (client_name, whatsapp, date, time) VALUES ($1, $2, $3, $4)', [client_name, whatsapp, date, time]);
+      // Inserção agora inclui o campo 'service'
+      await pool.query('INSERT INTO appointments (client_name, whatsapp, date, time, service) VALUES ($1, $2, $3, $4, $5)', [client_name, whatsapp, date, time, service]);
 
-      return { statusCode: 200, body: JSON.stringify({ success: true, message: 'Agendamento criado com sucesso!' }) };
+      return { 
+        statusCode: 200, 
+        body: JSON.stringify({ success: true, message: 'Agendamento criado com sucesso!' }) 
+      };
     } 
     
     else if (event.httpMethod === "DELETE") {
@@ -40,17 +49,29 @@ exports.handler = async (event) => {
       const { id } = event.queryStringParameters;
       
       if (!id) {
-        return { statusCode: 400, body: JSON.stringify({ success: false, error: "ID do agendamento é obrigatório!" }) };
+        return { 
+          statusCode: 400, 
+          body: JSON.stringify({ success: false, error: "ID do agendamento é obrigatório!" }) 
+        };
       }
 
       await pool.query('DELETE FROM appointments WHERE id = $1', [id]); // Exclui o agendamento
-      return { statusCode: 200, body: JSON.stringify({ success: true, message: 'Agendamento removido com sucesso!' }) };
+      return { 
+        statusCode: 200, 
+        body: JSON.stringify({ success: true, message: 'Agendamento removido com sucesso!' }) 
+      };
     } 
     
     else {
-      return { statusCode: 405, body: JSON.stringify({ success: false, error: "Método não permitido" }) };
+      return { 
+        statusCode: 405, 
+        body: JSON.stringify({ success: false, error: "Método não permitido" }) 
+      };
     }
   } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ success: false, error: error.message }) };
+    return { 
+      statusCode: 500, 
+      body: JSON.stringify({ success: false, error: error.message }) 
+    };
   }
 };

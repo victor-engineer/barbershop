@@ -12,61 +12,62 @@ client.connect()
     .then(() => console.log('Conectado ao banco de dados com sucesso!'))
     .catch(err => console.error('Erro ao conectar ao banco de dados:', err));
 
-async function getScheduledAppointments() {
-    console.log('Buscando agendamentos no banco de dados...');
-    const query = `
-        SELECT 
-            a.date, 
-            a.time, 
-            a.client_name, 
-            a.whatsapp
-        FROM appointments a
-    `;
-    const res = await client.query(query);
-    console.log('Agendamentos recuperados:', res.rows); // Log para verificar os agendamentos
-    return res.rows;
-}
-
-async function createAppointment(clientName, date, time, whatsapp) {
-    console.log('Verificando disponibilidade do horário...');
-    const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time = $2';
-    const checkResult = await client.query(queryCheck, [date, time]);
-    console.log('Resultado da verificação do agendamento:', checkResult.rows); // Log da verificação
-
-    if (checkResult.rows.length > 0) {
-        console.log('Horário já está reservado!');
-        return {
-            success: false,
-            error: 'O horário já está reservado!',
-        };
+    async function getScheduledAppointments() {
+        console.log('Buscando agendamentos no banco de dados...');
+        const query = `
+            SELECT 
+                a.date, 
+                a.time, 
+                a.client_name, 
+                a.whatsapp,
+                a.service  -- Incluindo o campo 'service'
+            FROM appointments a
+        `;
+        const res = await client.query(query);
+        console.log('Agendamentos recuperados:', res.rows); // Log para verificar os agendamentos
+        return res.rows;
     }
-
-    const formattedTime = time + ':00'; // Adiciona segundos ao horário
-    console.log('Inserindo novo agendamento no banco de dados...');
-    const query = 'INSERT INTO appointments (client_name, date, time, whatsapp) VALUES ($1, $2, $3, $4) RETURNING id';
-    const result = await client.query(query, [clientName, date, formattedTime, whatsapp]);
-
-    console.log('Resultado da inserção no banco de dados:', result); // Log da inserção
     
-    if (result.rowCount > 0) {
-        console.log('Reserva realizada com sucesso!');
-        return {
-            success: true,
-            message: 'Reserva realizada com sucesso!',
-            client_name: clientName,
-            date: date,
-            time: formattedTime,
-            whatsapp: whatsapp,
-        };
-    } else {
-        console.log('Erro ao salvar a reserva no banco de dados.');
-        return {
-            success: false,
-            error: 'Erro ao salvar a reserva no banco de dados.',
-        };
+    async function createAppointment(clientName, date, time, whatsapp, service) {
+        console.log('Verificando disponibilidade do horário...');
+        const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time = $2';
+        const checkResult = await client.query(queryCheck, [date, time]);
+        console.log('Resultado da verificação do agendamento:', checkResult.rows); // Log da verificação
+    
+        if (checkResult.rows.length > 0) {
+            console.log('Horário já está reservado!');
+            return {
+                success: false,
+                error: 'O horário já está reservado!',
+            };
+        }
+    
+        const formattedTime = time + ':00'; // Adiciona segundos ao horário
+        console.log('Inserindo novo agendamento no banco de dados...');
+        const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';  // Atualizado
+        const result = await client.query(query, [clientName, date, formattedTime, whatsapp, service]);  // Atualizado
+    
+        console.log('Resultado da inserção no banco de dados:', result); // Log da inserção
+        
+        if (result.rowCount > 0) {
+            console.log('Reserva realizada com sucesso!');
+            return {
+                success: true,
+                message: 'Reserva realizada com sucesso!',
+                client_name: clientName,
+                date: date,
+                time: formattedTime,
+                whatsapp: whatsapp,
+                service: service,  // Incluindo o 'service' no retorno
+            };
+        } else {
+            console.log('Erro ao salvar a reserva no banco de dados.');
+            return {
+                success: false,
+                error: 'Erro ao salvar a reserva no banco de dados.',
+            };
+        }
     }
-}
-
 exports.handler = async (event) => {
     console.log('Requisição recebida:', event);
     const allowedOrigins = ['http://localhost:5501', 'https://franciscobarbearia.netlify.app', 'http://localhost:8888'];
@@ -114,9 +115,9 @@ exports.handler = async (event) => {
             console.log('Requisição POST recebida. Processando reserva...');
             const data = JSON.parse(event.body);
             console.log('Dados recebidos no POST:', data); // Log dos dados recebidos
-
+    
             // Validação dos dados recebidos
-            if (!data.client_name || !data.date || !data.time || !data.whatsapp) {
+            if (!data.client_name || !data.date || !data.time || !data.whatsapp || !data.service) {  // Validação do 'service'
                 console.log('Dados inválidos ou incompletos!');
                 return {
                     statusCode: 400,
@@ -124,11 +125,11 @@ exports.handler = async (event) => {
                     body: JSON.stringify({ error: 'Dados inválidos ou incompletos!' }),
                 };
             }
-
-            const { client_name, date, time, whatsapp } = data;
-            const result = await createAppointment(client_name, date, time, whatsapp);
+    
+            const { client_name, date, time, whatsapp, service } = data;  // Incluindo 'service'
+            const result = await createAppointment(client_name, date, time, whatsapp, service);  // Passando 'service'
             console.log('Resultado da criação do agendamento:', result);
-
+    
             return {
                 statusCode: result.success ? 200 : 400,
                 headers,
@@ -143,6 +144,7 @@ exports.handler = async (event) => {
             };
         }
     }
+    
 
     console.log('Método não permitido:', event.httpMethod);
     return {

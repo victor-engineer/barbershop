@@ -22,7 +22,7 @@ async function getUpcomingAppointments(client) {
 
   // Consulta os agendamentos futuros
   const query = `
-    SELECT a.id, a.client_name, a.date, a.time, a.whatsapp
+    SELECT a.id, a.client_name, a.date, a.time, a.whatsapp, a.service
     FROM appointments a
     WHERE a.date || ' ' || a.time >= $1
     ORDER BY a.date, a.time
@@ -34,13 +34,13 @@ async function getUpcomingAppointments(client) {
     client_name: row.client_name,
     date: row.date,
     time: row.time,
-    whatsapp: row.whatsapp
+    whatsapp: row.whatsapp,
+    service: row.service // Incluindo o campo 'service' na resposta
   }));
 }
 
 // Função principal da Netlify Function
 exports.handler = async (event) => {
-  // Use a URL do Railway para a conexão ao banco de dados
   const client = new Client({
     connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway',  // URL de conexão do Railway
     ssl: {
@@ -78,7 +78,7 @@ exports.handler = async (event) => {
       const data = JSON.parse(event.body);
 
       // Valida os dados recebidos
-      if (!data.client_name || !data.date || !data.time) {
+      if (!data.client_name || !data.date || !data.time || !data.service) {
         return {
           statusCode: 400,
           body: JSON.stringify({ error: 'Dados inválidos ou incompletos!' }),
@@ -89,6 +89,7 @@ exports.handler = async (event) => {
       const date = data.date.trim();
       const time = data.time.trim();
       const whatsapp = data.whatsapp ? data.whatsapp.trim() : null;  // Whatsapp é opcional
+      const service = data.service.trim(); // O serviço agora é obrigatório
 
       // Validação de formato de data (YYYY-MM-DD) e hora (HH:MM)
       const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
@@ -113,7 +114,7 @@ exports.handler = async (event) => {
       // Verifica se o horário já está reservado
       const checkQuery = "SELECT 1 FROM appointments WHERE date = $1 AND time = $2";
       const checkResult = await client.query(checkQuery, [date, formatted_time]);
-      
+
       if (checkResult.rowCount > 0) {
         return {
           statusCode: 400,
@@ -122,8 +123,8 @@ exports.handler = async (event) => {
       }
 
       // Inserção no banco de dados após a verificação
-      const insertQuery = "INSERT INTO appointments (client_name, date, time, whatsapp) VALUES ($1, $2, $3, $4) RETURNING id";
-      const result = await client.query(insertQuery, [client_name, date, formatted_time, whatsapp]);
+      const insertQuery = "INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id";
+      const result = await client.query(insertQuery, [client_name, date, formatted_time, whatsapp, service]);
       const appointmentId = result.rows[0].id;
 
       return {
@@ -135,6 +136,7 @@ exports.handler = async (event) => {
           date,
           time: formatted_time,
           whatsapp,  // Inclui o whatsapp na resposta
+          service,   // Inclui o serviço na resposta
         }),
       };
     }
