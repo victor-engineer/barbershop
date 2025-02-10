@@ -54,9 +54,10 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
         clientName, 
         date, 
         formattedTime, 
-        whatsapp || null,  // Se não informado, salva NULL
-        service || null     // Se não informado, salva NULL
+        whatsapp && whatsapp.trim() !== '' ? whatsapp : null,  // Salva NULL se estiver vazio
+        service && service.trim() !== '' ? service : null      // Salva NULL se estiver vazio
     ]);
+    
 
     if (result.rowCount > 0) {
         console.log('Reserva realizada com sucesso!');
