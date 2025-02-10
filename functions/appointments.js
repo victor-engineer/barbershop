@@ -12,9 +12,7 @@ client.connect()
 
 async function getScheduledAppointments() {
     console.log('Buscando agendamentos no banco de dados...');
-    const query = `
-        SELECT date, time, client_name, whatsapp, service FROM appointments
-    `;
+    const query = `SELECT date, time, client_name, whatsapp, service FROM appointments`;
     const res = await client.query(query);
     console.log('Agendamentos recuperados:', res.rows);
     return res.rows;
@@ -80,13 +78,19 @@ exports.handler = async (event) => {
             const data = JSON.parse(event.body);
             console.log('Dados recebidos:', data);
 
-            // Verifica se algum campo está ausente ou vazio
+            // Verifica se os campos obrigatórios estão preenchidos corretamente
             const requiredFields = ['client_name', 'date', 'time', 'whatsapp', 'service'];
             for (const field of requiredFields) {
                 if (!data[field] || typeof data[field] !== 'string' || !data[field].trim()) {
                     console.log(`Campo inválido ou ausente: ${field}`);
                     return { statusCode: 400, headers, body: JSON.stringify({ error: `Campo inválido ou ausente: ${field}` }) };
                 }
+            }
+
+            // Permitir qualquer formato de número para whatsapp
+            if (typeof data.whatsapp !== 'string' || !data.whatsapp.trim()) {
+                console.log('Campo inválido ou ausente: whatsapp');
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Campo inválido ou ausente: whatsapp' }) };
             }
 
             const { client_name, date, time, whatsapp, service } = data;
