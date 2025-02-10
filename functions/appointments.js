@@ -12,7 +12,9 @@ client.connect()
 
 async function getScheduledAppointments() {
     console.log('Buscando agendamentos no banco de dados...');
-    const query = `SELECT date, time, client_name, whatsapp, service FROM appointments`;
+    const query = `
+        SELECT date, time, client_name, whatsapp, service FROM appointments
+    `;
     const res = await client.query(query);
     console.log('Agendamentos recuperados:', res.rows);
     return res.rows;
@@ -31,7 +33,7 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
     const formattedTime = time + ':00';
     console.log('Inserindo novo agendamento no banco de dados...');
     const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-    const result = await client.query(query, [clientName, date, formattedTime, whatsapp || null, service || null]);
+    const result = await client.query(query, [clientName, date, formattedTime, whatsapp, service]);
 
     console.log('Resultado da inserção:', result);
 
@@ -78,8 +80,8 @@ exports.handler = async (event) => {
             const data = JSON.parse(event.body);
             console.log('Dados recebidos:', data);
 
-            // Verifica se os campos obrigatórios estão preenchidos corretamente (exceto whatsapp e service)
-            const requiredFields = ['client_name', 'date', 'time'];
+            // Verifica se algum campo está ausente ou vazio
+            const requiredFields = ['client_name', 'date', 'time', 'whatsapp', 'service'];
             for (const field of requiredFields) {
                 if (!data[field] || typeof data[field] !== 'string' || !data[field].trim()) {
                     console.log(`Campo inválido ou ausente: ${field}`);
@@ -88,7 +90,7 @@ exports.handler = async (event) => {
             }
 
             const { client_name, date, time, whatsapp, service } = data;
-            const result = await createAppointment(client_name, date, time, whatsapp || null, service || null);
+            const result = await createAppointment(client_name, date, time, whatsapp, service);
             console.log('Resultado da criação:', result);
 
             return { statusCode: result.success ? 200 : 400, headers, body: JSON.stringify(result) };
