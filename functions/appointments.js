@@ -19,8 +19,7 @@ async function getScheduledAppointments() {
             a.date, 
             a.time, 
             a.client_name, 
-            a.whatsapp, 
-            a.service 
+            a.whatsapp
         FROM appointments a
     `;
     const res = await client.query(query);
@@ -28,7 +27,7 @@ async function getScheduledAppointments() {
     return res.rows;
 }
 
-async function createAppointment(clientName, date, time, whatsapp, service) {
+async function createAppointment(clientName, date, time, whatsapp) {
     console.log('Verificando disponibilidade do horário...');
     const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time = $2';
     const checkResult = await client.query(queryCheck, [date, time]);
@@ -44,8 +43,8 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
 
     const formattedTime = time + ':00'; // Adiciona segundos ao horário
     console.log('Inserindo novo agendamento no banco de dados...');
-    const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-    const result = await client.query(query, [clientName, date, formattedTime, whatsapp, JSON.stringify(service)]);
+    const query = 'INSERT INTO appointments (client_name, date, time, whatsapp) VALUES ($1, $2, $3, $4) RETURNING id';
+    const result = await client.query(query, [clientName, date, formattedTime, whatsapp]);
 
     console.log('Resultado da inserção no banco de dados:', result); // Log da inserção
     
@@ -58,7 +57,6 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
             date: date,
             time: formattedTime,
             whatsapp: whatsapp,
-            service: service,
         };
     } else {
         console.log('Erro ao salvar a reserva no banco de dados.');
@@ -117,7 +115,8 @@ exports.handler = async (event) => {
             const data = JSON.parse(event.body);
             console.log('Dados recebidos no POST:', data); // Log dos dados recebidos
 
-            if (!data.client_name || !data.date || !data.time || !data.whatsapp || !Array.isArray(data.service)) {
+            // Validação dos dados recebidos
+            if (!data.client_name || !data.date || !data.time || !data.whatsapp) {
                 console.log('Dados inválidos ou incompletos!');
                 return {
                     statusCode: 400,
@@ -126,8 +125,8 @@ exports.handler = async (event) => {
                 };
             }
 
-            const { client_name, date, time, whatsapp, service } = data;
-            const result = await createAppointment(client_name, date, time, whatsapp, service);
+            const { client_name, date, time, whatsapp } = data;
+            const result = await createAppointment(client_name, date, time, whatsapp);
             console.log('Resultado da criação do agendamento:', result);
 
             return {

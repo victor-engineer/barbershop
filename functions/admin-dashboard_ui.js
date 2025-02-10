@@ -20,9 +20,9 @@ async function getUpcomingAppointments(client) {
   const deleteQuery = "DELETE FROM appointments WHERE date || ' ' || time < $1";
   await client.query(deleteQuery, [now]);
 
-  // Consulta os agendamentos futuros e seus serviços
+  // Consulta os agendamentos futuros
   const query = `
-    SELECT a.id, a.client_name, a.date, a.time, a.whatsapp, a.service
+    SELECT a.id, a.client_name, a.date, a.time, a.whatsapp
     FROM appointments a
     WHERE a.date || ' ' || a.time >= $1
     ORDER BY a.date, a.time
@@ -34,8 +34,7 @@ async function getUpcomingAppointments(client) {
     client_name: row.client_name,
     date: row.date,
     time: row.time,
-    whatsapp: row.whatsapp,  // Inclui o whatsapp
-    services: row.service || []  // Inclui os serviços, se houver
+    whatsapp: row.whatsapp
   }));
 }
 
@@ -79,7 +78,7 @@ exports.handler = async (event) => {
       const data = JSON.parse(event.body);
 
       // Valida os dados recebidos
-      if (!data.client_name || !data.date || !data.time || !data.service) {
+      if (!data.client_name || !data.date || !data.time) {
         return {
           statusCode: 400,
           body: JSON.stringify({ error: 'Dados inválidos ou incompletos!' }),
@@ -89,7 +88,6 @@ exports.handler = async (event) => {
       const client_name = data.client_name.trim();
       const date = data.date.trim();
       const time = data.time.trim();
-      const service = data.service;  // Serviço associado
       const whatsapp = data.whatsapp ? data.whatsapp.trim() : null;  // Whatsapp é opcional
 
       // Validação de formato de data (YYYY-MM-DD) e hora (HH:MM)
@@ -124,8 +122,8 @@ exports.handler = async (event) => {
       }
 
       // Inserção no banco de dados após a verificação
-      const insertQuery = "INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id";
-      const result = await client.query(insertQuery, [client_name, date, formatted_time, whatsapp, service]);
+      const insertQuery = "INSERT INTO appointments (client_name, date, time, whatsapp) VALUES ($1, $2, $3, $4) RETURNING id";
+      const result = await client.query(insertQuery, [client_name, date, formatted_time, whatsapp]);
       const appointmentId = result.rows[0].id;
 
       return {
@@ -136,7 +134,6 @@ exports.handler = async (event) => {
           client_name,
           date,
           time: formatted_time,
-          service,
           whatsapp,  // Inclui o whatsapp na resposta
         }),
       };

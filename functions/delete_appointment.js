@@ -17,7 +17,7 @@ exports.handler = async (event) => {
         if (event.httpMethod === 'DELETE') {
             // Converte o corpo da requisição
             const data = JSON.parse(event.body);
-            const { clientName, date, time, whatsapp, service } = data;
+            const { clientName, date, time, whatsapp } = data;
 
             // Verifica se os campos obrigatórios estão presentes
             if (!clientName || !date || !time) {
@@ -27,17 +27,16 @@ exports.handler = async (event) => {
                 };
             }
 
-            // Consulta SQL para excluir o agendamento considerando o serviço
+            // Consulta SQL para excluir o agendamento sem considerar o serviço
             const deleteQuery = `
                 DELETE FROM appointments
                 WHERE client_name = $1
                 AND date = $2
                 AND time = $3
                 AND (whatsapp = $4 OR $4 IS NULL)
-                AND (services = $5 OR $5 IS NULL)
                 RETURNING *`;
                 
-            const res = await client.query(deleteQuery, [clientName, date, time, whatsapp, service]);
+            const res = await client.query(deleteQuery, [clientName, date, time, whatsapp]);
 
             // Verifica se o agendamento foi encontrado e excluído
             if (res.rows.length === 0) {

@@ -8,9 +8,9 @@ const pool = new Pool({
 exports.handler = async (event) => {
   try {
     if (event.httpMethod === "GET") {
-      // Modificado para incluir os serviços diretamente da coluna 'service' na tabela 'appointments'
+      // Removido a parte de 'service' da consulta
       const res = await pool.query(`
-        SELECT id, date, time, client_name, whatsapp, service
+        SELECT id, date, time, client_name, whatsapp
         FROM appointments
         ORDER BY date, time
       `);
@@ -18,9 +18,9 @@ exports.handler = async (event) => {
     } 
     
     else if (event.httpMethod === "POST") {
-      const { client_name, date, time, service, whatsapp } = JSON.parse(event.body);
+      const { client_name, date, time, whatsapp } = JSON.parse(event.body);
       
-      if (!client_name || !date || !time || !service) {
+      if (!client_name || !date || !time) {
         return { statusCode: 400, body: JSON.stringify({ success: false, error: "Todos os campos são obrigatórios, exceto 'whatsapp'!" }) };
       }
 
@@ -29,8 +29,8 @@ exports.handler = async (event) => {
         return { statusCode: 409, body: JSON.stringify({ success: false, error: "Horário já reservado!" }) };
       }
 
-      // Inserção do agendamento com o serviço
-      await pool.query('INSERT INTO appointments (client_name, whatsapp, date, time, service) VALUES ($1, $2, $3, $4, $5)', [client_name, whatsapp, date, time, service]);
+      // Inserção do agendamento sem o campo 'service'
+      await pool.query('INSERT INTO appointments (client_name, whatsapp, date, time) VALUES ($1, $2, $3, $4)', [client_name, whatsapp, date, time]);
 
       return { statusCode: 200, body: JSON.stringify({ success: true, message: 'Agendamento criado com sucesso!' }) };
     } 
