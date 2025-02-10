@@ -245,7 +245,7 @@
         const whatsapp = $("#whatsapp").val();
         const date = $("#date").val();
         const time = $("#time").val();
-        const service = $("#service").val(); // Captura o valor do campo serviço
+        const service = $("#service").val(); // Captura o valor do campo serviço (como string)
 
         // Logs para depuração
         console.log("Nome do cliente:", clientName);
@@ -266,7 +266,7 @@
             whatsapp: whatsapp,
             date: date,
             time: time,
-            service: service // Incluindo o serviço
+            service: service // Garantindo que o valor do serviço é enviado como string
         };
 
         console.log("Dados enviados para o backend:", data);
@@ -321,6 +321,7 @@
         });
     });
 });
+
 
  </script>
  
