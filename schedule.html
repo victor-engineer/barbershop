@@ -237,104 +237,105 @@
     });
 </script>
 <script>
-    $(document).ready(function() {
-     // Função para validar o campo de serviço
-     function validarServicos(service) {
-         if (!service || service.trim() === "") {
-             alert("O campo 'Serviço' é obrigatório.");
-             return false; // Retorna falso se o campo estiver vazio
-         }
-         return true; // Retorna verdadeiro se o campo for válido
-     }
- 
-     $("#booking-form").on("submit", function(event) {
-         event.preventDefault(); // Impede o envio padrão do formulário
- 
-         const clientName = $("#client_name").val();
-         const whatsapp = $("#whatsapp").val();
-         const date = $("#date").val();
-         const time = $("#time").val();
-         const service = $("#service").val(); // Captura o valor do campo serviço
- 
-         // Logs para depuração
-         console.log("Nome do cliente:", clientName);
-         console.log("WhatsApp:", whatsapp);
-         console.log("Data:", date);
-         console.log("Hora:", time);
-         console.log("Serviço:", service);
- 
-         // Validando se todos os campos estão preenchidos
-         if (!clientName || !whatsapp || !date || !time || !service) {
-             alert("Todos os campos são obrigatórios.");
-             return;
-         }
- 
-         // Chamando a função de validação do serviço
-         if (!validarServicos(service)) {
-             return; // Se a validação falhar, interrompe o envio
-         }
- 
-         // Montando os dados a serem enviados
-         const data = {
-             client_name: clientName,
-             whatsapp: whatsapp,
-             date: date,
-             time: time,
-             service: service // Incluindo o serviço
-         };
- 
-         console.log("Dados enviados para o backend:", data);
- 
-         // Enviando dados para o backend usando fetch
-         fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments", {
-             method: "POST",
-             headers: {
-                 "Content-Type": "application/json"
-             },
-             body: JSON.stringify(data)
-         })
-         .then(response => response.text())
-         .then(text => {
-             try {
-                 const responseData = JSON.parse(text);
-                 console.log("Resposta do servidor:", responseData);
- 
-                 if (responseData.error) {
-                     $("#response-message").html(`<div class="alert alert-danger">${responseData.error}</div>`);
-                 } else {
-                     $("#response-message").html(`<div class="alert alert-success">${responseData.message}</div>`);
-                     $("#booking-form")[0].reset(); // Limpa o formulário após o envio
-                     
-                     // Atualiza a tabela de agendamentos
-                     const newRow = `
-                         <tr>
-                             <td>${clientName}</td>
-                             <td>${whatsapp}</td>
-                             <td>${date}</td>
-                             <td>${time}</td>
-                             <td>${service}</td> <!-- Exibe o serviço -->
-                             <td>
-                                 <a href="#" class="btn btn-primary btn-sm">
-                                     <i class="fas fa-edit"></i> Editar
-                                 </a>
-                                 <a href="#" class="btn btn-danger btn-sm">
-                                     <i class="fas fa-trash"></i> Excluir
-                                 </a>
-                             </td>
-                         </tr>`;
-                     $(".appointments-table tbody").append(newRow);
-                 }
-             } catch (e) {
-                 console.error("Erro ao parsear JSON:", e);
-                 $("#response-message").html(`<div class="alert alert-danger">Resposta inesperada do servidor.</div>`);
-             }
-         })
-         .catch(error => {
-             console.error("Erro ao enviar o agendamento:", error);
-             $("#response-message").html(`<div class="alert alert-danger">Erro ao enviar o agendamento. Tente novamente.</div>`);
-         });
-     });
- });
+    (document).ready(function() {
+    
+    // Função para validar o campo de serviço
+    function validarServicos(service) {
+        if (!service || service.trim() === "") {
+            alert("O campo 'Serviço' é obrigatório.");
+            return false; // Retorna falso se o campo estiver vazio
+        }
+        return true; // Retorna verdadeiro se o campo for válido
+    }
+
+    $("#booking-form").on("submit", function(event) {
+        event.preventDefault(); // Impede o envio padrão do formulário
+
+        const clientName = $("#client_name").val();
+        const whatsapp = $("#whatsapp").val();
+        const date = $("#date").val();
+        const time = $("#time").val();
+        const service = $("#service").val(); // Captura o valor do campo serviço
+
+        // Logs para depuração
+        console.log("Nome do cliente:", clientName);
+        console.log("WhatsApp:", whatsapp);
+        console.log("Data:", date);
+        console.log("Hora:", time);
+        console.log("Serviço:", service);
+
+        // Validando se todos os campos estão preenchidos
+        if (!clientName || !whatsapp || !date || !time || !service) {
+            alert("Todos os campos são obrigatórios.");
+            return;
+        }
+
+        // Chamando a função de validação do serviço
+        if (!validarServicos(service)) {
+            return; // Se a validação falhar, interrompe o envio
+        }
+
+        // Montando os dados a serem enviados
+        const data = {
+            client_name: clientName,
+            whatsapp: whatsapp,
+            date: date,
+            time: time,
+            service: service // Incluindo o serviço
+        };
+
+        console.log("Dados enviados para o backend:", data);
+
+        // Enviando dados para o backend usando fetch
+        fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.text())
+        .then(text => {
+            try {
+                const responseData = JSON.parse(text);
+                console.log("Resposta do servidor:", responseData);
+
+                if (responseData.error) {
+                    $("#response-message").html(`<div class="alert alert-danger">${responseData.error}</div>`);
+                } else {
+                    $("#response-message").html(`<div class="alert alert-success">${responseData.message}</div>`);
+                    $("#booking-form")[0].reset(); // Limpa o formulário após o envio
+                    
+                    // Atualiza a tabela de agendamentos
+                    const newRow = `
+                        <tr>
+                            <td>${clientName}</td>
+                            <td>${whatsapp}</td>
+                            <td>${date}</td>
+                            <td>${time}</td>
+                            <td>${service}</td> <!-- Exibe o serviço -->
+                            <td>
+                                <a href="#" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <a href="#" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </a>
+                            </td>
+                        </tr>`;
+                    $(".appointments-table tbody").append(newRow);
+                }
+            } catch (e) {
+                console.error("Erro ao parsear JSON:", e);
+                $("#response-message").html(`<div class="alert alert-danger">Resposta inesperada do servidor.</div>`);
+            }
+        })
+        .catch(error => {
+            console.error("Erro ao enviar o agendamento:", error);
+            $("#response-message").html(`<div class="alert alert-danger">Erro ao enviar o agendamento. Tente novamente.</div>`);
+        });
+    });
+});
  </script>
  
 </script>
