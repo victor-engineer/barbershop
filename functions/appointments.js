@@ -126,15 +126,15 @@ exports.handler = async (event) => {
             console.log('service:', typeof data.service);
 
             // Validação dos dados recebidos
-            if (typeof data.client_name !== 'string' || !data.client_name.trim() ||
-            typeof data.date !== 'string' || !data.date.trim() ||
-            typeof data.time !== 'string' || !data.time.trim()) {
-            console.log('Dados inválidos ou incompletos!');
-            return {
-                statusCode: 400,
-                headers,
-                body: JSON.stringify({ error: 'Dados inválidos ou incompletos!' }),
-            };
+        if (typeof data.client_name !== 'string' || !data.client_name.trim() ||
+        typeof data.date !== 'string' || !data.date.trim() ||
+        typeof data.time !== 'string' || !data.time.trim()) {
+        console.log('Dados inválidos ou incompletos!');
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ error: 'Dados inválidos ou incompletos!' }),
+        };
         }
 
             const { client_name, date, time, whatsapp, service } = data;  // Incluindo 'service'
