@@ -237,16 +237,15 @@
     });
 </script>
 <script>
-    (document).ready(function() {
-    
+    $(document).ready(function() {
     // Função para validar o campo de serviço
-    function validarServicos(service) {
+    const validarServicos = function(service) {
         if (!service || service.trim() === "") {
             alert("O campo 'Serviço' é obrigatório.");
             return false; // Retorna falso se o campo estiver vazio
         }
         return true; // Retorna verdadeiro se o campo for válido
-    }
+    };
 
     $("#booking-form").on("submit", function(event) {
         event.preventDefault(); // Impede o envio padrão do formulário
@@ -336,6 +335,7 @@
         });
     });
 });
+
  </script>
  
 </script>
