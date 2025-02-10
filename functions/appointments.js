@@ -78,8 +78,8 @@ exports.handler = async (event) => {
         try {
             console.log('Requisição POST recebida. Processando reserva...');
             const data = JSON.parse(event.body);
-            console.log('Dados recebidos:', data);
-
+            console.log('Dados recebidos:', data); // Aqui está o console.log
+    
             // Verifica se algum campo está ausente ou vazio
             const requiredFields = ['client_name', 'date', 'time', 'whatsapp', 'service'];
             for (const field of requiredFields) {
@@ -88,17 +88,18 @@ exports.handler = async (event) => {
                     return { statusCode: 400, headers, body: JSON.stringify({ error: `Campo inválido ou ausente: ${field}` }) };
                 }
             }
-
+    
             const { client_name, date, time, whatsapp, service } = data;
             const result = await createAppointment(client_name, date, time, whatsapp, service);
             console.log('Resultado da criação:', result);
-
+    
             return { statusCode: result.success ? 200 : 400, headers, body: JSON.stringify(result) };
         } catch (error) {
             console.error('Erro ao processar a reserva:', error);
             return { statusCode: 500, headers, body: JSON.stringify({ error: 'Erro ao processar a reserva.' }) };
         }
     }
+    
 
     console.log('Método não permitido:', event.httpMethod);
     return { statusCode: 405, headers, body: JSON.stringify({ error: 'Método não permitido!' }) };
