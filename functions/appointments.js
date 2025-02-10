@@ -31,7 +31,7 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
     const formattedTime = time + ':00';
     console.log('Inserindo novo agendamento no banco de dados...');
     const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-    const result = await client.query(query, [clientName, date, formattedTime, whatsapp || null, service]);
+    const result = await client.query(query, [clientName, date, formattedTime, whatsapp || null, service || null]);
 
     console.log('Resultado da inserção:', result);
 
@@ -78,8 +78,8 @@ exports.handler = async (event) => {
             const data = JSON.parse(event.body);
             console.log('Dados recebidos:', data);
 
-            // Verifica se os campos obrigatórios estão preenchidos corretamente (exceto whatsapp)
-            const requiredFields = ['client_name', 'date', 'time', 'service'];
+            // Verifica se os campos obrigatórios estão preenchidos corretamente (exceto whatsapp e service)
+            const requiredFields = ['client_name', 'date', 'time'];
             for (const field of requiredFields) {
                 if (!data[field] || typeof data[field] !== 'string' || !data[field].trim()) {
                     console.log(`Campo inválido ou ausente: ${field}`);
@@ -88,7 +88,7 @@ exports.handler = async (event) => {
             }
 
             const { client_name, date, time, whatsapp, service } = data;
-            const result = await createAppointment(client_name, date, time, whatsapp, service);
+            const result = await createAppointment(client_name, date, time, whatsapp || null, service || null);
             console.log('Resultado da criação:', result);
 
             return { statusCode: result.success ? 200 : 400, headers, body: JSON.stringify(result) };
