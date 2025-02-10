@@ -126,7 +126,11 @@ exports.handler = async (event) => {
             console.log('service:', typeof data.service);
 
             // Validação dos dados recebidos
-            if (!data.client_name || !data.date || !data.time || !data.whatsapp || !data.service) {  // Validação do 'service'
+            if (typeof data.client_name !== 'string' || !data.client_name ||
+                typeof data.date !== 'string' || !data.date ||
+                typeof data.time !== 'string' || !data.time ||
+                typeof data.whatsapp !== 'string' || !data.whatsapp ||
+                typeof data.service !== 'string' || !data.service) {
                 console.log('Dados inválidos ou incompletos!');
                 return {
                     statusCode: 400,
