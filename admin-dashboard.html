@@ -130,12 +130,12 @@
 });
 
 // Função para deletar o agendamento baseado no corpo
-async function deleteAppointment(clientName, date, time, whatsapp, services) {
+async function deleteAppointment(clientName, date, time, whatsapp, service) {
     console.log("Cliente:", clientName);
     console.log("WhatsApp:", whatsapp);
     console.log("Data recebida:", date);
     console.log("Hora recebida:", time);
-    console.log("Serviços:", services);
+    console.log("Serviços:", service);
 
     if (!clientName || clientName.trim() === "") {
         console.warn("Nome do cliente não fornecido ou está vazio.");
@@ -222,9 +222,9 @@ async function loadAppointments() {
                         // Ajustar exibição dos serviços (caso seja um array)
                         let servicesDisplay = "Não informado";
                         if (appointment.services) {
-                            servicesDisplay = Array.isArray(appointment.services) 
-                                ? appointment.services.join(", ") 
-                                : appointment.services;
+                            servicesDisplay = Array.isArray(appointment.service) 
+                                ? appointment.service.join(", ") 
+                                : appointment.service;
                         }
 
                         const row = `

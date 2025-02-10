@@ -1,5 +1,4 @@
 const { Client } = require('pg'); // Importa o cliente PostgreSQL
-const cors = require('cors'); // Para lidar com CORS (Cross-Origin Resource Sharing)
 
 console.log('Iniciando conexão com o banco de dados...');
 const client = new Client({
@@ -21,7 +20,7 @@ async function getScheduledAppointments() {
             a.time, 
             a.client_name, 
             a.whatsapp, 
-            a.services 
+            a.service 
         FROM appointments a
     `;
     const res = await client.query(query);
@@ -29,7 +28,7 @@ async function getScheduledAppointments() {
     return res.rows;
 }
 
-async function createAppointment(clientName, date, time, whatsapp, services) {
+async function createAppointment(clientName, date, time, whatsapp, service) {
     console.log('Verificando disponibilidade do horário...');
     const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time = $2';
     const checkResult = await client.query(queryCheck, [date, time]);
@@ -45,8 +44,8 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
 
     const formattedTime = time + ':00'; // Adiciona segundos ao horário
     console.log('Inserindo novo agendamento no banco de dados...');
-    const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, services) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-    const result = await client.query(query, [clientName, date, formattedTime, whatsapp, JSON.stringify(services)]);
+    const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
+    const result = await client.query(query, [clientName, date, formattedTime, whatsapp, JSON.stringify(service)]);
 
     console.log('Resultado da inserção no banco de dados:', result); // Log da inserção
     
@@ -59,7 +58,7 @@ async function createAppointment(clientName, date, time, whatsapp, services) {
             date: date,
             time: formattedTime,
             whatsapp: whatsapp,
-            services: services,
+            service: service,
         };
     } else {
         console.log('Erro ao salvar a reserva no banco de dados.');
@@ -118,7 +117,7 @@ exports.handler = async (event) => {
             const data = JSON.parse(event.body);
             console.log('Dados recebidos no POST:', data); // Log dos dados recebidos
 
-            if (!data.client_name || !data.date || !data.time || !data.whatsapp || !Array.isArray(data.services)) {
+            if (!data.client_name || !data.date || !data.time || !data.whatsapp || !Array.isArray(data.service)) {
                 console.log('Dados inválidos ou incompletos!');
                 return {
                     statusCode: 400,
@@ -127,8 +126,8 @@ exports.handler = async (event) => {
                 };
             }
 
-            const { client_name, date, time, whatsapp, services } = data;
-            const result = await createAppointment(client_name, date, time, whatsapp, services);
+            const { client_name, date, time, whatsapp, service } = data;
+            const result = await createAppointment(client_name, date, time, whatsapp, service);
             console.log('Resultado da criação do agendamento:', result);
 
             return {
