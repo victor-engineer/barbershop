@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function fetchReservedTimes() {
-        fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments-ui')
+        fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const appointmentData = { client_name: name, date: selectedDate, time: selectedTime };
 
-        fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments-ui', {
+        fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(appointmentData)
