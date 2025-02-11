@@ -20,7 +20,7 @@ async function getScheduledAppointments() {
     return res.rows;
 }
 
-async function createAppointment(clientName, date, time) {
+async function createAppointment(clientName, date, time, whatsapp) {
     console.log('Verificando disponibilidade do horário...');
     const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time::text LIKE $2';
     try {
@@ -34,14 +34,14 @@ async function createAppointment(clientName, date, time) {
 
         const formattedTime = time.length === 5 ? time + ':00' : time; // Adiciona segundos se não houver
         console.log('Inserindo novo agendamento no banco de dados...');
-        const query = 'INSERT INTO appointments (client_name, date, time) VALUES ($1, $2, $3) RETURNING id';
-        const result = await client.query(query, [clientName, date, formattedTime]);
+        const query = 'INSERT INTO appointments (client_name, date, time, whatsapp) VALUES ($1, $2, $3, $4) RETURNING id';
+        const result = await client.query(query, [clientName, date, formattedTime, whatsapp]);
 
         console.log('Resultado da inserção:', result);
 
         if (result.rowCount > 0) {
             console.log('Reserva realizada com sucesso!');
-            return { success: true, message: 'Reserva realizada com sucesso!', clientName, date, time: formattedTime };
+            return { success: true, message: 'Reserva realizada com sucesso!', clientName, date, time: formattedTime, whatsapp };
         } else {
             console.log('Erro ao salvar a reserva.');
             return { success: false, error: 'Erro ao salvar a reserva no banco.' };
@@ -92,12 +92,13 @@ exports.handler = async (event) => {
             const formattedData = {
                 client_name: data.client_name?.trim() || '',
                 date: data.date?.trim() || '',
-                time: data.time?.trim() || ''
+                time: data.time?.trim() || '',
+                whatsapp: data.whatsapp?.trim() || '' // Adicionando o campo whatsapp
             };
 
             console.log('Dados normalizados para criação de reserva:', formattedData);
 
-            const requiredFields = ['client_name', 'date', 'time'];
+            const requiredFields = ['client_name', 'date', 'time', 'whatsapp'];
             for (const field of requiredFields) {
                 if (!formattedData[field]) {
                     console.log(`Campo inválido ou ausente: ${field}, Valor recebido: ${JSON.stringify(data[field])}`);
@@ -115,7 +116,8 @@ exports.handler = async (event) => {
             const result = await createAppointment(
                 formattedData.client_name,
                 formattedData.date,
-                formattedData.time
+                formattedData.time,
+                formattedData.whatsapp
             );
 
             console.log('Resultado da criação:', result);
@@ -129,3 +131,4 @@ exports.handler = async (event) => {
     console.log('Método não permitido:', event.httpMethod);
     return { statusCode: 405, headers, body: JSON.stringify({ error: 'Método não permitido!' }) };
 };
+
