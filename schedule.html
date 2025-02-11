@@ -247,10 +247,10 @@
         const date = $("#date").val();
         const time = $("#time").val();
 
-        // Remover espaços extras e caracteres indesejados dos inputs
+        // Remover espaços extras dos inputs
         const cleanClientName = clientName.trim();
-        const cleanWhatsapp = whatsapp.replace(/\D/g, ""); // Remove tudo que não for número
-        const cleanService = service.trim();
+        const cleanWhatsapp = whatsapp.trim(); // Remover apenas espaços extras
+        const cleanService = service.trim();   // Remover apenas espaços extras
         const cleanDate = date.trim();
         const cleanTime = time.trim();
 
@@ -270,8 +270,8 @@
         // Montando os dados a serem enviados
         const data = {
             client_name: cleanClientName,
-            whatsapp: cleanWhatsapp,
-            service: cleanService, // Garantindo que o valor do serviço é enviado como string
+            whatsapp: cleanWhatsapp, // Envia o whatsapp limpo, sem remoção de caracteres
+            service: cleanService,    // Envia o serviço limpo, sem remoção de caracteres
             date: cleanDate,
             time: cleanTime,
         };
@@ -328,6 +328,7 @@
         });
     });
 });
+
 
 
  </script>

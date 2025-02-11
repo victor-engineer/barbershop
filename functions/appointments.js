@@ -1,25 +1,3 @@
-const { Client } = require('pg'); // Importa o cliente PostgreSQL
-
-console.log('Iniciando conexão com o banco de dados...');
-const client = new Client({
-    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway', 
-    ssl: { rejectUnauthorized: false }
-});
-
-client.connect()
-    .then(() => console.log('Conectado ao banco de dados com sucesso!'))
-    .catch(err => console.error('Erro ao conectar ao banco de dados:', err));
-
-async function getScheduledAppointments() {
-    console.log('Buscando agendamentos no banco de dados...');
-    const query = `
-        SELECT date, time, client_name, whatsapp, service FROM appointments
-    `;
-    const res = await client.query(query);
-    console.log('Agendamentos recuperados:', res.rows);
-    return res.rows;
-}
-
 async function createAppointment(clientName, date, time, whatsapp, service) {
     console.log('Verificando disponibilidade do horário...');
     const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time = $2';
@@ -87,11 +65,11 @@ exports.handler = async (event) => {
                 client_name: data.client_name?.trim() || '',
                 date: data.date?.trim() || '',
                 time: data.time?.trim() || '',
-                whatsapp: data.whatsapp?.trim() || '',
-                service: data.service?.trim() || ''
+                whatsapp: data.whatsapp || '', // Aceita qualquer valor
+                service: data.service || '' // Aceita qualquer valor
             };
 
-            const requiredFields = ['client_name', 'date', 'time', 'whatsapp', 'service'];
+            const requiredFields = ['client_name', 'date', 'time'];
             for (const field of requiredFields) {
                 if (!formattedData[field]) {
                     console.log(`Campo inválido ou ausente: ${field}, Valor recebido: ${JSON.stringify(data[field])}`);
