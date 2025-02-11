@@ -10,74 +10,47 @@ client.connect()
     .then(() => console.log('Conectado ao banco de dados com sucesso!'))
     .catch(err => console.error('Erro ao conectar ao banco de dados:', err));
 
-    async function getScheduledAppointments() {
-        console.log('Buscando agendamentos no banco de dados...');
-        const query = `
-            SELECT date, time, client_name, whatsapp, service FROM appointments
-        `;
-        try {
-            const res = await client.query(query);
-            console.log(`Agendamentos recuperados (${res.rows.length} registros):`, res.rows);
-            return res.rows;
-        } catch (error) {
-            console.error('Erro ao buscar agendamentos:', error);
-            return [];
+async function getScheduledAppointments() {
+    console.log('Buscando agendamentos no banco de dados...');
+    const query = `
+        SELECT date, time, client_name, whatsapp, service FROM appointments
+    `;
+    const res = await client.query(query);
+    console.log('Agendamentos recuperados:', res.rows);
+    return res.rows;
+}
+
+async function createAppointment(clientName, date, time, whatsapp, service) {
+    console.log('Verificando disponibilidade do horário...');
+    const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time = $2';
+    try {
+        const checkResult = await client.query(queryCheck, [date, time]);
+        console.log('Resultado da verificação de disponibilidade:', checkResult.rows);
+
+        if (checkResult.rows.length > 0) {
+            console.log('Horário já reservado!');
+            return { success: false, error: 'O horário já está reservado!' };
         }
-    }
-    
-    async function createAppointment(clientName, date, time, whatsapp, service) {
-        console.log(`Iniciando criação de agendamento para ${clientName} em ${date} às ${time}...`);
-    
-        const formattedTime = time.length === 5 ? `${time}:00` : time; // Garante formato HH:MM:SS
-        console.log(`Horário formatado para inserção: ${formattedTime}`);
-    
-        console.log(`📌 Dados recebidos: 
-        - Cliente: ${clientName} 
-        - Data: ${date} 
-        - Horário: ${formattedTime} 
-        - WhatsApp: ${whatsapp || '❌ NÃO FORNECIDO'} 
-        - Serviço: ${service || '❌ NÃO FORNECIDO'}`);
-    
-        const queryCheck = 'SELECT date, time FROM appointments WHERE date = $1 AND time = $2';
-    
-        try {
-            console.log(`🔍 Verificando disponibilidade do horário: ${date} ${formattedTime}`);
-            const checkResult = await client.query(queryCheck, [date, formattedTime]);
-            console.log(`✅ Verificação concluída: ${checkResult.rows.length} registros encontrados.`);
-    
-            if (checkResult.rows.length > 0) {
-                console.warn(`⚠️ Horário já reservado: ${date} ${formattedTime}`);
-                return { success: false, error: 'O horário já está reservado!' };
-            }
-    
-            console.log('📝 Inserindo no banco de dados...');
-            const queryInsert = `
-                INSERT INTO appointments (client_name, date, time, whatsapp, service) 
-                VALUES ($1, $2, $3, $4, $5) RETURNING id
-            `;
-            const result = await client.query(queryInsert, [clientName, date, formattedTime, whatsapp, service]);
-    
-            console.log('📌 Resultado da inserção:', result.rowCount > 0 ? '✅ Sucesso!' : '❌ Falha na inserção.');
-    
-            if (result.rowCount > 0) {
-                return {
-                    success: true,
-                    message: 'Reserva realizada com sucesso!',
-                    clientName,
-                    date,
-                    time: formattedTime,
-                    whatsapp,
-                    service
-                };
-            } else {
-                return { success: false, error: 'Erro ao salvar a reserva no banco.' };
-            }
-        } catch (error) {
-            console.error('❌ Erro durante a verificação ou inserção no banco:', error);
-            return { success: false, error: 'Erro ao processar a reserva.', details: error.message };
+
+        const formattedTime = time + ':00';
+        console.log('Inserindo novo agendamento no banco de dados...');
+        const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
+        const result = await client.query(query, [clientName, date, formattedTime, whatsapp, service]);
+
+        console.log('Resultado da inserção:', result);
+
+        if (result.rowCount > 0) {
+            console.log('Reserva realizada com sucesso!');
+            return { success: true, message: 'Reserva realizada com sucesso!', clientName, date, time: formattedTime, whatsapp, service };
+        } else {
+            console.log('Erro ao salvar a reserva.');
+            return { success: false, error: 'Erro ao salvar a reserva no banco.' };
         }
+    } catch (error) {
+        console.error('Erro durante a verificação ou inserção no banco:', error);
+        return { success: false, error: 'Erro ao processar a reserva.', details: error.message };
     }
-    
+}
 
 exports.handler = async (event) => {
     console.log('Requisição recebida:', event);
