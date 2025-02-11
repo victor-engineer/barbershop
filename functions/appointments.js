@@ -27,30 +27,37 @@ client.connect()
     
     async function createAppointment(clientName, date, time, whatsapp, service) {
         console.log(`Iniciando criação de agendamento para ${clientName} em ${date} às ${time}...`);
-        
+    
         const formattedTime = time.length === 5 ? `${time}:00` : time; // Garante formato HH:MM:SS
         console.log(`Horário formatado para inserção: ${formattedTime}`);
     
+        console.log(`📌 Dados recebidos: 
+        - Cliente: ${clientName} 
+        - Data: ${date} 
+        - Horário: ${formattedTime} 
+        - WhatsApp: ${whatsapp || '❌ NÃO FORNECIDO'} 
+        - Serviço: ${service || '❌ NÃO FORNECIDO'}`);
+    
         const queryCheck = 'SELECT date, time FROM appointments WHERE date = $1 AND time = $2';
-        
+    
         try {
-            console.log(`Verificando disponibilidade do horário: ${date} ${formattedTime}`);
+            console.log(`🔍 Verificando disponibilidade do horário: ${date} ${formattedTime}`);
             const checkResult = await client.query(queryCheck, [date, formattedTime]);
-            console.log(`Resultado da verificação: ${checkResult.rows.length} registros encontrados`);
+            console.log(`✅ Verificação concluída: ${checkResult.rows.length} registros encontrados.`);
     
             if (checkResult.rows.length > 0) {
                 console.warn(`⚠️ Horário já reservado: ${date} ${formattedTime}`);
                 return { success: false, error: 'O horário já está reservado!' };
             }
     
-            console.log('Horário disponível! Inserindo no banco de dados...');
+            console.log('📝 Inserindo no banco de dados...');
             const queryInsert = `
                 INSERT INTO appointments (client_name, date, time, whatsapp, service) 
                 VALUES ($1, $2, $3, $4, $5) RETURNING id
             `;
             const result = await client.query(queryInsert, [clientName, date, formattedTime, whatsapp, service]);
     
-            console.log('Resultado da inserção:', result.rowCount > 0 ? '✅ Sucesso!' : '❌ Falha na inserção.');
+            console.log('📌 Resultado da inserção:', result.rowCount > 0 ? '✅ Sucesso!' : '❌ Falha na inserção.');
     
             if (result.rowCount > 0) {
                 return {
