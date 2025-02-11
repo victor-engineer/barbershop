@@ -14,7 +14,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Oswald:wght@600&display=swap" rel="stylesheet">
 
   <!-- Icon Font Stylesheet -->
-  
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -56,10 +55,9 @@
           <thead>
             <tr>
                 <th>Cliente</th>
-                <th>WhatsApp</th>
-                <th>Serviço</th>
                 <th>Data</th>
                 <th>Hora</th>
+                <th>WhatsApp</th>
                 <th>Opções</th>
             </tr>
           </thead>
@@ -77,14 +75,6 @@
                 <input type="text" id="client_name" placeholder="Nome do Cliente" required>
             </div>
             <div class="form-group">
-                <label for="whatsapp">WhatsApp</label>
-                <input type="text" id="whatsapp" placeholder="Número do WhatsApp" required>
-            </div>
-            <div class="form-group">
-                <label for="service">Serviço</label>
-                <input type="text" id="service" placeholder="Serviço desejado" required>
-            </div>
-            <div class="form-group">
                 <label for="date">Data</label>
                 <input type="date" id="date" required>
             </div>
@@ -99,25 +89,22 @@
   </div>
 
   <script>
-    // Função para validar o formulário antes de enviar
-document.querySelector("#booking-form").addEventListener("submit", async function (event) {
+  document.querySelector("#booking-form").addEventListener("submit", async function (event) {
     event.preventDefault(); // Impede o envio do formulário
 
     const clientName = $("#client_name").val();
-    const whatsapp = $("#whatsapp").val();
     const date = $("#date").val();
     const time = $("#time").val();
-    const service = $("#service").val(); // Adicionando a coleta do serviço
+    const whatsapp = $("#whatsapp").val();  // Novo campo whatsapp
 
     // Logs para depuração
     console.log("Nome do cliente:", clientName);
-    console.log("WhatsApp:", whatsapp);
     console.log("Data:", date);
     console.log("Hora:", time);
-    console.log("Serviço:", service);
+    console.log("WhatsApp:", whatsapp);  // Exibindo o whatsapp nos logs
 
     // Validando se todos os campos estão preenchidos
-    if (!clientName || !whatsapp || !date || !time || !service) {
+    if (!clientName || !date || !time || !whatsapp) {
         alert("Todos os campos são obrigatórios.");
         return;
     }
@@ -125,10 +112,9 @@ document.querySelector("#booking-form").addEventListener("submit", async functio
     // Montando os dados a serem enviados
     const data = {
         client_name: clientName,
-        whatsapp: whatsapp,
         date: date,
         time: time,
-        service: service // Incluindo o serviço nos dados
+        whatsapp: whatsapp  // Adicionando o whatsapp aos dados
     };
 
     console.log("Dados enviados para o backend:", data);
@@ -152,10 +138,9 @@ document.querySelector("#booking-form").addEventListener("submit", async functio
             const newRow = `
                 <tr>
                     <td>${clientName}</td>
-                    <td>${whatsapp}</td>
                     <td>${date}</td>
                     <td>${time}</td>
-                    <td>${service}</td> <!-- Exibindo o serviço -->
+                    <td>${whatsapp}</td> <!-- Adicionando o whatsapp à nova linha -->
                     <td>
                         <a href="#" class="btn btn-primary btn-sm">
                             <i class="fas fa-edit"></i> Editar
@@ -175,73 +160,7 @@ document.querySelector("#booking-form").addEventListener("submit", async functio
     }
 });
 
-// Função para carregar os agendamentos
-async function loadAppointments() {
-    fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments")
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.success) {
-                const tbody = $("#appointments-body");
-                tbody.empty(); // Limpa a tabela antes de adicionar os novos dados
-
-                data.appointments.forEach((appointment) => {
-                    // Convertendo para fuso horário de São Paulo e formatando corretamente
-                    const appointmentDateTime = new Date(`${appointment.date}T${appointment.time}Z`);
-                    const localDate = appointmentDateTime.toISOString().split("T")[0]; // Apenas YYYY-MM-DD
-                    const localTime = appointmentDateTime.toLocaleTimeString("pt-BR", {
-                        timeZone: "America/Sao_Paulo",
-                        hour: "2-digit",
-                        minute: "2-digit"
-                    });
-
-                    const currentTime = new Date();
-
-                    // Verificar se o horário já passou
-                    if (appointmentDateTime < currentTime) {
-                        // Deletar o agendamento automaticamente
-                        deleteAppointment(
-                            appointment.client_name, 
-                            localDate, 
-                            appointment.time, 
-                            appointment.whatsapp
-                        );
-                    } else {
-                        const row = `
-                            <tr id="appointment-${appointment.client_name}-${localDate}-${appointment.time}">
-                                <td>${appointment.client_name}</td>
-                                <td>${localDate}</td>
-                                <td>${localTime}</td>
-                                <td>${appointment.whatsapp || 'Não informado'}</td>
-                                <td>${appointment.service || 'Não informado'}</td> <!-- Adicionando a coluna serviço -->
-                                <td>
-                                    <a href="edit_appointment.js?clientName=${appointment.client_name}&date=${localDate}&time=${appointment.time}" class="btn btn-primary btn-sm">
-                                        <i class="fas fa-edit"></i> Editar
-                                    </a>
-                                    <a href="https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment?clientName=${appointment.client_name}&date=${localDate}&time=${appointment.time}" class="btn btn-danger btn-sm">
-                                        <i class="fas fa-trash"></i> Excluir
-                                    </a>
-                                </td>
-                            </tr>`;
-                        tbody.append(row);
-                    }
-                });
-            } else {
-                $("#response-message").html(`<div class="alert alert-danger">${data.error}</div>`);
-            }
-        })
-        .catch((error) => console.error("Erro ao carregar agendamentos:", error));
-}
-
-// Verificar periodicamente se algum agendamento passou
-setInterval(loadAppointments, 60000); // A cada 60 segundos
 </script>
 
-</script>
-
-
-// Verificar periodicamente se algum agendamento passou
-setInterval(loadAppointments, 60000); // A cada 60 segundos
-
-  </script>
 </body>
 </html>
