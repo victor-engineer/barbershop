@@ -22,9 +22,9 @@ async function getScheduledAppointments() {
 
 async function createAppointment(clientName, date, time, whatsapp, service) {
     console.log('Verificando disponibilidade do horário...');
-    const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time = $2';
+    const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time::text LIKE $2';
     try {
-        const checkResult = await client.query(queryCheck, [date, time]);
+        const checkResult = await client.query(queryCheck, [date, time + '%']);
         console.log('Resultado da verificação de disponibilidade:', checkResult.rows);
 
         if (checkResult.rows.length > 0) {
@@ -32,7 +32,7 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
             return { success: false, error: 'O horário já está reservado!' };
         }
 
-        const formattedTime = time + ':00';
+        const formattedTime = time.length === 5 ? time + ':00' : time; // Adiciona segundos se não houver
         console.log('Inserindo novo agendamento no banco de dados...');
         const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
         const result = await client.query(query, [clientName, date, formattedTime, whatsapp, service]);
@@ -133,4 +133,3 @@ exports.handler = async (event) => {
     console.log('Método não permitido:', event.httpMethod);
     return { statusCode: 405, headers, body: JSON.stringify({ error: 'Método não permitido!' }) };
 };
-
