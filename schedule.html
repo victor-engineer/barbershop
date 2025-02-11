@@ -243,33 +243,40 @@
 
         const clientName = $("#client_name").val();
         const whatsapp = $("#whatsapp").val();
+        const service = $("#service").val(); // Captura o valor do campo serviço (como string)
         const date = $("#date").val();
         const time = $("#time").val();
-        const service = $("#service").val(); // Captura o valor do campo serviço (como string)
 
-        // Logs para depuração
-        console.log("Nome do cliente:", clientName);
-        console.log("WhatsApp:", whatsapp);
-        console.log("Data:", date);
-        console.log("Hora:", time);
-        console.log("Serviço:", service);
+        // Remover espaços extras e caracteres indesejados dos inputs
+        const cleanClientName = clientName.trim();
+        const cleanWhatsapp = whatsapp.replace(/\D/g, ""); // Remove tudo que não for número
+        const cleanService = service.trim();
+        const cleanDate = date.trim();
+        const cleanTime = time.trim();
+
+        // Debugando os valores após limpeza
+        console.log("Nome do cliente (limpo):", cleanClientName);
+        console.log("WhatsApp (limpo):", cleanWhatsapp);
+        console.log("Data (limpa):", cleanDate);
+        console.log("Hora (limpa):", cleanTime);
+        console.log("Serviço (limpo):", cleanService);
 
         // Validando se todos os campos estão preenchidos
-        if (!clientName || !whatsapp || !date || !time || !service) {
-            alert("Todos os campos são obrigatórios.");
+        if (!cleanClientName || !cleanWhatsapp || !cleanService || !cleanDate || !cleanTime) {
+            alert("Todos os campos são obrigatórios após limpeza.");
             return;
         }
 
         // Montando os dados a serem enviados
         const data = {
-            client_name: clientName,
-            whatsapp: whatsapp,
-            date: date,
-            time: time,
-            service: service // Garantindo que o valor do serviço é enviado como string
+            client_name: cleanClientName,
+            whatsapp: cleanWhatsapp,
+            service: cleanService, // Garantindo que o valor do serviço é enviado como string
+            date: cleanDate,
+            time: cleanTime,
         };
 
-        console.log("Dados enviados para o backend:", data);
+        console.log("Dados realmente enviados para o backend:", JSON.stringify(data, null, 2));
 
         // Enviando dados para o backend usando fetch
         fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments", {
@@ -294,11 +301,11 @@
                     // Atualiza a tabela de agendamentos
                     const newRow = `
                         <tr>
-                            <td>${clientName}</td>
-                            <td>${whatsapp}</td>
-                            <td>${date}</td>
-                            <td>${time}</td>
-                            <td>${service}</td> <!-- Exibe o serviço -->
+                            <td>${cleanClientName}</td>
+                            <td>${cleanWhatsapp}</td>
+                            <td>${cleanDate}</td>
+                            <td>${cleanTime}</td>
+                            <td>${cleanService}</td> <!-- Exibe o serviço -->
                             <td>
                                 <a href="#" class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit"></i> Editar
