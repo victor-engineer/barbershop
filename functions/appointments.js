@@ -1,26 +1,32 @@
 async function createAppointment(clientName, date, time, whatsapp, service) {
     console.log('Verificando disponibilidade do horário...');
     const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time = $2';
-    const checkResult = await client.query(queryCheck, [date, time]);
+    try {
+        const checkResult = await client.query(queryCheck, [date, time]);
+        console.log('Resultado da verificação de disponibilidade:', checkResult.rows);
 
-    if (checkResult.rows.length > 0) {
-        console.log('Horário já reservado!');
-        return { success: false, error: 'O horário já está reservado!' };
-    }
+        if (checkResult.rows.length > 0) {
+            console.log('Horário já reservado!');
+            return { success: false, error: 'O horário já está reservado!' };
+        }
 
-    const formattedTime = time + ':00';
-    console.log('Inserindo novo agendamento no banco de dados...');
-    const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-    const result = await client.query(query, [clientName, date, formattedTime, whatsapp, service]);
+        const formattedTime = time + ':00';
+        console.log('Inserindo novo agendamento no banco de dados...');
+        const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
+        const result = await client.query(query, [clientName, date, formattedTime, whatsapp, service]);
 
-    console.log('Resultado da inserção:', result);
+        console.log('Resultado da inserção:', result);
 
-    if (result.rowCount > 0) {
-        console.log('Reserva realizada com sucesso!');
-        return { success: true, message: 'Reserva realizada com sucesso!', clientName, date, time: formattedTime, whatsapp, service };
-    } else {
-        console.log('Erro ao salvar a reserva.');
-        return { success: false, error: 'Erro ao salvar a reserva no banco.' };
+        if (result.rowCount > 0) {
+            console.log('Reserva realizada com sucesso!');
+            return { success: true, message: 'Reserva realizada com sucesso!', clientName, date, time: formattedTime, whatsapp, service };
+        } else {
+            console.log('Erro ao salvar a reserva.');
+            return { success: false, error: 'Erro ao salvar a reserva no banco.' };
+        }
+    } catch (error) {
+        console.error('Erro durante a verificação ou inserção no banco:', error);
+        return { success: false, error: 'Erro ao processar a reserva.', details: error.message };
     }
 }
 
@@ -69,6 +75,8 @@ exports.handler = async (event) => {
                 service: data.service || '' // Aceita qualquer valor
             };
 
+            console.log('Dados normalizados para criação de reserva:', formattedData);
+
             const requiredFields = ['client_name', 'date', 'time'];
             for (const field of requiredFields) {
                 if (!formattedData[field]) {
@@ -96,7 +104,7 @@ exports.handler = async (event) => {
             return { statusCode: result.success ? 200 : 400, headers, body: JSON.stringify(result) };
         } catch (error) {
             console.error('Erro ao processar a reserva:', error);
-            return { statusCode: 500, headers, body: JSON.stringify({ error: 'Erro ao processar a reserva.' }) };
+            return { statusCode: 500, headers, body: JSON.stringify({ error: 'Erro ao processar a reserva.', details: error.message }) };
         }
     }
 
