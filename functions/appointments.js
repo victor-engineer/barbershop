@@ -28,8 +28,8 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
         console.log('Resultado da verificação de disponibilidade:', checkResult.rows);
 
         if (checkResult.rows.length > 0) {
-            console.log('Reserva Feita Com Sucesso!');
-            return { success: false, error: 'Reserva Feita Com Sucesso!' };
+            console.log('Horário já reservado!');
+            return { success: false, error: 'O horário já está reservado!' };
         }
 
         const formattedTime = time.length === 5 ? time + ':00' : time; // Adiciona segundos se não houver
