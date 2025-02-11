@@ -77,13 +77,23 @@ exports.handler = async (event) => {
     if (event.httpMethod === 'POST' && event.headers['content-type']?.includes('application/json')) {
         try {
             console.log('Requisição POST recebida. Processando reserva...');
+            console.log('Corpo da requisição recebido:', event.body);
+
             const data = JSON.parse(event.body);
-            console.log('Dados recebidos:', data); // Aqui está o console.log
-    
-            // Verifica se algum campo está ausente ou vazio
+            console.log('Campos existentes no objeto recebido:', Object.keys(data));
+
+            // Normaliza os campos esperados
+            const formattedData = {
+                client_name: data.client_name?.trim() || '',
+                date: data.date?.trim() || '',
+                time: data.time?.trim() || '',
+                whatsapp: data.whatsapp?.trim() || '',
+                service: data.service?.trim() || ''
+            };
+
             const requiredFields = ['client_name', 'date', 'time', 'whatsapp', 'service'];
             for (const field of requiredFields) {
-                if (!data[field] || typeof data[field] !== 'string' || !data[field].trim()) {
+                if (!formattedData[field]) {
                     console.log(`Campo inválido ou ausente: ${field}, Valor recebido: ${JSON.stringify(data[field])}`);
                     return { 
                         statusCode: 400, 
@@ -95,11 +105,16 @@ exports.handler = async (event) => {
                     };
                 }
             }
-    
-            const { client_name, date, time, whatsapp, service } = data;
-            const result = await createAppointment(client_name, date, time, whatsapp, service);
+
+            const result = await createAppointment(
+                formattedData.client_name,
+                formattedData.date,
+                formattedData.time,
+                formattedData.whatsapp,
+                formattedData.service
+            );
+
             console.log('Resultado da criação:', result);
-    
             return { statusCode: result.success ? 200 : 400, headers, body: JSON.stringify(result) };
         } catch (error) {
             console.error('Erro ao processar a reserva:', error);
