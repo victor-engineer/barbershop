@@ -8,9 +8,9 @@ const pool = new Pool({
 exports.handler = async (event) => {
   try {
     if (event.httpMethod === "GET") {
-      // Agora a consulta inclui o campo 'service'
+      // Consulta sem o campo 'service' e 'whatsapp'
       const res = await pool.query(`
-        SELECT id, date, time, client_name, whatsapp, service
+        SELECT id, date, time, client_name
         FROM appointments
         ORDER BY date, time
       `);
@@ -18,9 +18,9 @@ exports.handler = async (event) => {
     } 
     
     else if (event.httpMethod === "POST") {
-      const { client_name, date, time, whatsapp, service } = JSON.parse(event.body);
+      const { client_name, date, time } = JSON.parse(event.body);
       
-      if (!client_name || !date || !time || !service) {
+      if (!client_name || !date || !time) {
         return { 
           statusCode: 400, 
           body: JSON.stringify({ success: false, error: "Todos os campos são obrigatórios!" })
@@ -35,8 +35,8 @@ exports.handler = async (event) => {
         };
       }
 
-      // Inserção agora inclui o campo 'service'
-      await pool.query('INSERT INTO appointments (client_name, whatsapp, date, time, service) VALUES ($1, $2, $3, $4, $5)', [client_name, whatsapp, date, time, service]);
+      // Inserção sem o campo 'service' e 'whatsapp'
+      await pool.query('INSERT INTO appointments (client_name, date, time) VALUES ($1, $2, $3)', [client_name, date, time]);
 
       return { 
         statusCode: 200, 

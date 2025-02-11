@@ -75,16 +75,6 @@
             <label for="client_name">Seu Nome:</label>
             <input type="text" id="client_name" name="client_name" placeholder="Digite seu nome" required autocomplete="off">
     
-            <label for="whatsapp">WhatsApp:</label>
-            <div class="input-container">
-                <i class="fa-brands fa-whatsapp"></i>
-                <input type="tel" id="whatsapp" name="whatsapp" placeholder="Digite seu WhatsApp" required 
-                    pattern="^\+?\d{10,15}$" title="Digite um número válido com DDD">
-            </div>
-    
-            <label for="service1">Escolha os serviços:</label>
-            <input type="text" id="service" name="service" placeholder="Digite os serviços separados por vírgula (ex: Corte Masculino, Barba, Hidratação)">
-    
             <label for="date">Selecione a data:</label>
             <input type="text" id="date" name="date" placeholder="Escolha uma data" required>
     
@@ -242,27 +232,21 @@
         event.preventDefault(); // Impede o envio padrão do formulário
 
         const clientName = $("#client_name").val();
-        const whatsapp = $("#whatsapp").val();
-        const service = $("#service").val(); // Captura o valor do campo serviço (como string)
         const date = $("#date").val();
         const time = $("#time").val();
 
         // Remover espaços extras dos inputs
         const cleanClientName = clientName.trim();
-        const cleanWhatsapp = whatsapp.trim(); // Remover apenas espaços extras
-        const cleanService = service.trim();   // Remover apenas espaços extras
         const cleanDate = date.trim();
         const cleanTime = time.trim();
 
         // Debugando os valores após limpeza
         console.log("Nome do cliente (limpo):", cleanClientName);
-        console.log("WhatsApp (limpo):", cleanWhatsapp);
         console.log("Data (limpa):", cleanDate);
         console.log("Hora (limpa):", cleanTime);
-        console.log("Serviço (limpo):", cleanService);
 
         // Validando se todos os campos estão preenchidos
-        if (!cleanClientName || !cleanWhatsapp || !cleanService || !cleanDate || !cleanTime) {
+        if (!cleanClientName || !cleanDate || !cleanTime) {
             alert("Todos os campos são obrigatórios após limpeza.");
             return;
         }
@@ -270,10 +254,8 @@
         // Montando os dados a serem enviados
         const data = {
             client_name: cleanClientName,
-            whatsapp: cleanWhatsapp, // Envia o whatsapp limpo, sem remoção de caracteres
-            service: cleanService,    // Envia o serviço limpo, sem remoção de caracteres
             date: cleanDate,
-            time: cleanTime,
+            time: cleanTime
         };
 
         console.log("Dados realmente enviados para o backend:", JSON.stringify(data, null, 2));
@@ -302,10 +284,8 @@
                     const newRow = `
                         <tr>
                             <td>${cleanClientName}</td>
-                            <td>${cleanWhatsapp}</td>
                             <td>${cleanDate}</td>
                             <td>${cleanTime}</td>
-                            <td>${cleanService}</td> <!-- Exibe o serviço -->
                             <td>
                                 <a href="#" class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit"></i> Editar

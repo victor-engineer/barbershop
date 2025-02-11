@@ -13,14 +13,14 @@ client.connect()
 async function getScheduledAppointments() {
     console.log('Buscando agendamentos no banco de dados...');
     const query = `
-        SELECT date, time, client_name, whatsapp, service FROM appointments
+        SELECT date, time, client_name FROM appointments
     `;
     const res = await client.query(query);
     console.log('Agendamentos recuperados:', res.rows);
     return res.rows;
 }
 
-async function createAppointment(clientName, date, time, whatsapp, service) {
+async function createAppointment(clientName, date, time) {
     console.log('Verificando disponibilidade do horário...');
     const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time::text LIKE $2';
     try {
@@ -34,14 +34,14 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
 
         const formattedTime = time.length === 5 ? time + ':00' : time; // Adiciona segundos se não houver
         console.log('Inserindo novo agendamento no banco de dados...');
-        const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-        const result = await client.query(query, [clientName, date, formattedTime, whatsapp, service]);
+        const query = 'INSERT INTO appointments (client_name, date, time) VALUES ($1, $2, $3) RETURNING id';
+        const result = await client.query(query, [clientName, date, formattedTime]);
 
         console.log('Resultado da inserção:', result);
 
         if (result.rowCount > 0) {
             console.log('Reserva realizada com sucesso!');
-            return { success: true, message: 'Reserva realizada com sucesso!', clientName, date, time: formattedTime, whatsapp, service };
+            return { success: true, message: 'Reserva realizada com sucesso!', clientName, date, time: formattedTime };
         } else {
             console.log('Erro ao salvar a reserva.');
             return { success: false, error: 'Erro ao salvar a reserva no banco.' };
@@ -92,9 +92,7 @@ exports.handler = async (event) => {
             const formattedData = {
                 client_name: data.client_name?.trim() || '',
                 date: data.date?.trim() || '',
-                time: data.time?.trim() || '',
-                whatsapp: data.whatsapp || '', // Aceita qualquer valor
-                service: data.service || '' // Aceita qualquer valor
+                time: data.time?.trim() || ''
             };
 
             console.log('Dados normalizados para criação de reserva:', formattedData);
@@ -117,9 +115,7 @@ exports.handler = async (event) => {
             const result = await createAppointment(
                 formattedData.client_name,
                 formattedData.date,
-                formattedData.time,
-                formattedData.whatsapp,
-                formattedData.service
+                formattedData.time
             );
 
             console.log('Resultado da criação:', result);

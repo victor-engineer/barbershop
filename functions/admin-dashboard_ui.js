@@ -20,9 +20,9 @@ async function getUpcomingAppointments(client) {
   const deleteQuery = "DELETE FROM appointments WHERE date || ' ' || time < $1";
   await client.query(deleteQuery, [now]);
 
-  // Consulta os agendamentos futuros
+  // Consulta os agendamentos futuros (removendo o campo 'service')
   const query = `
-    SELECT a.id, a.client_name, a.date, a.time, a.whatsapp, a.service
+    SELECT a.id, a.client_name, a.date, a.time
     FROM appointments a
     WHERE a.date || ' ' || a.time >= $1
     ORDER BY a.date, a.time
@@ -33,9 +33,7 @@ async function getUpcomingAppointments(client) {
     id: row.id,
     client_name: row.client_name,
     date: row.date,
-    time: row.time,
-    whatsapp: row.whatsapp,
-    service: row.service // Incluindo o campo 'service' na resposta
+    time: row.time
   }));
 }
 
@@ -78,7 +76,7 @@ exports.handler = async (event) => {
       const data = JSON.parse(event.body);
 
       // Valida os dados recebidos
-      if (!data.client_name || !data.date || !data.time || !data.service) {
+      if (!data.client_name || !data.date || !data.time) {
         return {
           statusCode: 400,
           body: JSON.stringify({ error: 'Dados inválidos ou incompletos!' }),
@@ -88,8 +86,6 @@ exports.handler = async (event) => {
       const client_name = data.client_name.trim();
       const date = data.date.trim();
       const time = data.time.trim();
-      const whatsapp = data.whatsapp ? data.whatsapp.trim() : null;  // Whatsapp é opcional
-      const service = data.service.trim(); // O serviço agora é obrigatório
 
       // Validação de formato de data (YYYY-MM-DD) e hora (HH:MM)
       const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
@@ -122,9 +118,9 @@ exports.handler = async (event) => {
         };
       }
 
-      // Inserção no banco de dados após a verificação
-      const insertQuery = "INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id";
-      const result = await client.query(insertQuery, [client_name, date, formatted_time, whatsapp, service]);
+      // Inserção no banco de dados após a verificação (removendo o campo 'service')
+      const insertQuery = "INSERT INTO appointments (client_name, date, time) VALUES ($1, $2, $3) RETURNING id";
+      const result = await client.query(insertQuery, [client_name, date, formatted_time]);
       const appointmentId = result.rows[0].id;
 
       return {
@@ -134,9 +130,7 @@ exports.handler = async (event) => {
           message: 'Reserva realizada com sucesso!',
           client_name,
           date,
-          time: formatted_time,
-          whatsapp,  // Inclui o whatsapp na resposta
-          service,   // Inclui o serviço na resposta
+          time: formatted_time
         }),
       };
     }
