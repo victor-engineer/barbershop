@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const dateInput = document.getElementById("date");
     const timeSelect = document.getElementById("time");
     const whatsappInput = document.getElementById("whatsapp"); // Campo de WhatsApp
+    const serviceSelect = document.getElementById("service"); // Novo campo de serviço
 
     const workingHours = [
         "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00",
@@ -59,25 +60,33 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(error => console.error('Erro ao buscar horários reservados:', error));
     }
 
-        bookingForm.addEventListener("submit", (event) => {
+    bookingForm.addEventListener("submit", (event) => {
         event.preventDefault();
 
         const name = nameInput.value.trim();
         const selectedDate = dateInput.value;
         const selectedTime = timeSelect.value;
         const whatsapp = whatsappInput.value.trim(); // Obtendo o valor do WhatsApp
+        const selectedService = serviceSelect.value; // Captura o serviço selecionado
 
         // Validando os campos
         if (!name) {
             alert("Por favor, insira seu nome.");
             return;
         }
+
         // Validação do campo WhatsApp com uma expressão regular
         const whatsappRegex = /^(\+?\d{1,4}[\s\-]?)?(\(?\d{2,3}\)?[\s\-]?)?[\d\s\-]{7,13}$/;
         if (!whatsapp || !whatsappRegex.test(whatsapp)) {
-        alert("Por favor, insira um número de WhatsApp válido.");
-        return;
-    }
+            alert("Por favor, insira um número de WhatsApp válido.");
+            return;
+        }
+
+        // Validando o campo de serviço
+        if (!selectedService) {
+            alert("Por favor, selecione um serviço.");
+            return;
+        }
 
         const isTimeReserved = reservedTimes.some(reserved => reserved.time === selectedTime && formatDate(reserved.date) === selectedDate);
 
@@ -90,7 +99,8 @@ document.addEventListener("DOMContentLoaded", () => {
             client_name: name, 
             date: selectedDate, 
             time: selectedTime,
-            whatsapp: whatsapp // Incluindo o número de WhatsApp
+            whatsapp: whatsapp, // Incluindo o número de WhatsApp
+            service: selectedService // Incluindo o serviço
         };
 
         fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments', {

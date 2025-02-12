@@ -13,14 +13,14 @@ client.connect()
 async function getScheduledAppointments() {
     console.log('Buscando agendamentos no banco de dados...');
     const query = `
-        SELECT date, time, client_name, whatsapp FROM appointments
+        SELECT date, time, client_name, whatsapp, service FROM appointments
     `;
     const res = await client.query(query);
     console.log('Agendamentos recuperados:', res.rows);
     return res.rows;
 }
 
-async function createAppointment(clientName, date, time, whatsapp) {
+async function createAppointment(clientName, date, time, whatsapp, service) {
     console.log('Verificando disponibilidade do horário...');
     const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time::text LIKE $2';
     try {
@@ -34,14 +34,14 @@ async function createAppointment(clientName, date, time, whatsapp) {
 
         const formattedTime = time.length === 5 ? time + ':00' : time; // Adiciona segundos se não houver
         console.log('Inserindo novo agendamento no banco de dados...');
-        const query = 'INSERT INTO appointments (client_name, date, time, whatsapp) VALUES ($1, $2, $3, $4) RETURNING id';
-        const result = await client.query(query, [clientName, date, formattedTime, whatsapp]);
+        const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
+        const result = await client.query(query, [clientName, date, formattedTime, whatsapp, service]);
 
         console.log('Resultado da inserção:', result);
 
         if (result.rowCount > 0) {
             console.log('Reserva realizada com sucesso!');
-            return { success: true, message: 'Reserva realizada com sucesso!', clientName, date, time: formattedTime, whatsapp };
+            return { success: true, message: 'Reserva realizada com sucesso!', clientName, date, time: formattedTime, whatsapp, service };
         } else {
             console.log('Erro ao salvar a reserva.');
             return { success: false, error: 'Erro ao salvar a reserva no banco.' };
@@ -52,6 +52,7 @@ async function createAppointment(clientName, date, time, whatsapp) {
     }
 }
 
+// Função handler que processa as requisições
 exports.handler = async (event) => {
     console.log('Requisição recebida:', event);
 
@@ -93,12 +94,13 @@ exports.handler = async (event) => {
                 client_name: data.client_name?.trim() || '',
                 date: data.date?.trim() || '',
                 time: data.time?.trim() || '',
-                whatsapp: data.whatsapp?.trim() || '' // Adicionando o campo whatsapp
+                whatsapp: data.whatsapp?.trim() || '', // Adicionando o campo whatsapp
+                service: data.service?.trim() || '' // Adicionando o campo serviço
             };
 
             console.log('Dados normalizados para criação de reserva:', formattedData);
 
-            const requiredFields = ['client_name', 'date', 'time', 'whatsapp'];
+            const requiredFields = ['client_name', 'date', 'time', 'whatsapp', 'service'];
             for (const field of requiredFields) {
                 if (!formattedData[field]) {
                     console.log(`Campo inválido ou ausente: ${field}, Valor recebido: ${JSON.stringify(data[field])}`);
@@ -117,7 +119,8 @@ exports.handler = async (event) => {
                 formattedData.client_name,
                 formattedData.date,
                 formattedData.time,
-                formattedData.whatsapp
+                formattedData.whatsapp,
+                formattedData.service
             );
 
             console.log('Resultado da criação:', result);
@@ -131,4 +134,3 @@ exports.handler = async (event) => {
     console.log('Método não permitido:', event.httpMethod);
     return { statusCode: 405, headers, body: JSON.stringify({ error: 'Método não permitido!' }) };
 };
-
