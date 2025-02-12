@@ -1,14 +1,14 @@
-const { Client } = require('pg');
+const { Client } = require('pg'); // Importa o cliente PostgreSQL
 
+console.log('Iniciando conexão com o banco de dados...');
 const client = new Client({
-    user: 'postgres',
-    host: 'seu_host',
-    database: 'barbershop',
-    password: 'postgres',
-    port: 5432,
+    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway', 
+    ssl: { rejectUnauthorized: false }
 });
 
-client.connect();
+client.connect()
+    .then(() => console.log('Conectado ao banco de dados com sucesso!'))
+    .catch(err => console.error('Erro ao conectar ao banco de dados:', err));
 
 exports.handler = async (event) => {
     if (event.httpMethod === 'GET') {
@@ -38,11 +38,11 @@ exports.handler = async (event) => {
 
     if (event.httpMethod === 'POST') {
         const data = JSON.parse(event.body);
-        const { id, client_name, date, time } = data;
+        const { id, client_name, date, time, whatsapp, service } = data;
 
         try {
-            const updateQuery = 'UPDATE appointments SET client_name = $1, date = $2, time = $3 WHERE id = $4';
-            await client.query(updateQuery, [client_name, date, time, id]);
+            const updateQuery = 'UPDATE appointments SET client_name = $1, date = $2, time = $3, whatsapp = $4, service = $5 WHERE id = $6';
+            await client.query(updateQuery, [client_name, date, time, whatsapp, service, id]);
             
             return {
                 statusCode: 200,

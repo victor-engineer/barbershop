@@ -145,11 +145,11 @@ window.addEventListener("DOMContentLoaded", async function () {
             <td>${appointment.date ? appointment.date.split('T')[0] : 'N/A'}</td>
             <td>${appointment.time || 'N/A'}</td>
             <td>${appointment.whatsapp || 'N/A'}</td>
-            <td>${appointment.service || 'N/A'}</td> <!-- Exibe o serviço -->
+            <td>${appointment.service || 'N/A'}</td>
             <td>
-              <a href="#" class="btn btn-primary btn-sm">
+              <button class="btn btn-primary btn-sm edit-btn" data-id="${appointment.id}" data-client="${appointment.client_name}" data-date="${appointment.date}" data-time="${appointment.time}" data-whatsapp="${appointment.whatsapp}" data-service="${appointment.service}">
                 <i class="fas fa-edit"></i> Editar
-              </a>
+              </button>
               <button class="btn btn-danger btn-sm delete-btn" data-client="${appointment.client_name}" data-date="${appointment.date}" data-time="${appointment.time}" data-whatsapp="${appointment.whatsapp || ''}" data-service="${appointment.service || ''}">
                 <i class="fas fa-trash"></i> Excluir
               </button>
@@ -169,6 +169,17 @@ window.addEventListener("DOMContentLoaded", async function () {
           deleteAppointment(clientName, date, time, whatsapp, service);
         });
       });
+
+      // Adicionar evento de clique para os botões de edição
+      document.querySelectorAll(".edit-btn").forEach(button => {
+        button.addEventListener("click", function () {
+          document.querySelector("#client_name").value = this.getAttribute("data-client");
+          document.querySelector("#date").value = this.getAttribute("data-date").split('T')[0];
+          document.querySelector("#time").value = this.getAttribute("data-time");
+          document.querySelector("#whatsapp").value = this.getAttribute("data-whatsapp");
+          document.querySelector("#service").value = this.getAttribute("data-service");
+        });
+      });
     } else {
       console.error('Nenhum agendamento encontrado ou resposta inválida.');
     }
@@ -185,20 +196,14 @@ document.querySelector("#booking-form").addEventListener("submit", async functio
   const date = document.querySelector("#date").value;
   const time = document.querySelector("#time").value;
   const whatsapp = document.querySelector("#whatsapp").value.trim();
-  const service = document.querySelector("#service").value.trim();  // Novo campo
+  const service = document.querySelector("#service").value.trim();
 
-  if (!clientName || !date || !time || !whatsapp || !service) { // Verifique se todos os campos foram preenchidos
+  if (!clientName || !date || !time || !whatsapp || !service) {
     alert("Todos os campos são obrigatórios.");
     return;
   }
 
-  const data = { 
-    client_name: clientName, 
-    date, 
-    time, 
-    whatsapp, 
-    service  // Incluindo o serviço no objeto
-  };
+  const data = { client_name: clientName, date, time, whatsapp, service };
 
   try {
     const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments", {
@@ -208,7 +213,7 @@ document.querySelector("#booking-form").addEventListener("submit", async functio
     });
 
     const result = await response.json();
-    console.log("Resposta do envio:", result); // Depuração
+    console.log("Resposta do envio:", result);
 
     if (response.ok) {
       document.querySelector("#response-message").innerHTML = `<div class="alert alert-success">${result.message}</div>`;
@@ -221,14 +226,14 @@ document.querySelector("#booking-form").addEventListener("submit", async functio
           <td>${date}</td>
           <td>${time}</td>
           <td>${whatsapp}</td>
-          <td>${service}</td>  <!-- Exibe o serviço na tabela -->
+          <td>${service}</td>
           <td>
-            <a href="#" class="btn btn-primary btn-sm">
+            <button class="btn btn-primary btn-sm edit-btn">
               <i class="fas fa-edit"></i> Editar
-            </a>
-            <a href="#" class="btn btn-danger btn-sm">
+            </button>
+            <button class="btn btn-danger btn-sm delete-btn">
               <i class="fas fa-trash"></i> Excluir
-            </a>
+            </button>
           </td>
         </tr>`;
       tbody.insertAdjacentHTML('beforeend', newRow);
