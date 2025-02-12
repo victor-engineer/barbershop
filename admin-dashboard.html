@@ -113,7 +113,7 @@
         const newRow = `
           <tr>
             <td>${appointment.client_name || 'N/A'}</td>
-            <td>${appointment.date || 'N/A'}</td>
+            <td>${appointment.date ? appointment.date.split('T')[0] : 'N/A'}</td>
             <td>${appointment.time || 'N/A'}</td>
             <td>${appointment.whatsapp || 'N/A'}</td>
             <td>
