@@ -3,8 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const nameInput = document.getElementById("client_name");
     const dateInput = document.getElementById("date");
     const timeSelect = document.getElementById("time");
-    const whatsappInput = document.getElementById("whatsapp"); // Campo de WhatsApp
-    const serviceSelect = document.getElementById("service"); // Novo campo de serviço
+    const whatsappInput = document.getElementById("whatsapp");
+    const serviceSelect = document.getElementById("service");
 
     const workingHours = [
         "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00",
@@ -32,7 +32,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const option = document.createElement("option");
             option.value = time;
 
-            const isReserved = reservedTimes.some(reserved => reserved.time === time && formatDate(reserved.date) === selectedDate);
+            const isReserved = reservedTimes.some(reserved => 
+                reserved.time === time && formatDate(reserved.date) === selectedDate
+            );
 
             if (isReserved) {
                 option.textContent = `${time} - Indisponível`;
@@ -55,10 +57,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         date: appointment.date
                     }));
                     updateAvailableTimes();
+                } else {
+                    console.error('Erro ao carregar horários:', data.error);
                 }
             })
             .catch(error => console.error('Erro ao buscar horários reservados:', error));
     }
+
+    dateInput.addEventListener("change", updateAvailableTimes);
 
     bookingForm.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -66,29 +72,28 @@ document.addEventListener("DOMContentLoaded", () => {
         const name = nameInput.value.trim();
         const selectedDate = dateInput.value;
         const selectedTime = timeSelect.value;
-        const whatsapp = whatsappInput.value.trim(); // Obtendo o valor do WhatsApp
-        const selectedService = serviceSelect.value; // Captura o serviço selecionado
+        const whatsapp = whatsappInput.value.trim();
+        const selectedService = serviceSelect.value;
 
-        // Validando os campos
         if (!name) {
             alert("Por favor, insira seu nome.");
             return;
         }
 
-        // Validação do campo WhatsApp com uma expressão regular
         const whatsappRegex = /^(\+?\d{1,4}[\s\-]?)?(\(?\d{2,3}\)?[\s\-]?)?[\d\s\-]{7,13}$/;
         if (!whatsapp || !whatsappRegex.test(whatsapp)) {
             alert("Por favor, insira um número de WhatsApp válido.");
             return;
         }
 
-        // Validando o campo de serviço
         if (!selectedService) {
             alert("Por favor, selecione um serviço.");
             return;
         }
 
-        const isTimeReserved = reservedTimes.some(reserved => reserved.time === selectedTime && formatDate(reserved.date) === selectedDate);
+        const isTimeReserved = reservedTimes.some(reserved => 
+            reserved.time === selectedTime && formatDate(reserved.date) === selectedDate
+        );
 
         if (isTimeReserved) {
             alert(`O horário ${selectedTime} já está reservado. Escolha outro.`);
@@ -99,8 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
             client_name: name, 
             date: selectedDate, 
             time: selectedTime,
-            whatsapp: whatsapp, // Incluindo o número de WhatsApp
-            service: selectedService // Incluindo o serviço
+            whatsapp: whatsapp,
+            service: selectedService
         };
 
         fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments', {
@@ -112,9 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(data => {
             if (data.success) {
                 alert('Reserva feita com sucesso');
-                // Atualiza os horários reservados após a reserva
-                reservedTimes.push({ time: selectedTime, date: selectedDate });
-                updateAvailableTimes();
+                fetchReservedTimes(); // Atualiza a lista de horários reservados
             } else {
                 alert(data.error || 'Erro ao agendar a reserva');
             }
