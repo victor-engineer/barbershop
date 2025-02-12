@@ -98,16 +98,18 @@
 
   <script>
    // Carregar os agendamentos ao carregar a página
-window.addEventListener("DOMContentLoaded", async function () {
+   window.addEventListener("DOMContentLoaded", async function () {
   try {
     const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments");
     const result = await response.json();
 
-    if (response.ok && result.appointments && Array.isArray(result.appointments)) {
+    console.log("Resposta da API:", result); // Depuração
+
+    if (response.ok && Array.isArray(result)) {
       const tbody = document.querySelector(".appointments-table tbody");
       tbody.innerHTML = ''; // Limpa a tabela antes de inserir novos dados
 
-      result.appointments.forEach(appointment => {
+      result.forEach(appointment => {
         const newRow = `
           <tr>
             <td>${appointment.client_name || 'N/A'}</td>
@@ -142,16 +144,13 @@ document.querySelector("#booking-form").addEventListener("submit", async functio
   const time = document.querySelector("#time").value;
   const whatsapp = document.querySelector("#whatsapp").value.trim();
 
-  // Validando se todos os campos estão preenchidos
   if (!clientName || !date || !time || !whatsapp) {
     alert("Todos os campos são obrigatórios.");
     return;
   }
 
-  // Montando os dados a serem enviados
   const data = { client_name: clientName, date, time, whatsapp };
 
-  // Enviando dados para o backend usando fetch
   try {
     const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments", {
       method: "POST",
@@ -160,12 +159,12 @@ document.querySelector("#booking-form").addEventListener("submit", async functio
     });
 
     const result = await response.json();
+    console.log("Resposta do envio:", result); // Depuração
 
     if (response.ok) {
       document.querySelector("#response-message").innerHTML = `<div class="alert alert-success">${result.message}</div>`;
-      document.querySelector("#booking-form").reset(); // Limpa o formulário após o envio
+      document.querySelector("#booking-form").reset();
 
-      // Atualiza a tabela de agendamentos
       const tbody = document.querySelector(".appointments-table tbody");
       const newRow = `
         <tr>
