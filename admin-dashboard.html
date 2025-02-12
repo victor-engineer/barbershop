@@ -37,14 +37,14 @@
     <aside class="dashboard-sidebar">
       <div class="logo">
         <h2><i class="fas fa-tachometer-alt"></i> Painel</h2>
-    </div>
-    <nav class="dashboard-nav">
+      </div>
+      <nav class="dashboard-nav">
         <ul>
-            <li><a href="/index.html"><i class="fas fa-home"></i> Início</a></li>
-            <li><a href="/schedule.html"><i class="fas fa-calendar-alt"></i> Agendamentos</a></li>
-            <li><a href="/admin-login.html"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+          <li><a href="/index.html"><i class="fas fa-home"></i> Início</a></li>
+          <li><a href="/schedule.html"><i class="fas fa-calendar-alt"></i> Agendamentos</a></li>
+          <li><a href="/admin-login.html"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
         </ul>
-    </nav>
+      </nav>
     </aside>
 
     <main class="dashboard-main">
@@ -58,11 +58,11 @@
         <table class="appointments-table">
           <thead>
             <tr>
-                <th>Cliente</th>
-                <th>Data</th>
-                <th>Hora</th>
-                <th>WhatsApp</th>
-                <th>Opções</th>
+              <th>Cliente</th>
+              <th>Data</th>
+              <th>Hora</th>
+              <th>WhatsApp</th>
+              <th>Opções</th>
             </tr>
           </thead>
           <tbody id="appointments-body">
@@ -74,97 +74,127 @@
       <section class="new-appointment-section">
         <h2>Agendar Novo Atendimento</h2>
         <form id="booking-form">
-            <div class="form-group">
-                <label for="client_name">Nome do Cliente</label>
-                <input type="text" id="client_name" placeholder="Nome do Cliente" required>
-            </div>
-            <div class="form-group">
-                <label for="date">Data</label>
-                <input type="date" id="date" required>
-            </div>
-            <div class="form-group">
-                <label for="time">Hora</label>
-                <input type="time" id="time" required>
-            </div>
-            <button type="submit" class="dashboard-button">Agendar</button>
+          <div class="form-group">
+            <label for="client_name">Nome do Cliente</label>
+            <input type="text" id="client_name" placeholder="Nome do Cliente" required>
+          </div>
+          <div class="form-group">
+            <label for="date">Data</label>
+            <input type="date" id="date" required>
+          </div>
+          <div class="form-group">
+            <label for="time">Hora</label>
+            <input type="time" id="time" required>
+          </div>
+          <div class="form-group">
+            <label for="whatsapp">WhatsApp</label>
+            <input type="text" id="whatsapp" placeholder="Número de WhatsApp" required>
+          </div>
+          <button type="submit" class="dashboard-button">Agendar</button>
         </form>
-    </section>
+      </section>
     </main>
   </div>
 
   <script>
-  document.querySelector("#booking-form").addEventListener("submit", async function (event) {
-    event.preventDefault(); // Impede o envio do formulário
+    // Carregar os agendamentos ao carregar a página
+    window.addEventListener("DOMContentLoaded", async function () {
+      try {
+        const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments");
+        const result = await response.json();
 
-    const clientName = $("#client_name").val();
-    const date = $("#date").val();
-    const time = $("#time").val();
-    const whatsapp = $("#whatsapp").val();  // Novo campo whatsapp
+        if (response.ok) {
+          const appointments = result.appointments;
+          appointments.forEach(appointment => {
+            const newRow = `
+              <tr>
+                <td>${appointment.client_name}</td>
+                <td>${appointment.date}</td>
+                <td>${appointment.time}</td>
+                <td>${appointment.whatsapp || 'N/A'}</td>
+                <td>
+                  <a href="#" class="btn btn-primary btn-sm">
+                    <i class="fas fa-edit"></i> Editar
+                  </a>
+                  <a href="#" class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash"></i> Excluir
+                  </a>
+                </td>
+              </tr>`;
+            $(".appointments-table tbody").append(newRow);
+          });
+        } else {
+          console.error('Erro ao carregar agendamentos:', result.error);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar agendamentos:', error);
+      }
+    });
 
-    // Logs para depuração
-    console.log("Nome do cliente:", clientName);
-    console.log("Data:", date);
-    console.log("Hora:", time);
-    console.log("WhatsApp:", whatsapp);  // Exibindo o whatsapp nos logs
+    // Adicionar um novo agendamento
+    document.querySelector("#booking-form").addEventListener("submit", async function (event) {
+      event.preventDefault(); // Impede o envio do formulário
 
-    // Validando se todos os campos estão preenchidos
-    if (!clientName || !date || !time || !whatsapp) {
+      const clientName = $("#client_name").val();
+      const date = $("#date").val();
+      const time = $("#time").val();
+      const whatsapp = $("#whatsapp").val();  // Novo campo whatsapp
+
+      // Validando se todos os campos estão preenchidos
+      if (!clientName || !date || !time || !whatsapp) {
         alert("Todos os campos são obrigatórios.");
         return;
-    }
+      }
 
-    // Montando os dados a serem enviados
-    const data = {
+      // Montando os dados a serem enviados
+      const data = {
         client_name: clientName,
         date: date,
         time: time,
         whatsapp: whatsapp  // Adicionando o whatsapp aos dados
-    };
+      };
 
-    console.log("Dados enviados para o backend:", data);
-
-    // Enviando dados para o backend usando fetch
-    try {
+      // Enviando dados para o backend usando fetch
+      try {
         const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
         });
         const result = await response.json();
 
         if (response.ok) {
-            $("#response-message").html(`<div class="alert alert-success">${result.message}</div>`);
-            $("#booking-form")[0].reset(); // Limpa o formulário após o envio
-            
-            // Atualiza a tabela de agendamentos
-            const newRow = `
-                <tr>
-                    <td>${clientName}</td>
-                    <td>${date}</td>
-                    <td>${time}</td>
-                    <td>${whatsapp}</td> <!-- Adicionando o whatsapp à nova linha -->
-                    <td>
-                        <a href="#" class="btn btn-primary btn-sm">
-                            <i class="fas fa-edit"></i> Editar
-                        </a>
-                        <a href="#" class="btn btn-danger btn-sm">
-                            <i class="fas fa-trash"></i> Excluir
-                        </a>
-                    </td>
-                </tr>`;
-            $(".appointments-table tbody").append(newRow);
+          $("#response-message").html(`<div class="alert alert-success">${result.message}</div>`);
+          $("#booking-form")[0].reset(); // Limpa o formulário após o envio
+
+          // Atualiza a tabela de agendamentos
+          const newRow = `
+            <tr>
+              <td>${clientName}</td>
+              <td>${date}</td>
+              <td>${time}</td>
+              <td>${whatsapp}</td> <!-- Adicionando o whatsapp à nova linha -->
+              <td>
+                <a href="#" class="btn btn-primary btn-sm">
+                  <i class="fas fa-edit"></i> Editar
+                </a>
+                <a href="#" class="btn btn-danger btn-sm">
+                  <i class="fas fa-trash"></i> Excluir
+                </a>
+              </td>
+            </tr>`;
+          $(".appointments-table tbody").append(newRow);
         } else {
-            $("#response-message").html(`<div class="alert alert-danger">${result.error}</div>`);
+          $("#response-message").html(`<div class="alert alert-danger">${result.error}</div>`);
         }
-    } catch (error) {
+      } catch (error) {
         console.error("Erro ao enviar o agendamento:", error);
         $("#response-message").html(`<div class="alert alert-danger">Erro ao enviar o agendamento. Tente novamente.</div>`);
-    }
-});
-
-</script>
+      }
+    });
+  </script>
 
 </body>
 </html>

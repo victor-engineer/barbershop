@@ -13,7 +13,7 @@ client.connect()
 async function getScheduledAppointments() {
     console.log('Buscando agendamentos no banco de dados...');
     const query = `
-        SELECT date, time, client_name FROM appointments
+        SELECT date, time, client_name, whatsapp FROM appointments
     `;
     const res = await client.query(query);
     console.log('Agendamentos recuperados:', res.rows);
