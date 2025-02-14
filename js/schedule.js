@@ -32,13 +32,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const option = document.createElement("option");
             option.value = time;
 
+            // Verifica se o horário está reservado para a data selecionada
             const isReserved = reservedTimes.some(reserved => 
                 reserved.time === time && formatDate(reserved.date) === selectedDate
             );
 
             if (isReserved) {
                 option.textContent = `${time} - Indisponível`;
-                option.disabled = true;
+                option.disabled = true; // Desabilita o horário reservado
             } else {
                 option.textContent = time;
             }
@@ -48,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function fetchReservedTimes() {
+        // Carrega os horários reservados da API
         fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments')
             .then(response => response.json())
             .then(data => {
@@ -56,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         time: appointment.time,
                         date: appointment.date
                     }));
-                    updateAvailableTimes();
+                    updateAvailableTimes(); // Atualiza a interface com os horários reservados
                 } else {
                     console.error('Erro ao carregar horários:', data.error);
                 }
@@ -108,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
             service: selectedService
         };
 
+        // Envia a reserva para a API para persistir os dados
         fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -118,13 +121,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.success) {
                 alert('Reserva feita com sucesso');
 
-                // Adiciona manualmente o novo horário à lista de horários reservados
+                // Adiciona o horário à lista de horários reservados localmente
                 reservedTimes.push({
                     time: selectedTime,
                     date: selectedDate
                 });
 
-                updateAvailableTimes(); // Atualiza a lista de horários imediatamente
+                updateAvailableTimes(); // Atualiza a interface de horários imediatamente
 
                 fetchReservedTimes(); // Recarrega os horários reservados da API para garantir consistência
             } else {
@@ -135,5 +138,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     setAvailableDates();
-    fetchReservedTimes();
+    fetchReservedTimes(); // Carrega os horários reservados quando a página for carregada
 });
