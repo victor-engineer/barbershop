@@ -53,15 +53,15 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(response => response.json())
             .then(data => {
                 console.log("Resposta da API:", data); // Verifique a resposta completa
-                if (data.success) {
-                    reservedTimes = data.appointments.map(appointment => ({
+                if (Array.isArray(data)) {
+                    reservedTimes = data.map(appointment => ({
                         time: appointment.time,
                         date: appointment.date
                     }));
                     console.log("Horários reservados:", reservedTimes); // Verifique os dados retornados da API
                     updateAvailableTimes(); // Atualiza a interface após a obtenção dos horários reservados
                 } else {
-                    console.error('Erro ao carregar horários:', data.error);
+                    console.error('Erro: Esperado um array de reservas', data);
                 }
             })
             .catch(error => console.error('Erro ao buscar horários reservados:', error));
