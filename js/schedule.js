@@ -26,32 +26,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateAvailableTimes() {
         timeSelect.innerHTML = "";
-        const selectedDate = dateInput.value;
-    
+        const selectedDate = formatDate(dateInput.value); // Garante que a data está no formato correto
+
         workingHours.forEach((time) => {
             const option = document.createElement("option");
             option.value = time;
-    
+
             const isReserved = reservedTimes.some(reserved => 
                 reserved.time === time && formatDate(reserved.date) === selectedDate
             );
-    
+
             if (isReserved) {
                 option.textContent = `${time} - Indisponível`;
                 option.disabled = true;
-                option.style.color = "red"; // Deixa a opção em vermelho para destacar
+                option.style.color = "red"; // Destaca o horário indisponível
             } else {
                 option.textContent = time;
             }
-    
+
             timeSelect.appendChild(option);
         });
     }
-    
-    // Garante que os horários indisponíveis persistam ao carregar a página
-    document.addEventListener("DOMContentLoaded", () => {
-        fetchReservedTimes();
-    });
 
     function fetchReservedTimes() {
         fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments')
@@ -60,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data.success) {
                     reservedTimes = data.appointments.map(appointment => ({
                         time: appointment.time,
-                        date: appointment.date
+                        date: formatDate(appointment.date) // Converte a data para o mesmo formato
                     }));
                     updateAvailableTimes();
                 } else {
@@ -76,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
 
         const name = nameInput.value.trim();
-        const selectedDate = dateInput.value;
+        const selectedDate = formatDate(dateInput.value); // Formata a data
         const selectedTime = timeSelect.value;
         const whatsapp = whatsappInput.value.trim();
         const selectedService = serviceSelect.value;
@@ -98,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const isTimeReserved = reservedTimes.some(reserved => 
-            reserved.time === selectedTime && formatDate(reserved.date) === selectedDate
+            reserved.time === selectedTime && reserved.date === selectedDate
         );
 
         if (isTimeReserved) {
