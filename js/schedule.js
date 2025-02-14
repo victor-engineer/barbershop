@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (isReserved) {
                 option.textContent = `${time} - Indisponível`;
                 option.disabled = true;
+                option.style.color = "red"; // Deixa a opção em vermelho para destacar
             } else {
                 option.textContent = time;
             }
@@ -51,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("DOMContentLoaded", () => {
         fetchReservedTimes();
     });
-    
 
     function fetchReservedTimes() {
         fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments')
