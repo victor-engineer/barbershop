@@ -27,25 +27,31 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateAvailableTimes() {
         timeSelect.innerHTML = "";
         const selectedDate = dateInput.value;
-
+    
         workingHours.forEach((time) => {
             const option = document.createElement("option");
             option.value = time;
-
+    
             const isReserved = reservedTimes.some(reserved => 
                 reserved.time === time && formatDate(reserved.date) === selectedDate
             );
-
+    
             if (isReserved) {
                 option.textContent = `${time} - Indisponível`;
                 option.disabled = true;
             } else {
                 option.textContent = time;
             }
-
+    
             timeSelect.appendChild(option);
         });
     }
+    
+    // Garante que os horários indisponíveis persistam ao carregar a página
+    document.addEventListener("DOMContentLoaded", () => {
+        fetchReservedTimes();
+    });
+    
 
     function fetchReservedTimes() {
         fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments')
