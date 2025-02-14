@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         time: appointment.time,
                         date: appointment.date
                     }));
-                    updateAvailableTimes();
+                    updateAvailableTimes(); // Atualiza a interface após a obtenção dos horários reservados
                 } else {
                     console.error('Erro ao carregar horários:', data.error);
                 }
@@ -136,5 +136,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     setAvailableDates();
-    fetchReservedTimes(); // Carrega os horários reservados ao carregar a página
+    fetchReservedTimes(); // Carrega os horários reservados logo após o carregamento da página
 });
