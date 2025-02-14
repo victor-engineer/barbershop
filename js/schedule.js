@@ -18,6 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return new Date(date).toISOString().split("T")[0];
     }
 
+    function formatTime(time) {
+        return time.split(":").slice(0, 2).join(":"); // Para garantir que estamos comparando corretamente as horas e minutos
+    }
+
     function setAvailableDates() {
         const today = new Date();
         dateInput.setAttribute("min", formatDate(today));
@@ -32,8 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const option = document.createElement("option");
             option.value = time;
 
+            // Verificar se o horário está reservado para a data selecionada
             const isReserved = reservedTimes.some(reserved => 
-                reserved.time === time && formatDate(reserved.date) === selectedDate
+                formatTime(reserved.time) === time && formatDate(reserved.date) === selectedDate
             );
 
             if (isReserved) {
