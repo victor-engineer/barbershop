@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateAvailableTimes() {
-        console.log("Atualizando os horários disponíveis...");
         timeSelect.innerHTML = "";
         const selectedDate = dateInput.value;
 
@@ -53,6 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments')
             .then(response => response.json())
             .then(data => {
+                console.log("Resposta da API:", data); // Verifique a resposta completa
                 if (data.success) {
                     reservedTimes = data.appointments.map(appointment => ({
                         time: appointment.time,
@@ -139,5 +139,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     setAvailableDates();
-    fetchReservedTimes(); // Carrega os horários reservados logo após o carregamento da página
+    fetchReservedTimes(); // Carrega os horários reservados ao carregar a página
 });
