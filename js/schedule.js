@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateAvailableTimes() {
         timeSelect.innerHTML = "";
-        const selectedDate = formatDate(dateInput.value); // Garante que a data está no formato correto
+        const selectedDate = dateInput.value;
 
         workingHours.forEach((time) => {
             const option = document.createElement("option");
@@ -39,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (isReserved) {
                 option.textContent = `${time} - Indisponível`;
                 option.disabled = true;
-                option.style.color = "red"; // Destaca o horário indisponível
             } else {
                 option.textContent = time;
             }
@@ -55,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data.success) {
                     reservedTimes = data.appointments.map(appointment => ({
                         time: appointment.time,
-                        date: formatDate(appointment.date) // Converte a data para o mesmo formato
+                        date: appointment.date
                     }));
                     updateAvailableTimes();
                 } else {
@@ -71,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
 
         const name = nameInput.value.trim();
-        const selectedDate = formatDate(dateInput.value); // Formata a data
+        const selectedDate = dateInput.value;
         const selectedTime = timeSelect.value;
         const whatsapp = whatsappInput.value.trim();
         const selectedService = serviceSelect.value;
@@ -93,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const isTimeReserved = reservedTimes.some(reserved => 
-            reserved.time === selectedTime && reserved.date === selectedDate
+            reserved.time === selectedTime && formatDate(reserved.date) === selectedDate
         );
 
         if (isTimeReserved) {
@@ -118,7 +117,16 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(data => {
             if (data.success) {
                 alert('Reserva feita com sucesso');
-                fetchReservedTimes(); // Atualiza a lista de horários reservados
+
+                // Adiciona manualmente o novo horário à lista de horários reservados
+                reservedTimes.push({
+                    time: selectedTime,
+                    date: selectedDate
+                });
+
+                updateAvailableTimes(); // Atualiza a lista de horários imediatamente
+
+                fetchReservedTimes(); // Recarrega os horários reservados da API para garantir consistência
             } else {
                 alert(data.error || 'Erro ao agendar a reserva');
             }
