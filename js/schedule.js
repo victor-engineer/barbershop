@@ -52,9 +52,32 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Função para excluir agendamentos expirados
+    function fetchReservedTimes() {
+        console.log("Buscando horários reservados...");
+        fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Resposta da API:", data); // Verifique a resposta completa
+                if (Array.isArray(data)) {
+                    // Filtra os agendamentos expirados
+                    const currentTime = new Date();
+                    reservedTimes = data.filter(appointment => {
+                        const appointmentDateTime = new Date(`${appointment.date}T${appointment.time}:00`);
+                        return appointmentDateTime >= currentTime; // Mantém apenas agendamentos não expirados
+                    });
+
+                    console.log("Horários reservados:", reservedTimes); // Verifique os dados filtrados
+                    updateAvailableTimes(); // Atualiza a interface após a obtenção dos horários reservados
+                } else {
+                    console.error('Erro: Esperado um array de reservas', data);
+                }
+            })
+            .catch(error => console.error('Erro ao buscar horários reservados:', error));
+    }
+
+    // Função para excluir agendamentos expirados automaticamente
     function deleteExpiredAppointments() {
-        fetch('https://franciscobarbearia.netlify.app/.netlify/functions/delete_past_appointment', {
+        fetch('https://franciscobarbearia.netlify.app/.netlify/functions/delete_past_appointments', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         })
@@ -67,30 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         })
         .catch(error => console.error('Erro ao chamar o endpoint de exclusão de agendamentos:', error));
-    }
-
-    // Função para buscar horários reservados
-    function fetchReservedTimes() {
-        console.log("Buscando horários reservados...");
-        fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments')
-            .then(response => response.json())
-            .then(data => {
-                console.log("Resposta da API:", data); // Verifique a resposta completa
-                if (Array.isArray(data)) {
-                    reservedTimes = data.filter(appointment => {
-                        // Filtra agendamentos expirados
-                        const appointmentDateTime = new Date(`${appointment.date}T${appointment.time}:00`);
-                        const currentTime = new Date();
-                        return appointmentDateTime >= currentTime; // Só mantemos os agendamentos não expirados
-                    });
-
-                    console.log("Horários reservados (atualizados):", reservedTimes); // Verifique os dados atualizados
-                    updateAvailableTimes(); // Atualiza a interface após a obtenção dos horários reservados
-                } else {
-                    console.error('Erro: Esperado um array de reservas', data);
-                }
-            })
-            .catch(error => console.error('Erro ao buscar horários reservados:', error));
     }
 
     // Exclui os agendamentos expirados ao carregar a página
