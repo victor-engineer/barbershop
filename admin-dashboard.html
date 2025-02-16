@@ -126,10 +126,10 @@ async function deleteAppointment(clientName, date, time, whatsapp, service) {
   }
 }
 
-// Função para excluir automaticamente os agendamentos expirados
+/// Função para excluir automaticamente os agendamentos expirados
 async function deleteExpiredAppointments(appointments) {
   const now = new Date();
-  
+
   appointments.forEach(async (appointment) => {
     const appointmentDate = appointment.date ? appointment.date.split("T")[0] : null;
     const appointmentTime = appointment.time || "00:00"; // Garante que há um horário válido
