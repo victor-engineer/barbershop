@@ -126,10 +126,10 @@ async function deleteAppointment(clientName, date, time, whatsapp, service) {
   }
 }
 
-/// Função para excluir automaticamente os agendamentos expirados
+// Função para excluir automaticamente os agendamentos expirados
 async function deleteExpiredAppointments(appointments) {
   const now = new Date();
-
+  
   appointments.forEach(async (appointment) => {
     const appointmentDate = appointment.date ? appointment.date.split("T")[0] : null;
     const appointmentTime = appointment.time || "00:00"; // Garante que há um horário válido
@@ -138,8 +138,14 @@ async function deleteExpiredAppointments(appointments) {
 
     const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}`);
 
+    console.log("Verificando agendamento:", appointment);
+    console.log("Data/Hora do Agendamento:", appointmentDateTime);
+    console.log("Data/Hora Atual:", now);
+
     // Se o agendamento já passou, exclui-o
     if (appointmentDateTime < now) {
+      console.log("Agendamento expirado! Excluindo...");
+
       const data = {
         clientName: appointment.client_name,
         date: appointmentDate,
@@ -149,18 +155,27 @@ async function deleteExpiredAppointments(appointments) {
       };
 
       try {
-        await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/delete_past_appointment", {
+        const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/delete_past_appointment", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
+
+        const result = await response.json();
+        console.log("Resultado da exclusão automática:", result);
+
+        if (response.ok) {
+          alert(`Agendamento de ${appointment.client_name} removido!`);
+          location.reload();
+        } else {
+          console.error("Erro ao excluir agendamento expirado:", result.error);
+        }
       } catch (error) {
         console.error("Erro ao excluir agendamento expirado:", error);
       }
     }
   });
 }
-
 
 // Carregar os agendamentos ao carregar a página
 window.addEventListener("DOMContentLoaded", async function () {
