@@ -1,4 +1,3 @@
-<!-- admin-dashboard.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -126,42 +125,6 @@ async function deleteAppointment(clientName, date, time, whatsapp, service) {
   }
 }
 
-// Função para excluir automaticamente os agendamentos expirados
-async function deleteExpiredAppointments(appointments) {
-  const now = new Date();
-  
-  appointments.forEach(async (appointment) => {
-    const appointmentDate = appointment.date ? appointment.date.split("T")[0] : null;
-    const appointmentTime = appointment.time || "00:00"; // Garante que há um horário válido
-
-    if (!appointmentDate) return; // Pula se não houver data
-
-    const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}`);
-
-    // Se o agendamento já passou, exclui-o
-    if (appointmentDateTime < now) {
-      const data = {
-        clientName: appointment.client_name,
-        date: appointmentDate,
-        time: appointmentTime,
-        whatsapp: appointment.whatsapp,
-        service: appointment.service
-      };
-
-      try {
-        await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/delete_past_appointment", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-      } catch (error) {
-        console.error("Erro ao excluir agendamento expirado:", error);
-      }
-    }
-  });
-}
-
-
 // Carregar os agendamentos ao carregar a página
 window.addEventListener("DOMContentLoaded", async function () {
   try {
@@ -193,9 +156,6 @@ window.addEventListener("DOMContentLoaded", async function () {
           </tr>`;
         tbody.insertAdjacentHTML('beforeend', newRow);
       });
-
-      // Verificar e excluir agendamentos expirados automaticamente
-      deleteExpiredAppointments(result);
 
       // Adicionar evento de clique para os botões de exclusão manual
       document.querySelectorAll(".delete-btn").forEach(button => {
