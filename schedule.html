@@ -219,21 +219,14 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-    const scheduleSection = document.getElementById("schedule");
+    // Quando a página carregar completamente, rolar até o formulário de agendamento
     const bookingForm = document.getElementById("booking-form");
 
-    const observer = new IntersectionObserver(
-        function (entries) {
-            if (entries[0].isIntersecting) {
-                setTimeout(() => {
-                    bookingForm.scrollIntoView({ behavior: "smooth", block: "start" });
-                }, 300); // Pequeno delay para garantir que a seção já carregou
-            }
-        },
-        { threshold: 0.3 } // Quando 30% da seção estiver visível
-    );
-
-    observer.observe(scheduleSection);
+    if (window.location.hash === "#schedule") {
+        setTimeout(() => {
+            bookingForm.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100); // Pequeno delay para garantir que tudo carregou
+    }
 });
 
 </script>
