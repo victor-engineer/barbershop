@@ -68,6 +68,11 @@
 
     <header>
         <h1>
+            <div class="text-center mt-3">
+                <button id="scrollToSchedule" class="btn btn-primary btn-lg">
+                    Agendar Agora <i class="fa fa-calendar-check"></i>
+                </button>
+            </div>
             <span class="image-text">
                 <img src="IMG_0950.PNG" alt="Francisco Barbearia">
             </span>
@@ -218,28 +223,15 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-    // Quando a página carregar completamente, rolar até o formulário de agendamento
-    const bookingForm = document.getElementById("booking-form");
-
-    if (window.location.hash === "#schedule") {
-        setTimeout(() => {
-            bookingForm.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 100); // Pequeno delay para garantir que tudo carregou
-    }
-})
-    ;document.addEventListener("DOMContentLoaded", function () {
-    // Verifica se a URL contém "#schedule"
-        if (window.location.hash === "#schedule") {
-        const bookingForm = document.getElementById("booking-form");
-
+    document.getElementById("scrollToSchedule").addEventListener("click", function () {
+        const bookingForm = document.getElementById("schedule");
         if (bookingForm) {
-            // Faz a rolagem automática para o formulário
             bookingForm.scrollIntoView({ behavior: "smooth", block: "start" });
         }
-    }
-});
+    });
 </script>
+
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
