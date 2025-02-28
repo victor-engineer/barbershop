@@ -71,7 +71,6 @@
     <!-- Navbar End -->
 
     <header>
-        <div id="carnaval-masks"></div>
         <h1>
             <span class="image-text">
                 <img src="IMG_0950.PNG" alt="Francisco Barbearia" class="masked-img">
@@ -221,28 +220,6 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <!-- Incluindo o arquivo de locale para português -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const maskContainer = document.getElementById("carnaval-masks");
-    
-        for (let i = 0; i < 10; i++) { // Adiciona 10 máscaras na tela
-            let mask = document.createElement("i");
-            mask.classList.add("fa-solid", "fa-mask", "mask-icon");
-            
-            // Define posição aleatória
-            mask.style.left = Math.random() * 100 + "vw";
-            mask.style.top = Math.random() * 100 + "vh";
-            
-            // Define cores aleatórias
-            const colors = ["#ff0", "#f00", "#0f0", "#00f", "#f0f", "#ff8c00"];
-            mask.style.color = colors[Math.floor(Math.random() * colors.length)];
-    
-            // Adiciona ao contêiner
-            maskContainer.appendChild(mask);
-        }
-    });
-    </script>
     
 
 <script>
