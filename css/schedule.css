@@ -164,7 +164,7 @@ header h1 {
 /* Media query para dispositivos móveis */
 @media (max-width: 768px) {
     header h1 .image-text img {
-        max-width: 90% !important; /* Garante que a largura da logo seja ajustada corretamente */
+        max-width: 95% !important; /* Garante que a largura da logo seja ajustada corretamente */
         animation: pulse 1.5s infinite ease-in-out; /* Ajusta a animação no mobile, se necessário */
     }
 
