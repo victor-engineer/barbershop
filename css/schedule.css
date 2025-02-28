@@ -192,22 +192,6 @@ header h1 {
     }
 }
 
-/*imagem dançando*/
-@keyframes sambaShake {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(3deg); }
-    50% { transform: rotate(-3deg); }
-    75% { transform: rotate(3deg); }
-    100% { transform: rotate(0deg); }
-}
-
-header h1 {
-    display: inline-block;
-    animation: sambaShake 0.3s infinite ease-in-out;
-}
-
-
-
 /* Área principal */
 main {
     padding: 30px;
