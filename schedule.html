@@ -218,6 +218,27 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const scheduleSection = document.getElementById("schedule");
+    const bookingForm = document.getElementById("booking-form");
+
+    const observer = new IntersectionObserver(
+        function (entries) {
+            if (entries[0].isIntersecting) {
+                setTimeout(() => {
+                    bookingForm.scrollIntoView({ behavior: "smooth", block: "start" });
+                }, 300); // Pequeno delay para garantir que a seção já carregou
+            }
+        },
+        { threshold: 0.3 } // Quando 30% da seção estiver visível
+    );
+
+    observer.observe(scheduleSection);
+});
+
+</script>
+
+<script>
     document.addEventListener("DOMContentLoaded", function() {
         // Obtendo a data atual e configurando para o início do dia (sem horas)
         const today = new Date();
