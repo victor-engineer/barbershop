@@ -249,13 +249,20 @@ form#booking-form {
 /* Ajustes para dispositivos móveis */
 @media (max-width: 768px) {
     header h1 {
-        margin-bottom: 10px; /* Reduz a distância entre a imagem e o formulário */
+        margin-bottom: 5px; /* Reduz ainda mais a distância entre a imagem e o título */
     }
 
     #schedule {
-        margin-top: 20px; /* Ajusta a distância entre o header e o formulário */
+        margin-top: 10px; /* Ajusta ainda mais a distância entre a imagem e o formulário */
+        padding-top: 0; /* Remove qualquer padding extra no topo */
+    }
+
+    /* Caso haja muito espaçamento, podemos também mexer no padding do header */
+    header {
+        padding-bottom: 0; /* Remove padding abaixo do header */
     }
 }
+
 
 /* Estilo do Rótulo */
 label {
