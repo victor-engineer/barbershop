@@ -227,8 +227,18 @@
             bookingForm.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 100); // Pequeno delay para garantir que tudo carregou
     }
-});
+})
+    ;document.addEventListener("DOMContentLoaded", function () {
+    // Verifica se a URL contém "#schedule"
+        if (window.location.hash === "#schedule") {
+        const bookingForm = document.getElementById("booking-form");
 
+        if (bookingForm) {
+            // Faz a rolagem automática para o formulário
+            bookingForm.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    }
+});
 </script>
 
 <script>
