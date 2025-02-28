@@ -173,37 +173,6 @@ header h1 {
     }
 }
 
-/* Centraliza e ajusta a imagem */
-.image-text {
-    position: relative;
-}
-
-/* Máscara na imagem */
-.masked-img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    transition: all 0.5s ease;
-    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-}
-
-/* Efeito de Carnaval: confetes e animação */
-@keyframes carnivalEffect {
-    0% {
-        transform: scale(1) rotate(0deg);
-    }
-    50% {
-        transform: scale(1.1) rotate(10deg);
-    }
-    100% {
-        transform: scale(1) rotate(-10deg);
-    }
-}
-
-.masked-img:hover {
-    animation: carnivalEffect 1.5s infinite ease-in-out; /* Efeito no hover */
-}
-
 
 /* Área principal */
 main {
