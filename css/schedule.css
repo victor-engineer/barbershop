@@ -21,6 +21,14 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+
+@media (max-width: 768px) {
+    html {
+        scroll-behavior: auto; /* Remove o efeito exagerado em dispositivos móveis */
+    }
+}
+
+
 /*** Spinner ***/
 #spinner {
     opacity: 0;

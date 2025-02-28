@@ -68,11 +68,6 @@
 
     <header>
         <h1>
-            <div class="text-center mt-3">
-                <button id="scrollToSchedule" class="btn btn-primary btn-lg">
-                    Agendar Agora <i class="fa fa-calendar-check"></i>
-                </button>
-            </div>
             <span class="image-text">
                 <img src="IMG_0950.PNG" alt="Francisco Barbearia">
             </span>
@@ -222,14 +217,6 @@
 <!-- Incluindo o arquivo de locale para português -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
-<script>
-    document.getElementById("scrollToSchedule").addEventListener("click", function () {
-        const bookingForm = document.getElementById("schedule");
-        if (bookingForm) {
-            bookingForm.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-    });
-</script>
 
 
 
