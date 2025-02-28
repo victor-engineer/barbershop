@@ -22,13 +22,6 @@ body {
 }
 
 
-@media (max-width: 768px) {
-    html {
-        scroll-behavior: auto; /* Remove o efeito exagerado em dispositivos móveis */
-    }
-}
-
-
 /*** Spinner ***/
 #spinner {
     opacity: 0;
@@ -252,6 +245,18 @@ form#booking-form {
     gap: 20px;
     align-items: center;
 }
+
+/* Ajustes para dispositivos móveis */
+@media (max-width: 768px) {
+    header h1 {
+        margin-bottom: 10px; /* Reduz a distância entre a imagem e o formulário */
+    }
+
+    #schedule {
+        margin-top: 20px; /* Ajusta a distância entre o header e o formulário */
+    }
+}
+
 /* Estilo do Rótulo */
 label {
     font-weight: 600;
