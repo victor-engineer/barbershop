@@ -213,19 +213,6 @@ section#schedule {
     text-align: center;
 }
 
-@keyframes carnavalColors { 
-    0% { background-color: #ff0000; } /* Vermelho */ 
-    25% { background-color: #ffea00; } /* Amarelo */ 
-    50% { background-color: #00ff00; } /* Verde */ 
-    75% { background-color: #0000ff; } /* Azul */ 
-    100% { background-color: #ff0000; } /* Volta ao vermelho */ 
-} 
-
-section#schedule { 
-    animation: carnavalColors 5s infinite alternate ease-in-out; 
-}
-
-
 /* Título da seção */
 section#schedule h2 {
     font-family: 'Merriweather', serif;
