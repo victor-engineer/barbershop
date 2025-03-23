@@ -30,7 +30,7 @@ body {
     align-items: center;
 
     /* Definindo a imagem como background */
-    background: url('..img/open.jpg') no-repeat center center fixed;
+    background: url('./img/open.jpg') no-repeat center center fixed;
     background-size: cover;
 }
 
