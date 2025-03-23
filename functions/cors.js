@@ -2,7 +2,8 @@ exports.handler = async (event) => {
   // Defina origens permitidas
   const allowedOrigins = [
     "https://franciscobarbearia.netlify.app",
-    "http://localhost:8888" // Permitir chamadas locais
+    "http://localhost:8888", // Permitir chamadas locais
+    "https://franciscobarbearia.com.br"
   ];
 
   // Pegue a origem da requisição
