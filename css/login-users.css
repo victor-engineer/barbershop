@@ -55,7 +55,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: px; /* Aumenta a distância entre o formulário e o texto */
+    gap: 100px; /* Aumenta a distância entre o formulário e o texto */
     width: 100%;
     max-width: 1000px;
     height: 100vh;
