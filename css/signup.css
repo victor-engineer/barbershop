@@ -26,13 +26,13 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
-    margin-top: 40px; /* Move o logo para baixo */
+    margin-top: 50px; /* Move o logo para baixo */
     margin-bottom: 20px;
 }
 
 /* Ajustando o tamanho do logo */
 .logo-container img {
-    width: 180px; /* Aumenta o tamanho */
+    width: 170px; /* Aumenta o tamanho */
     max-width: 100%; /* Evita que fique maior que o container */
     height: auto; /* Mantém a proporção */
     object-fit: contain; /* Garante que a imagem inteira apareça */
