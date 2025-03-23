@@ -30,6 +30,22 @@ body {
     padding: 20px;
 }
 
+.image-screen {
+    position: fixed; /* Mantém a imagem fixa na tela */
+    top: 0;
+    left: 0;
+    width: 100vw; /* Ocupa toda a largura da tela */
+    height: 100vh; /* Ocupa toda a altura da tela */
+    overflow: hidden; /* Evita rolagem */
+}
+
+.image-screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Faz a imagem cobrir toda a tela sem distorcer */
+}
+
+
 /* Container de Login */
 .login-container {
     background: var(--card-background);
@@ -128,25 +144,6 @@ body {
 
 .link:hover {
     color: var(--secondary);
-}
-
-/* Ícones de redes sociais */
-.social-icons {
-    text-align: center;
-    margin-top: 25px;
-}
-
-.social-icons i {
-    margin: 0 12px;
-    font-size: 22px;
-    cursor: pointer;
-    color: var(--primary);
-    transition: color 0.3s ease, transform 0.2s ease;
-}
-
-.social-icons i:hover {
-    color: var(--secondary);
-    transform: scale(1.1);
 }
 
 /* Responsividade */
