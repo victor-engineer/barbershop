@@ -1,169 +1,115 @@
-:root {
-    --primary: #DAA520; /* Dourado */
-    --secondary: #191C24; /* Preto quase carvão */
-    --light: #6C7293; /* Cinza claro */
-    --dark: #000000; /* Preto */
-    --accent: #FF6347; /* Vermelho tomate */
-    --success: #28a745; /* Verde de sucesso */
-    --error: #dc3545; /* Vermelho de erro */
-    --info: #17a2b8; /* Azul informativo */
-    --warning: #ffc107; /* Amarelo de aviso */
-    --background: #f8f9fa; /* Fundo claro */
-    --card-background: #ffffff; /* Fundo de cards */
-    --border: #ced4da; /* Cor de borda */
-    --highlight: #ff9800; /* Laranja destaque */
-    --muted-text: #6c757d; /* Texto desbotado */
-    --link: #007bff; /* Cor padrão de link */
-    --link-hover: #0056b3; /* Cor de link ao passar o mouse */
-    --shadow: rgba(0, 0, 0, 0.15); /* Sombra leve */
-}
-
-/* Configurações gerais */
+/* Estilo global */
 body {
     font-family: 'Roboto', sans-serif;
-    background: var(--background);
+    background: linear-gradient(to right, #4A90E2, #6A82FB);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    padding: 20px;
 }
 
-/* Container de Login */
+/* Container do login */
 .login-container {
-    background: var(--card-background);
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0px 10px 20px var(--shadow);
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     width: 100%;
-    max-width: 420px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    max-width: 400px;
     text-align: center;
 }
 
-.login-container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 15px 30px var(--shadow);
-}
-
-/* Título */
-.login-container h2 {
+h2 {
     font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    font-size: 24px;
-    color: var(--primary);
-    margin-bottom: 25px;
+    margin-bottom: 20px;
+    color: #333;
 }
 
-/* Campos do formulário */
+/* Inputs */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     text-align: left;
 }
 
-.form-control {
-    border-radius: 8px;
-    padding: 12px 15px;
-    border: 1px solid var(--border);
-    background-color: #f9f9f9;
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 16px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+label {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 5px;
+    color: #444;
 }
 
-.form-control:focus {
-    border-color: var(--primary);
-    outline: none;
-    box-shadow: 0px 0px 5px var(--primary);
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
 }
 
 /* Botão */
 .btn {
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 15px;
     width: 100%;
-    font-size: 16px;
+    background: #4A90E2;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background 0.3s;
 }
 
 .btn:hover {
-    background-color: var(--secondary);
-    transform: scale(1.03);
-}
-
-.btn:focus {
-    outline: none;
-    box-shadow: 0px 0px 5px var(--secondary);
+    background: #357ABD;
 }
 
 /* Mensagens de erro e sucesso */
 .error-message, .success-message {
+    margin-bottom: 15px;
     font-size: 14px;
-    text-align: center;
-    margin-top: 15px;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
 }
 
 .error-message {
-    color: var(--error);
+    background: #E74C3C;
 }
 
 .success-message {
-    color: var(--success);
+    background: #2ECC71;
 }
 
 /* Links */
-.link {
-    color: var(--primary);
-    font-size: 14px;
+.text-center a {
+    color: #4A90E2;
     text-decoration: none;
-    transition: color 0.3s ease;
+    font-weight: 500;
 }
 
-.link:hover {
-    color: var(--secondary);
+.text-center a:hover {
+    text-decoration: underline;
 }
 
-/* Ícones de redes sociais */
+/* Ícones sociais */
 .social-icons {
-    text-align: center;
-    margin-top: 25px;
+    margin-top: 20px;
 }
 
-.social-icons i {
-    margin: 0 12px;
-    font-size: 22px;
-    cursor: pointer;
-    color: var(--primary);
-    transition: color 0.3s ease, transform 0.2s ease;
+.btn-square {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    background: #4A90E2;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 18px;
+    margin: 5px;
+    transition: background 0.3s;
 }
 
-.social-icons i:hover {
-    color: var(--secondary);
-    transform: scale(1.1);
-}
-
-/* Responsividade */
-@media (max-width: 500px) {
-    .login-container {
-        padding: 25px;
-        max-width: 350px;
-    }
-
-    .login-container h2 {
-        font-size: 20px;
-    }
-
-    .form-control {
-        font-size: 14px;
-    }
-
-    .btn {
-        font-size: 14px;
-    }
+.btn-square:hover {
+    background: #357ABD;
 }
