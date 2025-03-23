@@ -1,0 +1,168 @@
+:root {
+    --primary: #DAA520; /* Dourado */
+    --secondary: #191C24; /* Preto quase carvão */
+    --light: #6C7293; /* Cinza claro */
+    --dark: #000000; /* Preto */
+    --accent: #FF6347; /* Tom de vermelho/tomato */
+    --success: #28a745; /* Verde de sucesso */
+    --error: #dc3545; /* Vermelho de erro */
+    --info: #17a2b8; /* Azul informativo */
+    --warning: #ffc107; /* Amarelo de aviso */
+    --background: #f8f9fa; /* Fundo claro */
+    --card-background: #ffffff; /* Branco para fundo de cards */
+    --border: #ced4da; /* Cor de borda */
+    --highlight: #ff9800; /* Laranja em destaque */
+    --muted-text: #6c757d; /* Texto desbotado */
+    --link: #007bff; /* Cor padrão de link */
+    --link-hover: #0056b3; /* Cor de link ao passar o mouse */
+    --shadow: rgba(0, 0, 0, 0.15); /* Sombra leve */
+}
+
+/* Configurações gerais */
+body {
+    font-family: 'Roboto', sans-serif;
+    background: var(--background);  /* Usando a cor definida como fundo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Container de Login */
+.login-container {
+    background: var(--card-background); /* Fundo branco para a caixa de login */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px; /* Maior largura */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.1); /* Efeito hover suave */
+}
+
+/* Título */
+.login-container h2 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    text-align: center;
+    font-size: 24px;
+    color: var(--primary);
+    margin-bottom: 30px;
+}
+
+/* Grupo de Formulário */
+.form-group {
+    margin-bottom: 20px; /* Aumentei o espaçamento entre os campos */
+}
+
+/* Campo de Entrada */
+.form-control {
+    border-radius: 8px;
+    padding: 12px 15px;
+    border: 1px solid var(--border);
+    background-color: #f9f9f9;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary); /* Destaque da borda ao focar */
+    outline: none;
+}
+
+/* Botão */
+.btn {
+    background-color: var(--primary); /* Usando a cor primária */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 15px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: var(--secondary); /* Cor mais escura no hover */
+}
+
+.btn:focus {
+    outline: none;
+}
+
+/* Mensagens de erro e sucesso */
+.error-message {
+    color: var(--error);
+    font-size: 14px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.success-message {
+    color: var(--success);
+    font-size: 14px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* Texto centralizado */
+.text-center {
+    text-align: center;
+}
+
+/* Ícones de redes sociais */
+.social-icons i {
+    margin: 0 15px;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--primary);
+    transition: color 0.3s ease;
+}
+
+.social-icons i:hover {
+    color: var(--secondary);
+}
+
+.social-icons {
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Links e texto adicional */
+.link {
+    color: var(--primary);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.link:hover {
+    color: var(--secondary);
+}
+
+/* Responsividade */
+@media (max-width: 500px) {
+    .login-container {
+        padding: 20px;
+        max-width: 350px;
+    }
+
+    .login-container h2 {
+        font-size: 20px;
+    }
+
+    .form-control {
+        font-size: 14px;
+    }
+
+    .btn {
+        font-size: 14px;
+    }
+}
