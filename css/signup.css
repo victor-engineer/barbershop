@@ -24,18 +24,19 @@ body {
 .logo-container {
     display: flex;
     justify-content: center;
-    align-items: center; /* Garante que fique centralizado */
+    align-items: center;
+    width: 100%; /* Garante que ocupe toda a largura */
     margin-bottom: 20px;
 }
 
+/* Ajustando o tamanho do logo */
 .logo-container img {
-    width: 180px; /* Aumenta o tamanho do logo */
-    max-width: 100%; /* Evita cortes */
+    width: 220px; /* Aumenta o tamanho */
+    max-width: 100%; /* Evita que fique maior que o container */
     height: auto; /* Mantém a proporção */
     object-fit: contain; /* Garante que a imagem inteira apareça */
-    filter: brightness(0) invert(1); /* Deixa o logo branco */
+    display: block; /* Evita espaçamentos extras */
 }
-
 /* Linha divisória abaixo do logo */
 .logo-divider {
     width: 100%;
