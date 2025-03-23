@@ -29,6 +29,7 @@ body {
     justify-content: center;
     align-items: center;
     position: relative; /* Necessário para garantir a sobreposição */
+    background-color: var(--background);
 }
 
 /* Criando a div de fundo */
@@ -49,34 +50,35 @@ body {
     object-fit: cover; /* Faz a imagem preencher a tela sem distorcer */
 }
 
+/* Estilizando o container do formulário e o texto ao lado */
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1000px;
+    height: 100vh;
+}
+
 /* Estilizando o formulário */
 .login-container {
     position: relative;
     z-index: 1; /* Garante que o formulário fique acima da imagem */
-    background: rgba(255, 255, 255, 0.8); /* Pode deixar o fundo transparente para mais efeito */
+    background: rgba(0, 0, 0, 0.4); /* Fundo transparente escuro */
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
     width: 100%;
     max-width: 420px;
     text-align: center;
-}
-
-/* Container de Login */
-.login-container {
-    background: var(--card-background);
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0px 8px 24px var(--shadow);
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
+    color: white; /* Cor do texto branco */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Efeito ao passar o mouse */
 .login-container:hover {
     transform: translateY(-5px);
-    box-shadow: 0px 12px 32px var(--shadow);
+    box-shadow: 0px 12px 32px rgba(0, 0, 0, 0.2);
 }
 
 /* Título */
@@ -163,7 +165,11 @@ body {
 }
 
 /* Responsividade */
-@media (max-width: 500px) {
+@media (max-width: 800px) {
+    .form-container {
+        flex-direction: column; /* Torna o layout em coluna em telas menores */
+    }
+
     .login-container {
         padding: 30px;
         max-width: 350px;
