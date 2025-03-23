@@ -24,11 +24,15 @@ body {
 .logo-container {
     display: flex;
     justify-content: center;
+    align-items: center; /* Garante que fique centralizado */
     margin-bottom: 20px;
 }
 
 .logo-container img {
-    width: 120px; /* Ajuste o tamanho conforme necessário */
+    width: 180px; /* Aumenta o tamanho do logo */
+    max-width: 100%; /* Evita cortes */
+    height: auto; /* Mantém a proporção */
+    object-fit: contain; /* Garante que a imagem inteira apareça */
     filter: brightness(0) invert(1); /* Deixa o logo branco */
 }
 
