@@ -1,0 +1,168 @@
+/* Definição das cores principais */
+:root {
+    --primary: #1DB954; /* Verde do Spotify */
+    --background: #121212; /* Preto fundo do Spotify */
+    --text-light: #FFFFFF; /* Branco */
+    --text-muted: #B3B3B3; /* Cinza */
+    --border-color: #282828; /* Borda sutil */
+}
+
+/* Resetando margens e fontes */
+body {
+    font-family: 'Circular Std', sans-serif;
+    background-color: var(--background);
+    color: var(--text-light);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Container principal do formulário */
+.signup-container {
+    background-color: #181818;
+    padding: 40px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Título */
+.signup-container h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Campos do formulário */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    background-color: #282828;
+    color: var(--text-light);
+    border-radius: 50px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 5px var(--primary);
+}
+
+/* Botão de cadastro */
+.btn-signup {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary);
+    color: var(--text-light);
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-signup:hover {
+    background-color: #1ed760;
+    transform: scale(1.05);
+}
+
+/* Linha divisória */
+.divider {
+    margin: 20px 0;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-muted);
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    position: absolute;
+    width: 40%;
+    height: 1px;
+    background: var(--border-color);
+    top: 50%;
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+/* Login com redes sociais */
+.social-login {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.social-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #282828;
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.social-btn:hover {
+    background-color: #333;
+}
+
+.social-btn i {
+    font-size: 18px;
+}
+
+/* Link para login */
+.login-link {
+    font-size: 14px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .signup-container {
+        width: 90%;
+        padding: 30px;
+    }
+}
