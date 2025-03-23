@@ -55,10 +55,34 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 50px; /* Aumenta a distância entre o formulário e o texto */
+    gap: 70px; /* Aumenta a distância entre o formulário e o texto */
     width: 100%;
     max-width: 1000px;
     height: 100vh;
+}
+
+/* Estilizando o texto ao lado do formulário */
+.text-side {
+    align-self: flex-start; /* Move o texto para cima */
+    margin-top: 50px; /* Ajusta a posição */
+    text-align: left;
+    max-width: 350px;
+}
+
+/* Título */
+.text-side h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+/* Destaque na mensagem "Faça login para acessar sua conta" */
+.text-side p {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--primary);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsividade */
