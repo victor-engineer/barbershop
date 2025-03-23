@@ -50,12 +50,12 @@ body {
     object-fit: cover; /* Faz a imagem preencher a tela sem distorcer */
 }
 
-/* Ajustando o espaçamento entre o formulário e o texto */
+/* Ajustando o container do formulário e do texto */
 .form-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 100px; /* Aumenta a distância entre o formulário e o texto */
+    gap: 70px; /* Reduz a distância entre o formulário e o texto */
     width: 100%;
     max-width: 1000px;
     height: 100vh;
@@ -63,10 +63,12 @@ body {
 
 /* Estilizando o texto ao lado do formulário */
 .text-side {
-    align-self: flex-start; /* Move o texto para cima */
-    margin-top: 50px; /* Ajusta a posição */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Mantém o alinhamento do texto */
     text-align: left;
     max-width: 350px;
+    margin-top: -30px; /* Levanta um pouco o texto */
 }
 
 /* Estilo para o parágrafo */
@@ -79,7 +81,7 @@ body {
 
 /* Estilizando os links das redes sociais */
 .social-links {
-    margin-top: 15px;
+    margin-top: 20px;
     display: flex;
     gap: 15px;
 }
@@ -92,7 +94,7 @@ body {
 }
 
 .social-icon:hover {
-    transform: scale(1.2);
+    transform: scale(1.1);
     color: var(--accent);
 }
 
