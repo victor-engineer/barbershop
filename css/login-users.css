@@ -55,7 +55,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 70px; /* Aumenta a distância entre o formulário e o texto */
+    gap: 100px; /* Aumenta a distância entre o formulário e o texto */
     width: 100%;
     max-width: 1000px;
     height: 100vh;
@@ -69,15 +69,7 @@ body {
     max-width: 350px;
 }
 
-/* Título */
-.text-side h1 {
-    font-size: 28px;
-    font-weight: bold;
-    color: var(--primary);
-    margin-bottom: 10px;
-}
-
-/* Destaque na mensagem "Faça login para acessar sua conta" */
+/* Estilo para o parágrafo */
 .text-side p {
     font-size: 18px;
     font-weight: bold;
@@ -85,6 +77,37 @@ body {
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+/* Estilizando os links das redes sociais */
+.social-links {
+    margin-top: 15px;
+    display: flex;
+    gap: 15px;
+}
+
+/* Ícones das redes sociais */
+.social-icon {
+    font-size: 24px;
+    color: var(--primary);
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.2);
+    color: var(--accent);
+}
+
+/* Cores específicas para cada rede social */
+.twitter:hover {
+    color: #1DA1F2; /* Azul do Twitter */
+}
+
+.facebook:hover {
+    color: #1877F2; /* Azul do Facebook */
+}
+
+.instagram:hover {
+    color: #E1306C; /* Rosa do Instagram */
+}
 /* Responsividade */
 @media (max-width: 800px) {
     .form-container {
