@@ -1,0 +1,169 @@
+:root {
+    --primary: #DAA520; /* Dourado */
+    --secondary: #191C24; /* Preto quase carvão */
+    --light: #6C7293; /* Cinza claro */
+    --dark: #000000; /* Preto */
+    --accent: #FF6347; /* Vermelho tomate */
+    --success: #28a745; /* Verde de sucesso */
+    --error: #dc3545; /* Vermelho de erro */
+    --info: #17a2b8; /* Azul informativo */
+    --warning: #ffc107; /* Amarelo de aviso */
+    --background: #f8f9fa; /* Fundo claro */
+    --card-background: #ffffff; /* Fundo de cards */
+    --border: #ced4da; /* Cor de borda */
+    --highlight: #ff9800; /* Laranja destaque */
+    --muted-text: #6c757d; /* Texto desbotado */
+    --link: #007bff; /* Cor padrão de link */
+    --link-hover: #0056b3; /* Cor de link ao passar o mouse */
+    --shadow: rgba(0, 0, 0, 0.15); /* Sombra leve */
+}
+
+/* Configurações gerais */
+body {
+    font-family: 'Roboto', sans-serif;
+    background: var(--background);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Container de Login */
+.login-container {
+    background: var(--card-background);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0px 10px 20px var(--shadow);
+    width: 100%;
+    max-width: 420px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+}
+
+.login-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 15px 30px var(--shadow);
+}
+
+/* Título */
+.login-container h2 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    color: var(--primary);
+    margin-bottom: 25px;
+}
+
+/* Campos do formulário */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-control {
+    border-radius: 8px;
+    padding: 12px 15px;
+    border: 1px solid var(--border);
+    background-color: #f9f9f9;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0px 0px 5px var(--primary);
+}
+
+/* Botão */
+.btn {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 15px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background-color: var(--secondary);
+    transform: scale(1.03);
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: 0px 0px 5px var(--secondary);
+}
+
+/* Mensagens de erro e sucesso */
+.error-message, .success-message {
+    font-size: 14px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.error-message {
+    color: var(--error);
+}
+
+.success-message {
+    color: var(--success);
+}
+
+/* Links */
+.link {
+    color: var(--primary);
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.link:hover {
+    color: var(--secondary);
+}
+
+/* Ícones de redes sociais */
+.social-icons {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.social-icons i {
+    margin: 0 12px;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--primary);
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.social-icons i:hover {
+    color: var(--secondary);
+    transform: scale(1.1);
+}
+
+/* Responsividade */
+@media (max-width: 500px) {
+    .login-container {
+        padding: 25px;
+        max-width: 350px;
+    }
+
+    .login-container h2 {
+        font-size: 20px;
+    }
+
+    .form-control {
+        font-size: 14px;
+    }
+
+    .btn {
+        font-size: 14px;
+    }
+}
