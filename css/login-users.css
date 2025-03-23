@@ -50,15 +50,25 @@ body {
     object-fit: cover; /* Faz a imagem preencher a tela sem distorcer */
 }
 
-/* Estilizando o container do formulário e o texto ao lado */
+/* Ajustando o espaçamento entre o formulário e o texto */
 .form-container {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 50px; /* Aumenta a distância entre o formulário e o texto */
     width: 100%;
     max-width: 1000px;
     height: 100vh;
 }
+
+/* Responsividade */
+@media (max-width: 800px) {
+    .form-container {
+        flex-direction: column;
+        gap: 20px; /* Reduz a distância em telas menores */
+    }
+}
+
 
 /* Estilizando o formulário */
 .login-container {
