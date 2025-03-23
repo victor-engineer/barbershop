@@ -25,7 +25,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%; /* Garante que ocupe toda a largura */
+    width: 100%;
+    margin-top: 30px; /* Move o logo para baixo */
     margin-bottom: 20px;
 }
 
