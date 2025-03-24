@@ -453,9 +453,10 @@ form#booking-form button {
     align-self: center;
 }
 
+/* Mudança para vermelho ao passar o mouse */
 form#booking-form button:hover {
     transform: translateY(-5px);
-    background: linear-gradient(135deg, var(--accent), var(--secondary));
+    background: linear-gradient(135deg, #ff0000, #cc0000); /* Tons de vermelho */
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
 }
 
