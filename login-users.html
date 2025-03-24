@@ -10,9 +10,9 @@
     <div class="login-container">
         <div class="login-form">
             <h1>Spotify</h1>
-            <form id="login-form">
+            <form action="#" method="POST">
                 <div class="input-group">
-                    <input type="email" id="username" placeholder="Email ou nome de usuário" required>
+                    <input type="email" id="email" placeholder="Email ou nome de usuário" required>
                 </div>
                 <div class="input-group">
                     <input type="password" id="password" placeholder="Senha" required>
@@ -25,43 +25,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.getElementById('login-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            if (!username || !password) {
-                alert('Por favor, preencha todos os campos!');
-                return;
-            }
-
-            try {
-                const response = await fetch('YOUR_BACKEND_URL_HERE', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password }),
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    alert('Login bem-sucedido!');
-                    // Armazenar o token no localStorage ou sessionStorage
-                    localStorage.setItem('auth_token', data.token);
-                    window.location.href = '/home';  // Redirecionar após login bem-sucedido
-                } else {
-                    alert(data.error || 'Erro ao realizar login.');
-                }
-            } catch (error) {
-                console.error(error);
-                alert('Erro ao tentar se conectar com o servidor.');
-            }
-        });
-    </script>
 </body>
 </html>
