@@ -21,6 +21,11 @@
 
     <form>
         <div class="form-group">
+            <label for="username">Nome de Usuário</label>
+            <input type="text" id="username" placeholder="Digite seu nome de usuário">
+        </div>
+
+        <div class="form-group">
             <label for="email">Email</label>
             <input type="email" id="email" placeholder="Digite seu email">
         </div>
@@ -47,6 +52,55 @@
 
     <p>Já tem uma conta? <a href="login-users.html" class="login-link">Faça login</a></p>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.querySelector("form");
+  
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+  
+        const username = document.getElementById("username").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirm-password").value;
+  
+        if (password !== confirmPassword) {
+          alert("As senhas não coincidem!");
+          return;
+        }
+  
+        const userData = { 
+          email, 
+          password,
+          username: email.split("@")[0] // Usando parte do e-mail como username
+        };
+  
+        try {
+          const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/signup", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(userData)
+          });
+  
+          const data = await response.json();
+          
+          if (data.success) {
+            alert("Cadastro realizado com sucesso!");
+            window.location.href = "login-users.html"; // Redireciona para login
+          } else {
+            alert("Erro: " + data.error);
+          }
+        } catch (error) {
+          console.error("Erro ao cadastrar:", error);
+          alert("Erro ao conectar ao servidor.");
+        }
+      });
+    });
+  </script>
+  
 
 </body>
 </html>
