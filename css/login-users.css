@@ -1,80 +1,85 @@
-/* Resetando margens e preenchimento */
+/* Resetando algumas configurações padrão */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-/* Corpo da página */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #1DB954;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #191414;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-}
-
-/* Container do formulário */
-.login-container {
+  }
+  
+  /* Estilo do container */
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Caixa de login */
+  .login-box {
     background-color: #fff;
-    padding: 30px;
+    padding: 40px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 360px;
+    width: 350px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
-}
-
-/* Estilos do título */
-h1 {
-    color: #1DB954;
-    font-size: 36px;
+  }
+  
+  h1 {
+    color: #1db954; /* Cor do Spotify */
+    margin-bottom: 30px;
+  }
+  
+  .textbox {
     margin-bottom: 20px;
-}
-
-/* Estilos para os campos de input */
-.input-group {
-    margin-bottom: 15px;
-}
-
-input {
+  }
+  
+  .textbox input {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     border-radius: 4px;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     font-size: 14px;
-}
-
-/* Botão de login */
-.login-btn {
+  }
+  
+  .textbox input:focus {
+    outline: none;
+    border-color: #1db954;
+  }
+  
+  .btn {
     width: 100%;
-    padding: 12px;
-    background-color: #1DB954;
-    color: white;
+    padding: 10px;
+    background-color: #1db954; /* Cor do Spotify */
     border: none;
     border-radius: 4px;
+    color: white;
     font-size: 16px;
     cursor: pointer;
-}
-
-.login-btn:hover {
+  }
+  
+  .btn:hover {
     background-color: #1ed760;
-}
-
-/* Links de rodapé */
-.footer {
+  }
+  
+  .signup-link {
     margin-top: 20px;
-}
-
-.footer a {
-    display: block;
-    color: #1DB954;
+  }
+  
+  .signup-link a {
     text-decoration: none;
-    font-size: 14px;
-    margin-bottom: 10px;
-}
-
-.footer a:hover {
+    color: #1db954;
+  }
+  
+  .signup-link a:hover {
     text-decoration: underline;
-}
+  }
+  
