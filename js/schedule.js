@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function formatTime(time) {
-        return time.split(":").slice(0, 2).join(":"); // Para garantir que estamos comparando corretamente as horas e minutos
+        return time.split(":").slice(0, 2).join(":");
     }
 
     function setAvailableDates() {
@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const option = document.createElement("option");
             option.value = time;
 
-            // Verificar se o horário está reservado para a data selecionada
             const isReserved = reservedTimes.some(reserved => 
                 formatTime(reserved.time) === time && formatDate(reserved.date) === selectedDate
             );
@@ -57,14 +56,14 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments')
             .then(response => response.json())
             .then(data => {
-                console.log("Resposta da API:", data); // Verifique a resposta completa
+                console.log("Resposta da API:", data);
                 if (Array.isArray(data)) {
                     reservedTimes = data.map(appointment => ({
                         time: appointment.time,
                         date: appointment.date
                     }));
-                    console.log("Horários reservados:", reservedTimes); // Verifique os dados retornados da API
-                    updateAvailableTimes(); // Atualiza a interface após a obtenção dos horários reservados
+                    console.log("Horários reservados:", reservedTimes);
+                    updateAvailableTimes();
                 } else {
                     console.error('Erro: Esperado um array de reservas', data);
                 }
@@ -124,25 +123,42 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Reserva feita com sucesso');
-                
-                // Atualize os horários reservados localmente com a nova reserva
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: 'Reserva feita com sucesso.',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+
                 reservedTimes.push({
                     time: selectedTime,
                     date: selectedDate
                 });
 
-                updateAvailableTimes(); // Atualiza imediatamente os horários disponíveis na interface
-
-                // Recarrega os horários reservados da API para garantir consistência
+                updateAvailableTimes();
                 fetchReservedTimes();
             } else {
-                alert(data.error || 'Erro ao agendar a reserva');
+                Swal.fire({
+                    title: 'Erro!',
+                    text: data.error || 'Erro ao agendar a reserva.',
+                    icon: 'error',
+                    confirmButtonText: 'Tentar novamente'
+                });
             }
         })
-        .catch(error => alert("Erro ao processar a reserva."));
+        .catch(error => {
+            Swal.fire({
+                title: 'Erro!',
+                text: 'Erro ao processar a reserva.',
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            });
+        });
     });
 
+    // 🔴 Essas linhas estavam dentro do addEventListener de submit, mas devem ser chamadas ao carregar a página:
     setAvailableDates();
-    fetchReservedTimes(); // Carrega os horários reservados ao carregar a página
+    fetchReservedTimes();
 });
