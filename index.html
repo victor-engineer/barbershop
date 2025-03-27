@@ -41,44 +41,41 @@
     <!-- Spinner End -->
 
 
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-secondary navbar-dark sticky-top py-lg-0 px-lg-5 wow fadeIn" data-wow-delay="0.1s">
-        <a href="index.html" class="navbar-brand ms-4 ms-lg-0">
-            <img src="IMG_0950.PNG" alt="Logo HairCut" class="logo-img">
-        </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="index.html" class="nav-item nav-link active">Início</a>
-                <a href="about.html" class="nav-item nav-link">Sobre</a>
-                <a href="service.html" class="nav-item nav-link">Serviços</a>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu m-0">
-                        <a href="price.html" class="dropdown-item">Plano de Preços</a>
-                        <a href="team.html" class="dropdown-item">Nosso Barbeiro</a>
-                        <a href="open.html" class="dropdown-item">Horário de Funcionamento</a>
-                        <a href="testimonial.html" class="dropdown-item">Depoimentos</a>
-                        <a href="404.html" class="dropdown-item">404 Page</a>
-                    </div>
+   <!-- Navbar Start -->
+<nav class="navbar navbar-expand-lg bg-secondary navbar-dark sticky-top py-lg-0 px-lg-5 wow fadeIn" data-wow-delay="0.1s">
+    <a href="index.html" class="navbar-brand ms-4 ms-lg-0">
+        <img src="IMG_0950.PNG" alt="Logo HairCut" class="logo-img">
+    </a>
+    <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto p-4 p-lg-0">
+            <a href="index.html" class="nav-item nav-link active">Início</a>
+            <a href="about.html" class="nav-item nav-link">Sobre</a>
+            <a href="service.html" class="nav-item nav-link">Serviços</a>
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                <div class="dropdown-menu m-0">
+                    <a href="price.html" class="dropdown-item">Plano de Preços</a>
+                    <a href="team.html" class="dropdown-item">Nosso Barbeiro</a>
+                    <a href="open.html" class="dropdown-item">Horário de Funcionamento</a>
+                    <a href="testimonial.html" class="dropdown-item">Depoimentos</a>
+                    <a href="404.html" class="dropdown-item">404 Page</a>
                 </div>
-                <a href="andress.html" class="nav-item nav-link">Endereço</a>
-                <a href="admin-login.html" class="nav-item nav-link">Área Administrativa <i class="fa fa-user-shield ms-3"></i></a>
             </div>
+            <a href="andress.html" class="nav-item nav-link">Endereço</a>
+            <!-- Botão Área Administrativa visível dentro do menu (desktop e mobile) -->
+            <a href="admin-login.html" class="nav-item nav-link">Área Administrativa <i class="fa fa-user-shield ms-3"></i></a>
         </div>
-
-       <!-- Botão que muda entre Login e Agendamento -->
-        <div id="user-action-container">
-            <a href="login-users.html" id="user-action-btn" class="btn btn-primary rounded-0 py-2 px-lg-4">Entrar <i class="fa fa-sign-in ms-3"></i></a>
-            <!-- Botão de Logout (inicialmente oculto) -->
-            <button id="logout-btn" onclick="logout()" class="btn btn-danger rounded-0 py-2 px-lg-4 ms-2" style="display: none;">
-                Logout <i class="fa fa-sign-out ms-3"></i>
-            </button>
-        </div>
-    </nav>
-    <!-- Navbar End -->
+    </div>
+    <!-- Botão de Agendamento visível tanto em desktop quanto em mobile, mas em lugares diferentes -->
+    <a href="schedule.html" class="btn btn-primary rounded-0 py-2 px-lg-4 d-none d-lg-inline-block">Agendamento <i class="fa fa-arrow-right ms-3"></i></a>
+    <div class="d-lg-none d-flex align-items-center">
+        <a href="schedule.html" class="btn btn-primary rounded-0 py-2 px-lg-4">Agendamento <i class="fa fa-arrow-right ms-3"></i></a>
+    </div>
+</nav>
+<!-- Navbar End -->
 
 
 
@@ -528,7 +525,6 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
-    <script src="js/loggedIn.js"></script>
 
 </body>
 
