@@ -52,6 +52,26 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
     }
 }
 
+// Função para excluir agendamento existente
+async function deleteAppointment(clientName, date, time) {
+    console.log(`Tentando excluir agendamento para ${clientName} no horário ${time} no dia ${date}`);
+    const queryDelete = 'DELETE FROM appointments WHERE client_name = $1 AND date = $2 AND time = $3 RETURNING id';
+    try {
+        const result = await client.query(queryDelete, [clientName, date, time]);
+
+        if (result.rowCount > 0) {
+            console.log('Agendamento excluído com sucesso.');
+            return { success: true, message: 'Agendamento excluído com sucesso.' };
+        } else {
+            console.log('Nenhum agendamento encontrado para excluir.');
+            return { success: false, error: 'Nenhum agendamento encontrado para excluir.' };
+        }
+    } catch (error) {
+        console.error('Erro ao excluir agendamento:', error);
+        return { success: false, error: 'Erro ao excluir o agendamento.', details: error.message };
+    }
+}
+
 // Função handler que processa as requisições
 exports.handler = async (event) => {
     console.log('Requisição recebida:', event);
@@ -112,6 +132,18 @@ exports.handler = async (event) => {
                             receivedValue: data[field] 
                         }) 
                     };
+                }
+            }
+
+            // Verifica se o cliente já tem um agendamento
+            const queryCheckClient = 'SELECT * FROM appointments WHERE client_name = $1 AND date = $2 AND time = $3';
+            const existingAppointment = await client.query(queryCheckClient, [formattedData.client_name, formattedData.date, formattedData.time]);
+
+            // Se já tiver agendamento, exclui o agendamento anterior
+            if (existingAppointment.rows.length > 0) {
+                const deleteResult = await deleteAppointment(formattedData.client_name, formattedData.date, formattedData.time);
+                if (!deleteResult.success) {
+                    return { statusCode: 400, headers, body: JSON.stringify(deleteResult) };
                 }
             }
 

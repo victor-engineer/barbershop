@@ -1,10 +1,10 @@
 const bcrypt = require('bcryptjs');
 const { Client } = require('pg');
 
-// Função para validar e-mail
-function isValidEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+// Função para validar número de WhatsApp
+function isValidWhatsApp(whatsapp) {
+  const whatsappRegex = /^\+?[1-9]\d{1,14}$/; // Regex para números internacionais
+  return whatsappRegex.test(whatsapp);
 }
 
 // Função para registrar usuários
@@ -24,31 +24,31 @@ exports.handler = async (event) => {
       };
     }
 
-    const { username, password, email } = JSON.parse(event.body);
+    const { username, password, whatsapp } = JSON.parse(event.body);
 
     // Validação dos campos
-    if (!username || !password || !email) {
+    if (!username || !password || !whatsapp) {
       return {
         statusCode: 400,
         body: JSON.stringify({ success: false, error: 'Todos os campos são obrigatórios.' }),
       };
     }
 
-    if (!isValidEmail(email)) {
+    if (!isValidWhatsApp(whatsapp)) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ success: false, error: 'E-mail inválido.' }),
+        body: JSON.stringify({ success: false, error: 'Número de WhatsApp inválido.' }),
       };
     }
 
     // Verifica se o usuário já existe
-    const userExistsQuery = 'SELECT * FROM users WHERE username = $1 OR email = $2';
-    const userExists = await client.query(userExistsQuery, [username, email]);
+    const userExistsQuery = 'SELECT * FROM users WHERE username = $1 OR whatsapp = $2';
+    const userExists = await client.query(userExistsQuery, [username, whatsapp]);
 
     if (userExists.rows.length > 0) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ success: false, error: 'Usuário ou e-mail já cadastrados.' }),
+        body: JSON.stringify({ success: false, error: 'Usuário ou WhatsApp já cadastrados.' }),
       };
     }
 
@@ -56,8 +56,8 @@ exports.handler = async (event) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insere no banco
-    const insertQuery = 'INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id, username, email';
-    const newUser = await client.query(insertQuery, [username, hashedPassword, email]);
+    const insertQuery = 'INSERT INTO users (username, password, whatsapp) VALUES ($1, $2, $3) RETURNING id, username, whatsapp';
+    const newUser = await client.query(insertQuery, [username, hashedPassword, whatsapp]);
 
     return {
       statusCode: 201,

@@ -1,6 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Client } = require('pg');
+require('dotenv').config(); // Adicione isso no início do arquivo
+
+const jwtSecret = process.env.JWT_SECRET;
+
 
 // Função para comparar a senha fornecida com o hash no banco de dados
 function encryptPassword(inputPassword, storedPasswordHash) {
@@ -46,7 +50,8 @@ exports.handler = async (event) => {
 
       if (passwordMatch) {
         // Se o login for bem-sucedido, gera o token JWT
-        const token = jwt.sign({ userId: user.id }, 'your-secret-key', { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: '1h' });
+
 
         return {
           statusCode: 200,
