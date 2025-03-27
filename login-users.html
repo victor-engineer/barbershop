@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Spotify</title>
+  <title>Login - Francisco Barbearia</title>
   <link rel="stylesheet" href="css/login-users.css">
 </head>
 <body>
@@ -14,10 +14,11 @@
       <h1>Entrar Em Francisco Barbearia</h1>
       <form id="loginForm">
         <div class="textbox">
-          <input type="email" placeholder="E-mail ou nome de usuário" required>
+          <!-- Alterado o tipo de input para WhatsApp -->
+          <input type="text" id="whatsapp" placeholder="WhatsApp" required>
         </div>
         <div class="textbox">
-          <input type="password" placeholder="Senha" required>
+          <input type="password" id="password" placeholder="Senha" required>
         </div>
         <input type="submit" value="Entrar" class="btn">
       </form>
@@ -37,7 +38,7 @@
     document.getElementById("loginForm").addEventListener("submit", async function(event) {
       event.preventDefault(); // Evita que o formulário recarregue a página
   
-      const username = document.getElementById("email").value;
+      const whatsapp = document.getElementById("whatsapp").value;
       const password = document.getElementById("password").value;
   
       const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/login_users", { // Substitua pela URL do seu backend
@@ -45,7 +46,7 @@
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ whatsapp, password }), // Envia whatsapp no lugar de username
       });
   
       const data = await response.json();
@@ -59,6 +60,5 @@
       }
     });
   </script>
-  
 </body>
 </html>

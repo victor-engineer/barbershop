@@ -7,7 +7,7 @@ function isValidWhatsApp(whatsapp) {
   return whatsappRegex.test(whatsapp);
 }
 
-// Função para registrar usuários
+// Função para login
 exports.handler = async (event) => {
   const client = new Client({
     connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway',
@@ -24,16 +24,17 @@ exports.handler = async (event) => {
       };
     }
 
-    const { username, password, whatsapp } = JSON.parse(event.body);
+    const { whatsapp, password } = JSON.parse(event.body);
 
     // Validação dos campos
-    if (!username || !password || !whatsapp) {
+    if (!whatsapp || !password) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ success: false, error: 'Todos os campos são obrigatórios.' }),
+        body: JSON.stringify({ success: false, error: 'WhatsApp ou senha ausentes.' }),
       };
     }
 
+    // Valida o número de WhatsApp
     if (!isValidWhatsApp(whatsapp)) {
       return {
         statusCode: 400,
@@ -41,32 +42,45 @@ exports.handler = async (event) => {
       };
     }
 
-    // Verifica se o usuário já existe
-    const userExistsQuery = 'SELECT * FROM users WHERE username = $1 OR whatsapp = $2';
-    const userExists = await client.query(userExistsQuery, [username, whatsapp]);
+    // Verifica se o usuário existe no banco de dados
+    const query = 'SELECT * FROM users WHERE whatsapp = $1';
+    const res = await client.query(query, [whatsapp]);
 
-    if (userExists.rows.length > 0) {
+    if (res.rows.length === 1) {
+      const user = res.rows[0];
+
+      // Verifica a senha usando a criptografia
+      const passwordMatch = bcrypt.compareSync(password, user.password);
+
+      if (passwordMatch) {
+        // Se o login for bem-sucedido, gera o token JWT
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            success: true,
+            token,  // Retorna o JWT como token de autenticação
+          }),
+        };
+      } else {
+        return {
+          statusCode: 401,
+          body: JSON.stringify({
+            success: false,
+            error: 'WhatsApp ou senha inválidos.',
+          }),
+        };
+      }
+    } else {
       return {
-        statusCode: 400,
-        body: JSON.stringify({ success: false, error: 'Usuário ou WhatsApp já cadastrados.' }),
+        statusCode: 401,
+        body: JSON.stringify({
+          success: false,
+          error: 'WhatsApp ou senha inválidos.',
+        }),
       };
     }
-
-    // Criptografa a senha antes de salvar
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Insere no banco
-    const insertQuery = 'INSERT INTO users (username, password, whatsapp) VALUES ($1, $2, $3) RETURNING id, username, whatsapp';
-    const newUser = await client.query(insertQuery, [username, hashedPassword, whatsapp]);
-
-    return {
-      statusCode: 201,
-      body: JSON.stringify({ 
-        success: true, 
-        message: 'Usuário cadastrado com sucesso!', 
-        user: newUser.rows[0] 
-      }),
-    };
   } catch (error) {
     console.error(error);
     return {

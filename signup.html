@@ -26,8 +26,8 @@
         </div>
 
         <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" placeholder="Digite seu email">
+            <label for="whatsapp">WhatsApp</label>
+            <input type="text" id="whatsapp" placeholder="Digite seu número de WhatsApp">
         </div>
 
         <div class="form-group">
@@ -61,9 +61,16 @@
         event.preventDefault();
   
         const username = document.getElementById("username").value;
-        const email = document.getElementById("email").value;
+        const whatsapp = document.getElementById("whatsapp").value;
         const password = document.getElementById("password").value;
         const confirmPassword = document.getElementById("confirm-password").value;
+  
+        // Valida o número de WhatsApp
+        const whatsappRegex = /^\+?[1-9]\d{1,14}$/;
+        if (!whatsappRegex.test(whatsapp)) {
+          alert("Número de WhatsApp inválido!");
+          return;
+        }
   
         if (password !== confirmPassword) {
           alert("As senhas não coincidem!");
@@ -71,9 +78,9 @@
         }
   
         const userData = { 
-          email, 
+          whatsapp, 
           password,
-          username: email.split("@")[0] // Usando parte do e-mail como username
+          username // Usando o nome de usuário fornecido no campo 'username'
         };
   
         try {
@@ -99,8 +106,7 @@
         }
       });
     });
-  </script>
-  
+</script>
 
 </body>
 </html>
