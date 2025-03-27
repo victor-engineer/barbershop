@@ -5,7 +5,6 @@ require('dotenv').config(); // Adicione isso no início do arquivo
 
 const jwtSecret = process.env.JWT_SECRET;
 
-
 // Função para comparar a senha fornecida com o hash no banco de dados
 function encryptPassword(inputPassword, storedPasswordHash) {
   return bcrypt.compareSync(inputPassword, storedPasswordHash);
@@ -18,12 +17,32 @@ exports.handler = async (event) => {
     ssl: { rejectUnauthorized: false },
   });
 
+  // Configurações de CORS
+  const allowedOrigins = ['http://localhost:5501', 'https://franciscobarbearia.netlify.app', 'http://localhost:8888'];
+  const origin = event.headers.origin;
+  const headers = {
+    'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : 'null',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json',
+  };
+
   try {
     await client.connect();
+
+    // Verifica se é uma requisição OPTIONS (para CORS)
+    if (event.httpMethod === 'OPTIONS') {
+      return {
+        statusCode: 204,  // No content
+        headers: headers,  // Adiciona os headers de CORS
+        body: JSON.stringify({}),
+      };
+    }
 
     if (event.httpMethod !== 'POST') {
       return {
         statusCode: 405,
+        headers: headers,  // Adiciona os headers de CORS
         body: JSON.stringify({ success: false, error: 'Método não permitido.' }),
       };
     }
@@ -34,6 +53,7 @@ exports.handler = async (event) => {
     if (!username || !password) {
       return {
         statusCode: 400,
+        headers: headers,  // Adiciona os headers de CORS
         body: JSON.stringify({ success: false, error: 'Usuário ou senha ausentes.' }),
       };
     }
@@ -52,9 +72,9 @@ exports.handler = async (event) => {
         // Se o login for bem-sucedido, gera o token JWT
         const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: '1h' });
 
-
         return {
           statusCode: 200,
+          headers: headers,  // Adiciona os headers de CORS
           body: JSON.stringify({
             success: true,
             token,  // Retorna o JWT como token de autenticação
@@ -63,6 +83,7 @@ exports.handler = async (event) => {
       } else {
         return {
           statusCode: 401,
+          headers: headers,  // Adiciona os headers de CORS
           body: JSON.stringify({
             success: false,
             error: 'Usuário ou senha inválidos.',
@@ -72,6 +93,7 @@ exports.handler = async (event) => {
     } else {
       return {
         statusCode: 401,
+        headers: headers,  // Adiciona os headers de CORS
         body: JSON.stringify({
           success: false,
           error: 'Usuário ou senha inválidos.',
@@ -82,6 +104,7 @@ exports.handler = async (event) => {
     console.error(error);
     return {
       statusCode: 500,
+      headers: headers,  // Adiciona os headers de CORS
       body: JSON.stringify({ success: false, error: 'Erro interno do servidor.' }),
     };
   } finally {

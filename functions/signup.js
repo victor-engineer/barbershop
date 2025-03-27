@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { Client } = require('pg');
+const jwt = require('jsonwebtoken'); // Não se esqueça de importar o jwt
 
 // Função para validar número de WhatsApp
 function isValidWhatsApp(whatsapp) {
@@ -14,12 +15,32 @@ exports.handler = async (event) => {
     ssl: { rejectUnauthorized: false },
   });
 
+  // Configurações de CORS
+  const allowedOrigins = ['http://localhost:5501', 'https://franciscobarbearia.netlify.app', 'http://localhost:8888'];
+  const origin = event.headers.origin;
+  const headers = {
+    'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : 'null',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json',
+  };
+
   try {
     await client.connect();
+
+    // Verifica se é uma requisição OPTIONS (para CORS)
+    if (event.httpMethod === 'OPTIONS') {
+      return {
+        statusCode: 204,  // No content
+        headers: headers,  // Adiciona os headers de CORS
+        body: JSON.stringify({}),
+      };
+    }
 
     if (event.httpMethod !== 'POST') {
       return {
         statusCode: 405,
+        headers: headers,  // Adiciona os headers de CORS
         body: JSON.stringify({ success: false, error: 'Método não permitido.' }),
       };
     }
@@ -30,6 +51,7 @@ exports.handler = async (event) => {
     if (!whatsapp || !password) {
       return {
         statusCode: 400,
+        headers: headers,  // Adiciona os headers de CORS
         body: JSON.stringify({ success: false, error: 'WhatsApp ou senha ausentes.' }),
       };
     }
@@ -38,6 +60,7 @@ exports.handler = async (event) => {
     if (!isValidWhatsApp(whatsapp)) {
       return {
         statusCode: 400,
+        headers: headers,  // Adiciona os headers de CORS
         body: JSON.stringify({ success: false, error: 'Número de WhatsApp inválido.' }),
       };
     }
@@ -58,6 +81,7 @@ exports.handler = async (event) => {
 
         return {
           statusCode: 200,
+          headers: headers,  // Adiciona os headers de CORS
           body: JSON.stringify({
             success: true,
             token,  // Retorna o JWT como token de autenticação
@@ -66,6 +90,7 @@ exports.handler = async (event) => {
       } else {
         return {
           statusCode: 401,
+          headers: headers,  // Adiciona os headers de CORS
           body: JSON.stringify({
             success: false,
             error: 'WhatsApp ou senha inválidos.',
@@ -75,6 +100,7 @@ exports.handler = async (event) => {
     } else {
       return {
         statusCode: 401,
+        headers: headers,  // Adiciona os headers de CORS
         body: JSON.stringify({
           success: false,
           error: 'WhatsApp ou senha inválidos.',
@@ -85,6 +111,7 @@ exports.handler = async (event) => {
     console.error(error);
     return {
       statusCode: 500,
+      headers: headers,  // Adiciona os headers de CORS
       body: JSON.stringify({ success: false, error: 'Erro interno do servidor.' }),
     };
   } finally {
