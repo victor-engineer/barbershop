@@ -26,10 +26,12 @@ exports.handler = async (event) => {
   };
 
   try {
+    console.log("Conectando ao banco de dados...");
     await client.connect();
 
     // Verifica se é uma requisição OPTIONS (para CORS)
     if (event.httpMethod === 'OPTIONS') {
+      console.log("Requisição OPTIONS, retornando headers...");
       return {
         statusCode: 204,  // No content
         headers: headers,  // Adiciona os headers de CORS
@@ -38,6 +40,7 @@ exports.handler = async (event) => {
     }
 
     if (event.httpMethod !== 'POST') {
+      console.log("Método não permitido:", event.httpMethod);
       return {
         statusCode: 405,
         headers: headers,  // Adiciona os headers de CORS
@@ -46,9 +49,11 @@ exports.handler = async (event) => {
     }
 
     const { whatsapp, password } = JSON.parse(event.body);
+    console.log("Recebendo dados:", { whatsapp, password });
 
     // Validação dos campos
     if (!whatsapp || !password) {
+      console.log("WhatsApp ou senha ausentes.");
       return {
         statusCode: 400,
         headers: headers,  // Adiciona os headers de CORS
@@ -58,6 +63,7 @@ exports.handler = async (event) => {
 
     // Valida o número de WhatsApp
     if (!isValidWhatsApp(whatsapp)) {
+      console.log("Número de WhatsApp inválido:", whatsapp);
       return {
         statusCode: 400,
         headers: headers,  // Adiciona os headers de CORS
@@ -66,18 +72,22 @@ exports.handler = async (event) => {
     }
 
     // Verifica se o usuário existe no banco de dados
+    console.log("Consultando usuário no banco de dados...");
     const query = 'SELECT * FROM users WHERE whatsapp = $1';
     const res = await client.query(query, [whatsapp]);
 
     if (res.rows.length === 1) {
       const user = res.rows[0];
+      console.log("Usuário encontrado:", user);
 
       // Verifica a senha usando a criptografia
       const passwordMatch = bcrypt.compareSync(password, user.password);
+      console.log("Senha verificada:", passwordMatch);
 
       if (passwordMatch) {
         // Se o login for bem-sucedido, gera o token JWT
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        console.log("Login bem-sucedido, gerando token...");
 
         return {
           statusCode: 200,
@@ -88,6 +98,7 @@ exports.handler = async (event) => {
           }),
         };
       } else {
+        console.log("Senha incorreta.");
         return {
           statusCode: 401,
           headers: headers,  // Adiciona os headers de CORS
@@ -98,6 +109,7 @@ exports.handler = async (event) => {
         };
       }
     } else {
+      console.log("Usuário não encontrado.");
       return {
         statusCode: 401,
         headers: headers,  // Adiciona os headers de CORS
@@ -108,13 +120,14 @@ exports.handler = async (event) => {
       };
     }
   } catch (error) {
-    console.error(error);
+    console.error("Erro no servidor:", error);
     return {
       statusCode: 500,
       headers: headers,  // Adiciona os headers de CORS
       body: JSON.stringify({ success: false, error: 'Erro interno do servidor.' }),
     };
   } finally {
+    console.log("Fechando conexão com o banco de dados...");
     await client.end();
   }
 };
