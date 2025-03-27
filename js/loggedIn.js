@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
         userActionBtn.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
         logoutBtn.style.display = "block"; // Mostra o botão de logout
     } else {
-        userActionBtn.href = "login.html";
-        userActionBtn.innerHTML = 'Login <i class="fa fa-sign-in ms-3"></i>';
+        userActionBtn.href = "login-users.html";
+        userActionBtn.innerHTML = 'Entrar <i class="fa fa-sign-in ms-3"></i>';
         logoutBtn.style.display = "none"; // Esconde o botão de logout
     }
 });
