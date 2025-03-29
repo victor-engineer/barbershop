@@ -25,6 +25,8 @@ exports.handler = async (event) => {
   };
 
   try {
+    console.log("Iniciando a função serverless...");
+    
     console.log("Conectando ao banco de dados...");
     await client.connect();
 
@@ -48,7 +50,7 @@ exports.handler = async (event) => {
     }
 
     const { whatsapp, password } = JSON.parse(event.body);
-    console.log("Recebendo dados:", { whatsapp, password });
+    console.log("Dados recebidos:", { whatsapp, password });
 
     // Validação dos campos
     if (!whatsapp || !password) {
@@ -90,7 +92,7 @@ exports.handler = async (event) => {
     const hashedPassword = bcrypt.hashSync(password, salt);
 
     // Insere o usuário no banco
-    console.log("Cadastrando usuário...");
+    console.log("Inserindo usuário no banco...");
     const query = 'INSERT INTO users (whatsapp, password) VALUES ($1, $2) RETURNING id';
     const result = await client.query(query, [whatsapp, hashedPassword]);
     console.log("Resultado da inserção de usuário:", result.rows);
@@ -109,7 +111,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 500,
       headers: headers,
-      body: JSON.stringify({ success: false, error: 'Erro interno do servidor.' }),
+      body: JSON.stringify({ success: false, error: 'Erro interno do servidor.', details: error.message }),
     };
   } finally {
     console.log("Fechando conexão com o banco de dados...");
