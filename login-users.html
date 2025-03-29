@@ -34,29 +34,31 @@
 
   <script>
     document.getElementById("loginForm").addEventListener("submit", async function(event) {
-      event.preventDefault(); // Evita que o formulário recarregue a página
+  event.preventDefault(); // Evita que o formulário recarregue a página
 
-      const whatsapp = document.getElementById("whatsapp").value;
-      const password = document.getElementById("password").value;
+  const whatsapp = document.getElementById("whatsapp").value;
+  const password = document.getElementById("password").value;
 
-      const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/login_users", { // URL do seu backend
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ whatsapp, password }),
-      });
+  const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/login_users", { // URL do seu backend
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ whatsapp, password }),
+  });
 
-      const data = await response.json();
+  const data = await response.json();
 
-      if (data.success) {
-        alert("Login bem-sucedido!");
-        localStorage.setItem("token", data.token); // Salva o token JWT no localStorage
-        window.location.href = "index.html"; // Redireciona para outra página após login
-      } else {
-        alert("Erro: " + data.error);
-      }
-    });
+  if (data.success) {
+    alert("Login bem-sucedido!");
+    // Remover o armazenamento do token no localStorage
+    // Remover o redirecionamento para outra página
+    // Apenas realizar a ação desejada após o login bem-sucedido
+  } else {
+    alert("Erro: " + data.error);
+  }
+});
+
   </script>
 </body>
 </html>

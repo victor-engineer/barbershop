@@ -77,15 +77,14 @@ exports.handler = async (event) => {
       const passwordMatch = encryptPassword(password, user.password);
 
       if (passwordMatch) {
-        console.log("Senha válida! Gerando o token...");
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
+        console.log("Senha válida! Login bem-sucedido.");
+      
         return {
           statusCode: 200,
           headers: headers,  // Adiciona os headers de CORS
           body: JSON.stringify({
             success: true,
-            token,  // Retorna o JWT como token de autenticação
+            message: "Login bem-sucedido!"  // Apenas a mensagem de sucesso, sem o token
           }),
         };
       } else {
@@ -99,16 +98,6 @@ exports.handler = async (event) => {
           }),
         };
       }
-    } else {
-      console.log("Usuário não encontrado com o WhatsApp:", whatsapp);
-      return {
-        statusCode: 401,
-        headers: headers,  // Adiciona os headers de CORS
-        body: JSON.stringify({
-          success: false,
-          error: 'WhatsApp ou senha inválidos.',
-        }),
-      };
     }
   } catch (error) {
     console.error("Erro no servidor:", error);
