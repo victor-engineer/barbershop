@@ -73,6 +73,7 @@ exports.handler = async (event) => {
     // Verifica se o usuário já está cadastrado
     console.log("Verificando se usuário já existe...");
     const checkUser = await client.query('SELECT * FROM users WHERE whatsapp = $1', [whatsapp]);
+    console.log("Resultado da consulta de usuário:", checkUser.rows);
 
     if (checkUser.rows.length > 0) {
       console.log("Usuário já cadastrado:", whatsapp);
@@ -92,6 +93,7 @@ exports.handler = async (event) => {
     console.log("Cadastrando usuário...");
     const query = 'INSERT INTO users (whatsapp, password) VALUES ($1, $2) RETURNING id';
     const result = await client.query(query, [whatsapp, hashedPassword]);
+    console.log("Resultado da inserção de usuário:", result.rows);
 
     // Gera um token JWT para autenticação após o cadastro
     console.log("Gerando token JWT...");
