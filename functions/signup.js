@@ -49,16 +49,16 @@ exports.handler = async (event) => {
       };
     }
 
-    const { whatsapp, password } = JSON.parse(event.body);
-    console.log("Dados recebidos:", { whatsapp, password });
+    const { whatsapp, password, username } = JSON.parse(event.body);
+    console.log("Dados recebidos:", { whatsapp, password, username });
 
     // Validação dos campos
-    if (!whatsapp || !password) {
-      console.log("WhatsApp ou senha ausentes.");
+    if (!whatsapp || !password || !username) {
+      console.log("WhatsApp, senha ou nome de usuário ausentes.");
       return {
         statusCode: 400,
         headers: headers,
-        body: JSON.stringify({ success: false, error: 'WhatsApp ou senha ausentes.' }),
+        body: JSON.stringify({ success: false, error: 'WhatsApp, senha ou nome de usuário ausentes.' }),
       };
     }
 
@@ -93,8 +93,8 @@ exports.handler = async (event) => {
 
     // Insere o usuário no banco
     console.log("Inserindo usuário no banco...");
-    const query = 'INSERT INTO users (whatsapp, password) VALUES ($1, $2) RETURNING id';
-    const result = await client.query(query, [whatsapp, hashedPassword]);
+    const query = 'INSERT INTO users (whatsapp, password, username) VALUES ($1, $2, $3) RETURNING id';
+    const result = await client.query(query, [whatsapp, hashedPassword, username]);
     console.log("Resultado da inserção de usuário:", result.rows);
 
     // Gera um token JWT para autenticação após o cadastro
