@@ -1,9 +1,7 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { Client } = require('pg');
-require('dotenv').config(); // Adicione isso no início do arquivo
+require('dotenv').config();  // Carrega variáveis do .env
 
-const jwtSecret = process.env.JWT_SECRET;
+const bcrypt = require('bcryptjs');
+const { Client } = require('pg');
 
 // Função para comparar a senha fornecida com o hash no banco de dados
 function encryptPassword(inputPassword, storedPasswordHash) {
@@ -47,20 +45,20 @@ exports.handler = async (event) => {
       };
     }
 
-    const { username, password } = JSON.parse(event.body);
+    const { whatsapp, password } = JSON.parse(event.body);
 
     // Validação dos campos
-    if (!username || !password) {
+    if (!whatsapp || !password) {
       return {
         statusCode: 400,
         headers: headers,  // Adiciona os headers de CORS
-        body: JSON.stringify({ success: false, error: 'Usuário ou senha ausentes.' }),
+        body: JSON.stringify({ success: false, error: 'WhatsApp ou senha ausentes.' }),
       };
     }
 
-    // Verifica se o usuário existe
-    const query = 'SELECT * FROM users WHERE username = $1';
-    const res = await client.query(query, [username]);
+    // Verifica se o usuário existe, agora com o WhatsApp
+    const query = 'SELECT * FROM users WHERE whatsapp = $1';
+    const res = await client.query(query, [whatsapp]);
 
     if (res.rows.length === 1) {
       const user = res.rows[0];
@@ -86,7 +84,7 @@ exports.handler = async (event) => {
           headers: headers,  // Adiciona os headers de CORS
           body: JSON.stringify({
             success: false,
-            error: 'Usuário ou senha inválidos.',
+            error: 'WhatsApp ou senha inválidos.',
           }),
         };
       }
@@ -96,7 +94,7 @@ exports.handler = async (event) => {
         headers: headers,  // Adiciona os headers de CORS
         body: JSON.stringify({
           success: false,
-          error: 'Usuário ou senha inválidos.',
+          error: 'WhatsApp ou senha inválidos.',
         }),
       };
     }
