@@ -2,6 +2,7 @@ require('dotenv').config();  // Carrega variáveis do .env
 
 const bcrypt = require('bcryptjs');
 const { Client } = require('pg');
+const jwt = require('jsonwebtoken'); // Certifique-se de importar o jwt
 
 // Função para comparar a senha fornecida com o hash no banco de dados
 function encryptPassword(inputPassword, storedPasswordHash) {
@@ -26,7 +27,9 @@ exports.handler = async (event) => {
   };
 
   try {
+    console.log("Conectando ao banco de dados...");
     await client.connect();
+    console.log("Conexão bem-sucedida!");
 
     // Verifica se é uma requisição OPTIONS (para CORS)
     if (event.httpMethod === 'OPTIONS') {
@@ -46,9 +49,11 @@ exports.handler = async (event) => {
     }
 
     const { whatsapp, password } = JSON.parse(event.body);
+    console.log(`Login tentativa: WhatsApp: ${whatsapp}`);
 
     // Validação dos campos
     if (!whatsapp || !password) {
+      console.log("Erro: WhatsApp ou senha ausentes.");
       return {
         statusCode: 400,
         headers: headers,  // Adiciona os headers de CORS
@@ -58,17 +63,19 @@ exports.handler = async (event) => {
 
     // Verifica se o usuário existe, agora com o WhatsApp
     const query = 'SELECT * FROM users WHERE whatsapp = $1';
+    console.log(`Executando consulta: ${query} com whatsapp: ${whatsapp}`);
     const res = await client.query(query, [whatsapp]);
 
     if (res.rows.length === 1) {
       const user = res.rows[0];
+      console.log("Usuário encontrado. Verificando senha...");
 
       // Verifica a senha usando a criptografia
       const passwordMatch = encryptPassword(password, user.password);
 
       if (passwordMatch) {
-        // Se o login for bem-sucedido, gera o token JWT
-        const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: '1h' });
+        console.log("Senha válida! Gerando o token...");
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         return {
           statusCode: 200,
@@ -79,6 +86,7 @@ exports.handler = async (event) => {
           }),
         };
       } else {
+        console.log("Senha inválida!");
         return {
           statusCode: 401,
           headers: headers,  // Adiciona os headers de CORS
@@ -89,6 +97,7 @@ exports.handler = async (event) => {
         };
       }
     } else {
+      console.log("Usuário não encontrado!");
       return {
         statusCode: 401,
         headers: headers,  // Adiciona os headers de CORS
@@ -99,7 +108,7 @@ exports.handler = async (event) => {
       };
     }
   } catch (error) {
-    console.error(error);
+    console.error("Erro no servidor:", error);
     return {
       statusCode: 500,
       headers: headers,  // Adiciona os headers de CORS
@@ -107,5 +116,6 @@ exports.handler = async (event) => {
     };
   } finally {
     await client.end();
+    console.log("Conexão com o banco encerrada.");
   }
 };
