@@ -25,12 +25,14 @@ document.addEventListener("DOMContentLoaded", () => {
     function setAvailableDates() {
         const today = new Date();
         dateInput.setAttribute("min", formatDate(today));
-        dateInput.value = formatDate(today);
+        dateInput.value = ""; // Deixar vazio até o usuário clicar
     }
 
     function updateAvailableTimes() {
         timeSelect.innerHTML = "";
         const selectedDate = dateInput.value;
+
+        if (!selectedDate) return; // Só mostrar horários se uma data for selecionada
 
         workingHours.forEach((time) => {
             const option = document.createElement("option");
@@ -63,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         date: appointment.date
                     }));
                     console.log("Horários reservados:", reservedTimes);
-                    updateAvailableTimes();
                 } else {
                     console.error('Erro: Esperado um array de reservas', data);
                 }
@@ -125,10 +126,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.success) {
                 Swal.fire({
                     title: 'Sucesso!',
-                    text: `Reserva feita com sucesso para ${selectedDate} às ${selectedTime}.`,
+                    text: `Agendamento para o dia ${selectedDate} às ${selectedTime}.`,
                     icon: 'success',
                     confirmButtonText: 'Ok',
-                    timer: 3000,
+                    timer: 5000,
                     timerProgressBar: true
                 });
 
