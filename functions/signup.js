@@ -2,7 +2,6 @@ require('dotenv').config();  // Carrega variáveis do .env
 
 const bcrypt = require('bcryptjs');
 const { Client } = require('pg');
-const jwt = require('jsonwebtoken');
 
 // Função para validar número de WhatsApp
 function isValidWhatsApp(whatsapp) {
@@ -79,12 +78,17 @@ exports.handler = async (event) => {
     const query = 'INSERT INTO users (whatsapp, password, username) VALUES ($1, $2, $3) RETURNING id';
     const result = await client.query(query, [whatsapp, hashedPassword, username]);
 
-    const token = jwt.sign({ userId: result.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Removendo a geração do token JWT
+    const user = {
+      id: result.rows[0].id,
+      username: username,
+      whatsapp: whatsapp,
+    };
 
     return {
       statusCode: 201,
       headers: headers,
-      body: JSON.stringify({ success: true, userId: result.rows[0].id, token }),
+      body: JSON.stringify({ success: true, user }),
     };
   } catch (error) {
     console.error("Erro no servidor:", error);
