@@ -36,33 +36,31 @@
   <script src="js/loggedIn.js"></script>
 
   <script>
+    // Quando a página carregar
     document.addEventListener("DOMContentLoaded", function () {
-      const isLoggedIn = localStorage.getItem("userLoggedIn"); 
-
-      const userActionBtn = document.getElementById("user-action-btn");
-      const logoutBtn = document.getElementById("logout-btn");
-
+      const isLoggedIn = localStorage.getItem("userLoggedIn"); // Verificar se o usuário está logado
+      const userActionBtn = document.querySelector(".btn-primary"); // Selecionar o botão "Entrar"
+  
       // Verificando se o usuário está logado
       if (isLoggedIn === "true") { 
-        userActionBtn.href = "schedule.html"; // Redireciona para o agendamento
+        // Altera o botão "Entrar" para "Agendamento"
         userActionBtn.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
-        logoutBtn.style.display = "block"; // Exibe o botão de logout
+        userActionBtn.href = "schedule.html"; // Redireciona para a página de agendamento
       } else {
-        userActionBtn.href = "login-users.html"; // Redireciona para login
-        userActionBtn.innerHTML = 'Entrar <i class="fa fa-sign-in ms-3"></i>';
-        logoutBtn.style.display = "none"; // Esconde o botão de logout
+        // Se não estiver logado, mantém o botão "Entrar"
+        userActionBtn.innerHTML = 'Entrar <i class="fa fa-arrow-right ms-3"></i>';
+        userActionBtn.href = "login-users.html"; // Redireciona para o login
       }
     });
-
+  
     // Função para simular o login
     document.getElementById("loginForm").addEventListener("submit", async function(event) {
       event.preventDefault(); // Evita que o formulário recarregue a página
-
+  
       const whatsapp = document.getElementById("whatsapp").value;
       const password = document.getElementById("password").value;
-
+  
       try {
-        // Faz a requisição de login para o backend
         const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/login_users", {
           method: "POST",
           headers: {
@@ -70,30 +68,21 @@
           },
           body: JSON.stringify({ whatsapp, password }),
         });
-
+  
         const data = await response.json();
-
+  
         if (data.success) {
-          // Caso o login seja bem-sucedido
           alert("Login bem-sucedido!");
-          localStorage.setItem("userLoggedIn", "true"); // Armazena o estado de login no localStorage
+          localStorage.setItem("userLoggedIn", "true"); // Marca o usuário como logado
           window.location.href = "index.html"; // Redireciona para a página inicial após o login
         } else {
-          // Caso o login falhe
           alert("Erro: " + data.error);
         }
       } catch (error) {
-        // Caso haja um erro na requisição
         console.error("Erro ao tentar fazer o login: ", error);
         alert("Ocorreu um erro ao tentar fazer o login.");
       }
     });
-
-    // Função para simular o logout
-    function logout() {
-      localStorage.removeItem("userLoggedIn"); // Remove o status de login
-      window.location.href = "index.html"; // Redireciona para a página inicial após logout
-    }
   </script>
 </body>
 </html>
