@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.success) {
                 Swal.fire({
                     title: 'Sucesso!',
-                    text: 'Reserva feita com sucesso.',
+                    text: `Reserva feita com sucesso para ${selectedDate} às ${selectedTime}.`,
                     icon: 'success',
                     confirmButtonText: 'Ok',
                     timer: 3000,
@@ -158,7 +158,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 🔴 Essas linhas estavam dentro do addEventListener de submit, mas devem ser chamadas ao carregar a página:
     setAvailableDates();
     fetchReservedTimes();
 });
