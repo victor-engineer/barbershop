@@ -8,13 +8,11 @@
 </head>
 <body>
   <div class="container">
-    <!-- Linha abaixo do logo -->
     <div class="logo-divider"></div>
     <div class="login-box">
       <h1>Entrar Em Francisco Barbearia</h1>
       <form id="loginForm">
         <div class="textbox">
-          <!-- Alterado o tipo de input para WhatsApp -->
           <input type="text" id="whatsapp" placeholder="WhatsApp" required>
         </div>
         <div class="textbox">
@@ -37,20 +35,20 @@
   <script>
     document.getElementById("loginForm").addEventListener("submit", async function(event) {
       event.preventDefault(); // Evita que o formulário recarregue a página
-  
+
       const whatsapp = document.getElementById("whatsapp").value;
       const password = document.getElementById("password").value;
-  
-      const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/login_users", { // Substitua pela URL do seu backend
+
+      const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/login_users", { // URL do seu backend
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ whatsapp, password }), 
+        body: JSON.stringify({ whatsapp, password }),
       });
-  
+
       const data = await response.json();
-  
+
       if (data.success) {
         alert("Login bem-sucedido!");
         localStorage.setItem("token", data.token); // Salva o token JWT no localStorage
