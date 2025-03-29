@@ -39,17 +39,22 @@
     // Quando a página carregar
     document.addEventListener("DOMContentLoaded", function () {
       const isLoggedIn = localStorage.getItem("userLoggedIn"); // Verificar se o usuário está logado
-      const userActionBtn = document.querySelector(".btn-primary"); // Selecionar o botão "Entrar"
+      const loginBtn = document.getElementById("login-btn"); // Botão da navbar (desktop)
+      const loginBtnMobile = document.getElementById("login-btn-mobile"); // Botão da navbar (mobile)
   
       // Verificando se o usuário está logado
       if (isLoggedIn === "true") { 
-        // Altera o botão "Entrar" para "Agendamento"
-        userActionBtn.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
-        userActionBtn.href = "schedule.html"; // Redireciona para a página de agendamento
+        // Alterar o texto e o link para "Agendamento"
+        loginBtn.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
+        loginBtn.href = "schedule.html"; // Redireciona para a página de agendamento
+        loginBtnMobile.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
+        loginBtnMobile.href = "schedule.html"; // Redireciona para a página de agendamento
       } else {
         // Se não estiver logado, mantém o botão "Entrar"
-        userActionBtn.innerHTML = 'Entrar <i class="fa fa-arrow-right ms-3"></i>';
-        userActionBtn.href = "login-users.html"; // Redireciona para o login
+        loginBtn.innerHTML = 'Entrar <i class="fa fa-arrow-right ms-3"></i>';
+        loginBtn.href = "login-users.html"; // Redireciona para o login
+        loginBtnMobile.innerHTML = 'Entrar <i class="fa fa-arrow-right ms-3"></i>';
+        loginBtnMobile.href = "login-users.html"; // Redireciona para o login
       }
     });
   
@@ -84,5 +89,6 @@
       }
     });
   </script>
+  
 </body>
 </html>
