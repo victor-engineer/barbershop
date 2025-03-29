@@ -32,35 +32,10 @@
     </div>
   </div>
 
-  <!-- loggedin -->
-  <script src="js/loggedIn.js"></script>
-
+  
   <script>
-    // Quando a página carregar
-    document.addEventListener("DOMContentLoaded", function () {
-      const isLoggedIn = localStorage.getItem("userLoggedIn"); // Verificar se o usuário está logado
-      const loginBtn = document.getElementById("login-btn"); // Botão da navbar (desktop)
-      const loginBtnMobile = document.getElementById("login-btn-mobile"); // Botão da navbar (mobile)
-  
-      // Verificando se o usuário está logado
-      if (isLoggedIn === "true") { 
-        // Alterar o texto e o link para "Agendamento"
-        loginBtn.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
-        loginBtn.href = "schedule.html"; // Redireciona para a página de agendamento
-        loginBtnMobile.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
-        loginBtnMobile.href = "schedule.html"; // Redireciona para a página de agendamento
-      } else {
-        // Se não estiver logado, mantém o botão "Entrar"
-        loginBtn.innerHTML = 'Entrar <i class="fa fa-arrow-right ms-3"></i>';
-        loginBtn.href = "login-users.html"; // Redireciona para o login
-        loginBtnMobile.innerHTML = 'Entrar <i class="fa fa-arrow-right ms-3"></i>';
-        loginBtnMobile.href = "login-users.html"; // Redireciona para o login
-      }
-    });
-  
-    // Função para simular o login
     document.getElementById("loginForm").addEventListener("submit", async function(event) {
-      event.preventDefault(); // Evita que o formulário recarregue a página
+      event.preventDefault();
   
       const whatsapp = document.getElementById("whatsapp").value;
       const password = document.getElementById("password").value;
@@ -68,9 +43,7 @@
       try {
         const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/login_users", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ whatsapp, password }),
         });
   
@@ -79,7 +52,7 @@
         if (data.success) {
           alert("Login bem-sucedido!");
           localStorage.setItem("userLoggedIn", "true"); // Marca o usuário como logado
-          window.location.href = "index.html"; // Redireciona para a página inicial após o login
+          window.location.href = "index.html"; // Redireciona para a página inicial
         } else {
           alert("Erro: " + data.error);
         }
