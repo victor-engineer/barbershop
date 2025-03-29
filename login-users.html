@@ -51,7 +51,7 @@
   
         if (data.success) {
           alert("Login bem-sucedido!");
-          localStorage.setItem("userLoggedIn", "true"); // Marca o usuário como logado
+          localStorage.setItem("userLoggedIn", "true"); // Agora o usuário está logado
           window.location.href = "index.html"; // Redireciona para a página inicial
         } else {
           alert("Erro: " + data.error);

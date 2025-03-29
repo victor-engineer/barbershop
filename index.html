@@ -528,26 +528,27 @@
     <script src="js/main.js"></script>
 
     <!-- buttom changes-->
-    <script>
+    <<script>
         document.addEventListener("DOMContentLoaded", function () {
-          const isLoggedIn = localStorage.getItem("userLoggedIn"); // Verifica se está logado
+          const isLoggedIn = localStorage.getItem("userLoggedIn") === "true"; // Garante que só aceita "true"
           const loginBtn = document.getElementById("login-btn");
           const loginBtnMobile = document.getElementById("login-btn-mobile");
       
-          if (isLoggedIn === "true") { 
-            loginBtn.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
-            loginBtn.href = "schedule.html";
-            loginBtnMobile.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
-            loginBtnMobile.href = "schedule.html";
-          } else {
-            loginBtn.innerHTML = 'Entrar <i class="fa fa-arrow-right ms-3"></i>';
-            loginBtn.href = "login-users.html";
-            loginBtnMobile.innerHTML = 'Entrar <i class="fa fa-arrow-right ms-3"></i>';
-            loginBtnMobile.href = "login-users.html";
+          if (loginBtn && loginBtnMobile) {
+            if (isLoggedIn) { 
+              loginBtn.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
+              loginBtn.href = "schedule.html";
+              loginBtnMobile.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
+              loginBtnMobile.href = "schedule.html";
+            } else {
+              loginBtn.innerHTML = 'Entrar <i class="fa fa-arrow-right ms-3"></i>';
+              loginBtn.href = "login-users.html";
+              loginBtnMobile.innerHTML = 'Entrar <i class="fa fa-arrow-right ms-3"></i>';
+              loginBtnMobile.href = "login-users.html";
+            }
           }
         });
       </script>
-      
 </body>
 
 </html>
