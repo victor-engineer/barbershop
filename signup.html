@@ -56,59 +56,66 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const form = document.querySelector("form");
-  
-      form.addEventListener("submit", async function (event) {
-        event.preventDefault();
-  
-        const username = document.getElementById("username").value;
-        const whatsapp = document.getElementById("whatsapp").value;
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirm-password").value;
-  
-        // Valida o número de WhatsApp
-        const whatsappRegex = /^\+?[1-9]\d{1,14}$/;
-        if (!whatsappRegex.test(whatsapp)) {
-          alert("Número de WhatsApp inválido!");
-          return;
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("form");
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const whatsapp = document.getElementById("whatsapp").value;
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
+
+      // Valida o número de WhatsApp
+      const whatsappRegex = /^\+?[1-9]\d{1,14}$/;
+      console.log("WhatsApp fornecido:", whatsapp); // Verificando o valor de WhatsApp
+      if (!whatsappRegex.test(whatsapp)) {
+        alert("Número de WhatsApp inválido!");
+        return;
+      }
+
+      // Verifica se as senhas coincidem
+      console.log("Senha fornecida:", password); // Verificando o valor da senha
+      console.log("Confirmar senha fornecida:", confirmPassword); // Verificando o valor da confirmação de senha
+      if (password !== confirmPassword) {
+        alert("As senhas não coincidem!");
+        return;
+      }
+
+      const userData = { 
+        whatsapp, 
+        password,
+        username // Usando o nome de usuário fornecido no campo 'username'
+      };
+
+      try {
+        const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(userData)
+        });
+
+        const data = await response.json();
+        
+        console.log("Resposta do servidor:", data); // Verificando o que o servidor retorna
+
+        if (data.success) {
+          alert("Cadastro realizado com sucesso!");
+          window.location.href = "login-users.html"; // Redireciona para login
+        } else {
+          alert("Erro: " + data.error);
         }
-  
-        if (password !== confirmPassword) {
-          alert("As senhas não coincidem!");
-          return;
-        }
-  
-        const userData = { 
-          whatsapp, 
-          password,
-          username // Usando o nome de usuário fornecido no campo 'username'
-        };
-  
-        try {
-          const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/signup", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(userData)
-          });
-  
-          const data = await response.json();
-          
-          if (data.success) {
-            alert("Cadastro realizado com sucesso!");
-            window.location.href = "login-users.html"; // Redireciona para login
-          } else {
-            alert("Erro: " + data.error);
-          }
-        } catch (error) {
-          console.error("Erro ao cadastrar:", error);
-          alert("Erro ao conectar ao servidor.");
-        }
-      });
+      } catch (error) {
+        console.error("Erro ao cadastrar:", error);
+        alert("Erro ao conectar ao servidor.");
+      }
     });
+  });
 </script>
+
 
 </body>
 </html>

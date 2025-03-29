@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { Client } = require('pg');
-const jwt = require('jsonwebtoken'); // Não se esqueça de importar o jwt
+const jwt = require('jsonwebtoken'); // Importa o JWT
 
 // Função para validar número de WhatsApp
 function isValidWhatsApp(whatsapp) {
@@ -8,7 +8,6 @@ function isValidWhatsApp(whatsapp) {
   return whatsappRegex.test(whatsapp);
 }
 
-// Função para login
 exports.handler = async (event) => {
   const client = new Client({
     connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway',
@@ -20,7 +19,7 @@ exports.handler = async (event) => {
   const origin = event.headers.origin;
   const headers = {
     'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : 'null',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json',
   };
@@ -33,8 +32,8 @@ exports.handler = async (event) => {
     if (event.httpMethod === 'OPTIONS') {
       console.log("Requisição OPTIONS, retornando headers...");
       return {
-        statusCode: 204,  // No content
-        headers: headers,  // Adiciona os headers de CORS
+        statusCode: 204,
+        headers: headers,
         body: JSON.stringify({}),
       };
     }
@@ -43,7 +42,7 @@ exports.handler = async (event) => {
       console.log("Método não permitido:", event.httpMethod);
       return {
         statusCode: 405,
-        headers: headers,  // Adiciona os headers de CORS
+        headers: headers,
         body: JSON.stringify({ success: false, error: 'Método não permitido.' }),
       };
     }
@@ -56,7 +55,7 @@ exports.handler = async (event) => {
       console.log("WhatsApp ou senha ausentes.");
       return {
         statusCode: 400,
-        headers: headers,  // Adiciona os headers de CORS
+        headers: headers,
         body: JSON.stringify({ success: false, error: 'WhatsApp ou senha ausentes.' }),
       };
     }
@@ -66,64 +65,48 @@ exports.handler = async (event) => {
       console.log("Número de WhatsApp inválido:", whatsapp);
       return {
         statusCode: 400,
-        headers: headers,  // Adiciona os headers de CORS
+        headers: headers,
         body: JSON.stringify({ success: false, error: 'Número de WhatsApp inválido.' }),
       };
     }
 
-    // Verifica se o usuário existe no banco de dados
-    console.log("Consultando usuário no banco de dados...");
-    const query = 'SELECT * FROM users WHERE whatsapp = $1';
-    const res = await client.query(query, [whatsapp]);
+    // Verifica se o usuário já está cadastrado
+    console.log("Verificando se usuário já existe...");
+    const checkUser = await client.query('SELECT * FROM users WHERE whatsapp = $1', [whatsapp]);
 
-    if (res.rows.length === 1) {
-      const user = res.rows[0];
-      console.log("Usuário encontrado:", user);
-
-      // Verifica a senha usando a criptografia
-      const passwordMatch = bcrypt.compareSync(password, user.password);
-      console.log("Senha verificada:", passwordMatch);
-
-      if (passwordMatch) {
-        // Se o login for bem-sucedido, gera o token JWT
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        console.log("Login bem-sucedido, gerando token...");
-
-        return {
-          statusCode: 200,
-          headers: headers,  // Adiciona os headers de CORS
-          body: JSON.stringify({
-            success: true,
-            token,  // Retorna o JWT como token de autenticação
-          }),
-        };
-      } else {
-        console.log("Senha incorreta.");
-        return {
-          statusCode: 401,
-          headers: headers,  // Adiciona os headers de CORS
-          body: JSON.stringify({
-            success: false,
-            error: 'WhatsApp ou senha inválidos.',
-          }),
-        };
-      }
-    } else {
-      console.log("Usuário não encontrado.");
+    if (checkUser.rows.length > 0) {
+      console.log("Usuário já cadastrado:", whatsapp);
       return {
-        statusCode: 401,
-        headers: headers,  // Adiciona os headers de CORS
-        body: JSON.stringify({
-          success: false,
-          error: 'WhatsApp ou senha inválidos.',
-        }),
+        statusCode: 400,
+        headers: headers,
+        body: JSON.stringify({ success: false, error: 'Usuário já cadastrado.' }),
       };
     }
+
+    // Criptografa a senha antes de salvar
+    console.log("Criptografando senha...");
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(password, salt);
+
+    // Insere o usuário no banco
+    console.log("Cadastrando usuário...");
+    const query = 'INSERT INTO users (whatsapp, password) VALUES ($1, $2) RETURNING id';
+    const result = await client.query(query, [whatsapp, hashedPassword]);
+
+    // Gera um token JWT para autenticação após o cadastro
+    console.log("Gerando token JWT...");
+    const token = jwt.sign({ userId: result.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    return {
+      statusCode: 201,
+      headers: headers,
+      body: JSON.stringify({ success: true, userId: result.rows[0].id, token }),
+    };
   } catch (error) {
     console.error("Erro no servidor:", error);
     return {
       statusCode: 500,
-      headers: headers,  // Adiciona os headers de CORS
+      headers: headers,
       body: JSON.stringify({ success: false, error: 'Erro interno do servidor.' }),
     };
   } finally {
