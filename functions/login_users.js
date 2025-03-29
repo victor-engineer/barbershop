@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken'); // Certifique-se de importar o jwt
 
 // Função para comparar a senha fornecida com o hash no banco de dados
 function encryptPassword(inputPassword, storedPasswordHash) {
+  console.log("Comparando senha fornecida com o hash armazenado...");
   return bcrypt.compareSync(inputPassword, storedPasswordHash);
 }
 
@@ -33,6 +34,7 @@ exports.handler = async (event) => {
 
     // Verifica se é uma requisição OPTIONS (para CORS)
     if (event.httpMethod === 'OPTIONS') {
+      console.log("Requisição OPTIONS detectada. Retornando status 204.");
       return {
         statusCode: 204,  // No content
         headers: headers,  // Adiciona os headers de CORS
@@ -41,6 +43,7 @@ exports.handler = async (event) => {
     }
 
     if (event.httpMethod !== 'POST') {
+      console.log("Método não permitido detectado. Esperado POST.");
       return {
         statusCode: 405,
         headers: headers,  // Adiciona os headers de CORS
@@ -86,7 +89,7 @@ exports.handler = async (event) => {
           }),
         };
       } else {
-        console.log("Senha inválida!");
+        console.log("Senha inválida! Rejeitando login.");
         return {
           statusCode: 401,
           headers: headers,  // Adiciona os headers de CORS
@@ -97,7 +100,7 @@ exports.handler = async (event) => {
         };
       }
     } else {
-      console.log("Usuário não encontrado!");
+      console.log("Usuário não encontrado com o WhatsApp:", whatsapp);
       return {
         statusCode: 401,
         headers: headers,  // Adiciona os headers de CORS
