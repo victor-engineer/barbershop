@@ -1,12 +1,12 @@
 document.getElementById('login-form').addEventListener('submit', async (event) => {
-    event.preventDefault();  // Impede o envio tradicional do formulário
-    
+    event.preventDefault(); // Impede o envio tradicional do formulário
+
     const formData = new FormData(event.target);
     const data = {
-        username: formData.get('username'),  // Verifique se o nome corresponde ao campo no HTML
-        password: formData.get('password')   // Verifique se o nome corresponde ao campo no HTML
+        username: formData.get('username'),
+        password: formData.get('password')
     };
-    
+
     try {
         const response = await fetch('https://franciscobarbearia.netlify.app/.netlify/functions/admin-login', {
             method: 'POST',
@@ -15,17 +15,32 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
             },
             body: JSON.stringify(data),
         });
- 
+
         const result = await response.json();
-        
+
         if (response.ok) {
-            alert('Login bem-sucedido!');
-            // Redirecionar para o dashboard ou outra página
-            window.location.href = 'admin-dashboard.html';
+            Swal.fire({
+                title: 'Sucesso!',
+                text: 'Login feito com sucesso!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = 'admin-dashboard.html'; // Redireciona após o OK
+            });
         } else {
-            alert(result.error || 'Erro no login.');
+            Swal.fire({
+                title: 'Erro!',
+                text: result.error || 'Erro no login.',
+                icon: 'error',
+                confirmButtonText: 'Tentar novamente'
+            });
         }
     } catch (error) {
-        alert('Erro ao se conectar ao servidor: ' + error.message);
+        Swal.fire({
+            title: 'Erro!',
+            text: 'Erro ao se conectar ao servidor: ' + error.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
 });
