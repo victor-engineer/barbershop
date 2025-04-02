@@ -28,31 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         dateInput.value = ""; // Deixar vazio até o usuário clicar
     }
 
-    function updateAvailableTimes() {
-        timeSelect.innerHTML = "";
-        const selectedDate = dateInput.value;
-
-        if (!selectedDate) return; // Só mostrar horários se uma data for selecionada
-
-        workingHours.forEach((time) => {
-            const option = document.createElement("option");
-            option.value = time;
-
-            const isReserved = reservedTimes.some(reserved => 
-                formatTime(reserved.time) === time && formatDate(reserved.date) === selectedDate
-            );
-
-            if (isReserved) {
-                option.textContent = `${time} - Indisponível`;
-                option.disabled = true;
-            } else {
-                option.textContent = time;
-            }
-
-            timeSelect.appendChild(option);
-        });
-    }
-        /* function updateAvailableTimes(loggedUserName) {
+        function updateAvailableTimes(loggedUserName) {
         timeSelect.innerHTML = "";
         const selectedDate = dateInput.value;
 
@@ -128,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Erro ao conectar com o servidor.");
         }
     }
-    */
+    
 
     function fetchReservedTimes() {
         console.log("Buscando horários reservados...");
@@ -239,3 +215,28 @@ document.addEventListener("DOMContentLoaded", () => {
     setAvailableDates();
     fetchReservedTimes();
 });
+
+/*function updateAvailableTimes() {
+        timeSelect.innerHTML = "";
+        const selectedDate = dateInput.value;
+
+        if (!selectedDate) return; // Só mostrar horários se uma data for selecionada
+
+        workingHours.forEach((time) => {
+            const option = document.createElement("option");
+            option.value = time;
+
+            const isReserved = reservedTimes.some(reserved => 
+                formatTime(reserved.time) === time && formatDate(reserved.date) === selectedDate
+            );
+
+            if (isReserved) {
+                option.textContent = `${time} - Indisponível`;
+                option.disabled = true;
+            } else {
+                option.textContent = time;
+            }
+
+            timeSelect.appendChild(option);
+        });
+    } */
