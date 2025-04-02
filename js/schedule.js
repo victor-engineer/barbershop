@@ -52,6 +52,83 @@ document.addEventListener("DOMContentLoaded", () => {
             timeSelect.appendChild(option);
         });
     }
+        /* function updateAvailableTimes(loggedUserName) {
+        timeSelect.innerHTML = "";
+        const selectedDate = dateInput.value;
+
+        if (!selectedDate) return; // Só mostrar horários se uma data for selecionada
+
+        workingHours.forEach((time) => {
+            const optionContainer = document.createElement("div"); // Criar um container para cada opção
+            optionContainer.style.display = "flex";
+            optionContainer.style.alignItems = "center";
+            optionContainer.style.gap = "10px"; // Espaçamento entre os elementos
+
+            const option = document.createElement("option");
+            option.value = time;
+
+            const reservedAppointment = reservedTimes.find(reserved => 
+                formatTime(reserved.time) === time && formatDate(reserved.date) === selectedDate
+            );
+
+            if (reservedAppointment) {
+                option.textContent = `${time} - ${reservedAppointment.client_name}`;
+                option.disabled = true;
+                
+                optionContainer.appendChild(option);
+
+                // Se o usuário logado for o dono da reserva, adiciona o botão de exclusão
+                if (loggedUserName === reservedAppointment.client_name) {
+                    const deleteButton = document.createElement("button");
+                    deleteButton.textContent = "Cancelar";
+                    deleteButton.style.backgroundColor = "red";
+                    deleteButton.style.color = "white";
+                    deleteButton.style.border = "none";
+                    deleteButton.style.padding = "5px 10px";
+                    deleteButton.style.cursor = "pointer";
+                    deleteButton.style.borderRadius = "5px";
+
+                    deleteButton.onclick = () => cancelAppointment(reservedAppointment);
+
+                    optionContainer.appendChild(deleteButton);
+                }
+            } else {
+                option.textContent = time;
+                optionContainer.appendChild(option);
+            }
+
+            timeSelect.appendChild(optionContainer);
+        });
+    }
+
+    async function cancelAppointment(appointment) {
+        const confirmCancel = confirm(`Tem certeza que deseja cancelar o agendamento de ${appointment.client_name} às ${appointment.time}?`);
+        
+        if (!confirmCancel) return;
+
+        try {
+            const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments", { // Substitua pela URL correta
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    client_name: appointment.client_name,
+                    date: appointment.date,
+                    time: appointment.time
+                })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert("Agendamento cancelado com sucesso!");
+                updateAvailableTimes(appointment.client_name); // Atualiza os horários disponíveis
+            } else {
+                alert("Erro ao cancelar o agendamento: " + result.error);
+            }
+        } catch (error) {
+            alert("Erro ao conectar com o servidor.");
+        }
+    }
+    */
 
     function fetchReservedTimes() {
         console.log("Buscando horários reservados...");
