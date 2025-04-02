@@ -1,12 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const isLoggedIn = localStorage.getItem("userLoggedIn"); 
-
+    const isLoggedIn = localStorage.getItem("userLoggedIn") === "true"; // Garante que o valor seja "true"
+    
     const userActionBtn = document.getElementById("user-action-btn");
     const logoutBtn = document.getElementById("logout-btn");
 
-    // Verificando se o usuário está logado
-    if (isLoggedIn === "true") { // Verifique se o valor é exatamente "true"
-        userActionBtn.href = "schedule.html"; // Redireciona para o agendamento
+    if (isLoggedIn) {
+        userActionBtn.href = "schedule.html"; // Redireciona para a página de agendamento
         userActionBtn.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
         logoutBtn.style.display = "block"; // Exibe o botão de logout
     } else {
@@ -16,14 +15,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// Função para simular o login
+// Função de Login Simulada
 function login() {
-    localStorage.setItem("userLoggedIn", "true"); // Marca o usuário como logado
-    window.location.href = "index.html"; // Redireciona para a página inicial após login
+    localStorage.setItem("userLoggedIn", "true");
+    window.location.reload(); // Recarrega a página para refletir a mudança
 }
 
-// Função para simular o logout
+// Função de Logout
 function logout() {
-    localStorage.removeItem("userLoggedIn"); // Remove o status de login
-    window.location.href = "index.html"; // Redireciona para a página inicial após logout
+    localStorage.removeItem("userLoggedIn");
+    window.location.reload(); // Recarrega a página para refletir a mudança
 }
