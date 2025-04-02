@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+/*document.addEventListener("DOMContentLoaded", function () {
     const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
 
     const loginBtn = document.getElementById("login-btn");
@@ -33,4 +33,4 @@ function login() {
 function logout() {
     localStorage.removeItem("userLoggedIn");
     window.location.href = "index.html"; // Recarrega a página inicial após logout
-}
+} */
