@@ -1,28 +1,36 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const isLoggedIn = localStorage.getItem("userLoggedIn") === "true"; // Garante que o valor seja "true"
-    
-    const userActionBtn = document.getElementById("user-action-btn");
-    const logoutBtn = document.getElementById("logout-btn");
+    const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
 
-    if (isLoggedIn) {
-        userActionBtn.href = "schedule.html"; // Redireciona para a página de agendamento
-        userActionBtn.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
-        logoutBtn.style.display = "block"; // Exibe o botão de logout
-    } else {
-        userActionBtn.href = "login-users.html"; // Redireciona para login
-        userActionBtn.innerHTML = 'Entrar <i class="fa fa-sign-in ms-3"></i>';
-        logoutBtn.style.display = "none"; // Esconde o botão de logout
+    const loginBtn = document.getElementById("login-btn");
+    const loginBtnMobile = document.getElementById("login-btn-mobile");
+
+    if (loginBtn && loginBtnMobile) { // Verifica se os botões existem antes de manipulá-los
+        if (isLoggedIn) {
+            // Usuário logado - Mostra "Agendamento"
+            loginBtn.href = "schedule.html";
+            loginBtn.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
+
+            loginBtnMobile.href = "schedule.html";
+            loginBtnMobile.innerHTML = 'Agendamento <i class="fa fa-calendar ms-3"></i>';
+        } else {
+            // Usuário não logado - Mostra "Entrar"
+            loginBtn.href = "login-users.html";
+            loginBtn.innerHTML = 'Entrar <i class="fa fa-sign-in ms-3"></i>';
+
+            loginBtnMobile.href = "login-users.html";
+            loginBtnMobile.innerHTML = 'Entrar <i class="fa fa-sign-in ms-3"></i>';
+        }
     }
 });
 
-// Função de Login Simulada
+// Função para simular login
 function login() {
     localStorage.setItem("userLoggedIn", "true");
-    window.location.reload(); // Recarrega a página para refletir a mudança
+    window.location.href = "index.html"; // Recarrega a página inicial após login
 }
 
-// Função de Logout
+// Função para simular logout
 function logout() {
     localStorage.removeItem("userLoggedIn");
-    window.location.reload(); // Recarrega a página para refletir a mudança
+    window.location.href = "index.html"; // Recarrega a página inicial após logout
 }
