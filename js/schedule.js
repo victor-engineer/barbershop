@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Preencha todos os campos corretamente.");
             return;
         }
-        
+        /*
         const userHasBooking = reservedTimes.some(reserved => 
             reserved.client_name === name &&
             formatDate(reserved.date) === selectedDate &&
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
             return;
-        } 
+        } */
 
         Swal.fire({
             title: 'Confirme seu agendamento',
@@ -151,22 +151,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
-
+/*
     function cancelAppointment(name, date, time, whatsapp) {  
-        fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments', { 
+        fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/appointments?client_name=${name}&date=${date}&time=${time}&whatsapp=${whatsapp}`, { 
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                client_name: name,
-                date: date,
-                time: time,
-                whatsapp: whatsapp
-            })
         })
         .then(response => response.json())
         .then(data => {
-            console.log("Resposta da API ao cancelar:", data); // <---- Adicionado para depuração
-    
             if (data.success) {
                 Swal.fire('Cancelado!', 'Seu agendamento foi cancelado.', 'success');
                 reservedTimes = reservedTimes.filter(appt => 
@@ -181,11 +172,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 Swal.fire('Erro!', data.error || 'Erro ao cancelar.', 'error');
             }
         })
-        .catch(error => {
-            console.error("Erro ao cancelar:", error); // <---- Adicionado para ver erros no console
-            Swal.fire('Erro!', 'Erro ao processar o cancelamento.', 'error');
-        });
-    } 
+        .catch(() => Swal.fire('Erro!', 'Erro ao processar o cancelamento.', 'error'));
+    } */
+
     setAvailableDates();
     fetchReservedTimes();
 });
