@@ -12,9 +12,7 @@ client.connect()
 
 async function getScheduledAppointments() {
     console.log('Buscando agendamentos no banco de dados...');
-    const query = `
-        SELECT date, time, client_name, whatsapp, service FROM appointments
-    `;
+    const query = `SELECT date, time, client_name, whatsapp, service FROM appointments`;
     const res = await client.query(query);
     console.log('Agendamentos recuperados:', res.rows);
     return res.rows;
@@ -23,6 +21,7 @@ async function getScheduledAppointments() {
 async function createAppointment(clientName, date, time, whatsapp, service) {
     console.log('Verificando disponibilidade do horário...');
     const queryCheck = 'SELECT 1 FROM appointments WHERE date = $1 AND time::text LIKE $2';
+    
     try {
         const checkResult = await client.query(queryCheck, [date, time + '%']);
         console.log('Resultado da verificação de disponibilidade:', checkResult.rows);
@@ -32,18 +31,15 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
             return { success: false, error: 'O horário já está reservado!' };
         }
 
-        const formattedTime = time.length === 5 ? time + ':00' : time; // Adiciona segundos se não houver
+        const formattedTime = time.length === 5 ? time + ':00' : time;
         console.log('Inserindo novo agendamento no banco de dados...');
         const query = 'INSERT INTO appointments (client_name, date, time, whatsapp, service) VALUES ($1, $2, $3, $4, $5) RETURNING id';
         const result = await client.query(query, [clientName, date, formattedTime, whatsapp, service]);
-
-        console.log('Resultado da inserção:', result);
 
         if (result.rowCount > 0) {
             console.log('Reserva realizada com sucesso!');
             return { success: true, message: 'Reserva realizada com sucesso!', clientName, date, time: formattedTime, whatsapp, service };
         } else {
-            console.log('Erro ao salvar a reserva.');
             return { success: false, error: 'Erro ao salvar a reserva no banco.' };
         }
     } catch (error) {
@@ -52,10 +48,10 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
     }
 }
 
-// Função para excluir agendamento existente
 async function deleteAppointment(clientName, date, time) {
     console.log(`Tentando excluir agendamento para ${clientName} no horário ${time} no dia ${date}`);
     const queryDelete = 'DELETE FROM appointments WHERE client_name = $1 AND date = $2 AND time = $3 RETURNING id';
+    
     try {
         const result = await client.query(queryDelete, [clientName, date, time]);
 
@@ -63,12 +59,29 @@ async function deleteAppointment(clientName, date, time) {
             console.log('Agendamento excluído com sucesso.');
             return { success: true, message: 'Agendamento excluído com sucesso.' };
         } else {
-            console.log('Nenhum agendamento encontrado para excluir.');
             return { success: false, error: 'Nenhum agendamento encontrado para excluir.' };
         }
     } catch (error) {
         console.error('Erro ao excluir agendamento:', error);
         return { success: false, error: 'Erro ao excluir o agendamento.', details: error.message };
+    }
+}
+
+// Função para cancelar um agendamento
+async function cancelAppointment(clientName, date, time) {
+    console.log(`Cancelando agendamento para ${clientName} no dia ${date} às ${time}...`);
+
+    try {
+        const result = await deleteAppointment(clientName, date, time);
+        if (result.success) {
+            console.log('Agendamento cancelado com sucesso!');
+            return { success: true, message: 'Agendamento cancelado com sucesso!' };
+        } else {
+            return { success: false, error: 'Erro ao cancelar o agendamento.' };
+        }
+    } catch (error) {
+        console.error('Erro ao cancelar agendamento:', error);
+        return { success: false, error: 'Erro ao cancelar o agendamento.', details: error.message };
     }
 }
 
@@ -80,72 +93,48 @@ exports.handler = async (event) => {
     const origin = event.headers.origin;
     const headers = {
         'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : 'null',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Content-Type': 'application/json',
     };
 
     if (event.httpMethod === 'OPTIONS') {
-        console.log('Respondendo a uma solicitação OPTIONS');
         return { statusCode: 204, headers };
     }
 
     if (event.httpMethod === 'GET') {
         try {
-            console.log('Obtendo agendamentos...');
             const appointments = await getScheduledAppointments();
             return { statusCode: 200, headers, body: JSON.stringify(appointments) };
         } catch (error) {
-            console.error('Erro ao obter agendamentos:', error);
             return { statusCode: 500, headers, body: JSON.stringify({ error: 'Erro ao obter agendamentos.', details: error.message }) };
         }
     }
 
     if (event.httpMethod === 'POST' && event.headers['content-type']?.includes('application/json')) {
         try {
-            console.log('Requisição POST recebida. Processando reserva...');
-            console.log('Corpo da requisição recebido:', event.body);
-
             const data = JSON.parse(event.body);
-            console.log('Campos existentes no objeto recebido:', Object.keys(data));
-
-            // Normaliza os campos esperados
             const formattedData = {
                 client_name: data.client_name?.trim() || '',
                 date: data.date?.trim() || '',
                 time: data.time?.trim() || '',
-                whatsapp: data.whatsapp?.trim() || '', // Adicionando o campo whatsapp
-                service: data.service?.trim() || '' // Adicionando o campo serviço
+                whatsapp: data.whatsapp?.trim() || '',
+                service: data.service?.trim() || ''
             };
-
-            console.log('Dados normalizados para criação de reserva:', formattedData);
 
             const requiredFields = ['client_name', 'date', 'time', 'whatsapp', 'service'];
             for (const field of requiredFields) {
                 if (!formattedData[field]) {
-                    console.log(`Campo inválido ou ausente: ${field}, Valor recebido: ${JSON.stringify(data[field])}`);
-                    return { 
-                        statusCode: 400, 
-                        headers, 
-                        body: JSON.stringify({ 
-                            error: `Campo inválido ou ausente: ${field}`, 
-                            receivedValue: data[field] 
-                        }) 
-                    };
+                    return { statusCode: 400, headers, body: JSON.stringify({ error: `Campo inválido ou ausente: ${field}` }) };
                 }
             }
 
-            // Verifica se o cliente já tem um agendamento no mesmo dia (independente do horário)
             const queryCheckClient = 'SELECT * FROM appointments WHERE client_name = $1 AND date = $2';
             const existingAppointments = await client.query(queryCheckClient, [formattedData.client_name, formattedData.date]);
 
-            // Se já tiver um agendamento no mesmo dia, exclui o agendamento anterior
             if (existingAppointments.rows.length > 0) {
                 for (const appointment of existingAppointments.rows) {
-                    const deleteResult = await deleteAppointment(appointment.client_name, appointment.date, appointment.time);
-                    if (!deleteResult.success) {
-                        return { statusCode: 400, headers, body: JSON.stringify(deleteResult) };
-                    }
+                    await deleteAppointment(appointment.client_name, appointment.date, appointment.time);
                 }
             }
 
@@ -157,14 +146,25 @@ exports.handler = async (event) => {
                 formattedData.service
             );
 
-            console.log('Resultado da criação:', result);
             return { statusCode: result.success ? 200 : 400, headers, body: JSON.stringify(result) };
         } catch (error) {
-            console.error('Erro ao processar a reserva:', error);
             return { statusCode: 500, headers, body: JSON.stringify({ error: 'Erro ao processar a reserva.', details: error.message }) };
         }
     }
 
-    console.log('Método não permitido:', event.httpMethod);
+    if (event.httpMethod === 'DELETE' && event.headers['content-type']?.includes('application/json')) {
+        try {
+            const data = JSON.parse(event.body);
+            if (!data.client_name || !data.date || !data.time) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Nome do cliente, data e horário são obrigatórios para cancelar um agendamento.' }) };
+            }
+
+            const result = await cancelAppointment(data.client_name, data.date, data.time);
+            return { statusCode: result.success ? 200 : 400, headers, body: JSON.stringify(result) };
+        } catch (error) {
+            return { statusCode: 500, headers, body: JSON.stringify({ error: 'Erro ao cancelar a reserva.', details: error.message }) };
+        }
+    }
+
     return { statusCode: 405, headers, body: JSON.stringify({ error: 'Método não permitido!' }) };
 };
