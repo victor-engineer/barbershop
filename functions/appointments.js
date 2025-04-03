@@ -49,20 +49,24 @@ async function createAppointment(clientName, date, time, whatsapp, service) {
 }
 
 async function deleteAppointment(clientName, date, time) {
-    console.log(`Tentando excluir agendamento para ${clientName} no horário ${time} no dia ${date}`);
+    console.log(`🟡 Tentando excluir: Nome=${clientName}, Data=${date}, Hora=${time}`);
+
     const queryDelete = 'DELETE FROM appointments WHERE client_name = $1 AND date = $2 AND time = $3 RETURNING id';
-    
+
     try {
         const result = await client.query(queryDelete, [clientName, date, time]);
 
+        console.log(`🔹 Query result:`, result);
+
         if (result.rowCount > 0) {
-            console.log('Agendamento excluído com sucesso.');
+            console.log('✅ Agendamento excluído com sucesso.');
             return { success: true, message: 'Agendamento excluído com sucesso.' };
         } else {
+            console.log('⚠️ Nenhum agendamento encontrado para excluir.');
             return { success: false, error: 'Nenhum agendamento encontrado para excluir.' };
         }
     } catch (error) {
-        console.error('Erro ao excluir agendamento:', error);
+        console.error('❌ Erro ao excluir agendamento:', error);
         return { success: false, error: 'Erro ao excluir o agendamento.', details: error.message };
     }
 }
