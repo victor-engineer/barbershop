@@ -152,8 +152,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    function cancelAppointment(name, date, whatsapp) {
-        fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/appointments?client_name=${name}&date=${date}&whatsapp=${whatsapp}`, {
+    function cancelAppointment(name, date, time, whatsapp) {  
+        fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/appointments?client_name=${name}&date=${date}&time=${time}&whatsapp=${whatsapp}`, { 
             method: 'DELETE',
         })
         .then(response => response.json())
@@ -163,6 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 reservedTimes = reservedTimes.filter(appt => 
                     appt.client_name !== name || 
                     formatDate(appt.date) !== date || 
+                    formatTime(appt.time) !== time || 
                     appt.whatsapp !== whatsapp
                 );
                 updateAvailableTimes();
