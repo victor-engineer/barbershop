@@ -165,6 +165,8 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .then(response => response.json())
         .then(data => {
+            console.log("Resposta da API ao cancelar:", data); // <---- Adicionado para depuração
+    
             if (data.success) {
                 Swal.fire('Cancelado!', 'Seu agendamento foi cancelado.', 'success');
                 reservedTimes = reservedTimes.filter(appt => 
@@ -179,7 +181,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 Swal.fire('Erro!', data.error || 'Erro ao cancelar.', 'error');
             }
         })
-        .catch(() => Swal.fire('Erro!', 'Erro ao processar o cancelamento.', 'error'));
+        .catch(error => {
+            console.error("Erro ao cancelar:", error); // <---- Adicionado para ver erros no console
+            Swal.fire('Erro!', 'Erro ao processar o cancelamento.', 'error');
+        });
     } 
     setAvailableDates();
     fetchReservedTimes();
