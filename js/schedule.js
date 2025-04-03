@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Preencha todos os campos corretamente.");
             return;
         }
-
+        /*
         const userHasBooking = reservedTimes.some(reserved => 
             reserved.client_name === name &&
             formatDate(reserved.date) === selectedDate &&
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
             return;
-        }
+        } */
 
         Swal.fire({
             title: 'Confirme seu agendamento',
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
-
+/*
     function cancelAppointment(name, date, time, whatsapp) {  
         fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/appointments?client_name=${name}&date=${date}&time=${time}&whatsapp=${whatsapp}`, { 
             method: 'DELETE',
@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         })
         .catch(() => Swal.fire('Erro!', 'Erro ao processar o cancelamento.', 'error'));
-    }
+    } */
 
     setAvailableDates();
     fetchReservedTimes();
