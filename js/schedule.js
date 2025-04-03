@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function setAvailableDates() {
         const today = new Date();
         dateInput.setAttribute("min", formatDate(today));
-        dateInput.value = ""; // Deixar vazio até o usuário clicar
+        dateInput.value = "";
     }
 
     function updateAvailableTimes() {
@@ -54,19 +54,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function fetchReservedTimes() {
-        console.log("Buscando horários reservados...");
         fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments')
             .then(response => response.json())
             .then(data => {
-                console.log("Resposta da API:", data);
                 if (Array.isArray(data)) {
                     reservedTimes = data.map(appointment => ({
+                        client_name: appointment.client_name,
                         time: appointment.time,
-                        date: appointment.date
+                        date: appointment.date,
+                        whatsapp: appointment.whatsapp
                     }));
-                    console.log("Horários reservados:", reservedTimes);
-                } else {
-                    console.error('Erro: Esperado um array de reservas', data);
                 }
             })
             .catch(error => console.error('Erro ao buscar horários reservados:', error));
@@ -83,28 +80,28 @@ document.addEventListener("DOMContentLoaded", () => {
         const whatsapp = whatsappInput.value.trim();
         const selectedService = serviceSelect.value;
 
-        if (!name) {
-            alert("Por favor, insira seu nome.");
+        if (!name || !whatsapp || !selectedService) {
+            alert("Preencha todos os campos corretamente.");
             return;
         }
 
-        const whatsappRegex = /^(\+?\d{1,4}[\s\-]?)?(\(?\d{2,3}\)?[\s\-]?)?[\d\s\-]{7,13}$/;
-        if (!whatsapp || !whatsappRegex.test(whatsapp)) {
-            alert("Por favor, insira um número de WhatsApp válido.");
-            return;
-        }
-
-        if (!selectedService) {
-            alert("Por favor, selecione um serviço.");
-            return;
-        }
-
-        const isTimeReserved = reservedTimes.some(reserved => 
-            reserved.time === selectedTime && formatDate(reserved.date) === selectedDate
+        const userHasBooking = reservedTimes.some(reserved => 
+            reserved.client_name === name && formatDate(reserved.date) === selectedDate
         );
 
-        if (isTimeReserved) {
-            alert(`O horário ${selectedTime} já está reservado. Escolha outro.`);
+        if (userHasBooking) {
+            Swal.fire({
+                title: 'Você já tem um agendamento!',
+                text: 'Deseja cancelar o agendamento atual?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sim, cancelar',
+                cancelButtonText: 'Não'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    cancelAppointment(name, selectedDate);
+                }
+            });
             return;
         }
 
@@ -140,38 +137,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        Swal.fire({
-                            title: 'Sucesso!',
-                            text: `Agendamento para o dia ${selectedDate} às ${selectedTime} foi confirmado.`,
-                            icon: 'success',
-                            confirmButtonText: 'Ok',
-                            timer: 5000,
-                            timerProgressBar: true
-                        });
-
-                        reservedTimes.push({ time: selectedTime, date: selectedDate });
+                        Swal.fire('Sucesso!', 'Agendamento confirmado.', 'success');
+                        reservedTimes.push({ time: selectedTime, date: selectedDate, client_name: name });
                         updateAvailableTimes();
                         fetchReservedTimes();
                     } else {
-                        Swal.fire({
-                            title: 'Erro!',
-                            text: data.error || 'Erro ao agendar a reserva.',
-                            icon: 'error',
-                            confirmButtonText: 'Tentar novamente'
-                        });
+                        Swal.fire('Erro!', data.error || 'Erro ao agendar.', 'error');
                     }
                 })
-                .catch(error => {
-                    Swal.fire({
-                        title: 'Erro!',
-                        text: 'Erro ao processar a reserva.',
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
-                    });
-                });
+                .catch(() => Swal.fire('Erro!', 'Erro ao processar a reserva.', 'error'));
             }
         });
     });
+
+    function cancelAppointment(name, date) {
+        fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/appointments?client_name=${name}&date=${date}`, {
+            method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire('Cancelado!', 'Seu agendamento foi cancelado.', 'success');
+                reservedTimes = reservedTimes.filter(appt => appt.client_name !== name || formatDate(appt.date) !== date);
+                updateAvailableTimes();
+                fetchReservedTimes();
+            } else {
+                Swal.fire('Erro!', data.error || 'Erro ao cancelar.', 'error');
+            }
+        })
+        .catch(() => Swal.fire('Erro!', 'Erro ao processar o cancelamento.', 'error'));
+    }
 
     setAvailableDates();
     fetchReservedTimes();
