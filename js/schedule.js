@@ -153,8 +153,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function cancelAppointment(name, date, time, whatsapp) {  
-        fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/appointments?client_name=${name}&date=${date}&time=${time}&whatsapp=${whatsapp}`, { 
+        fetch('https://franciscobarbearia.netlify.app/.netlify/functions/appointments', { 
             method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                client_name: name,
+                date: date,
+                time: time,
+                whatsapp: whatsapp
+            })
         })
         .then(response => response.json())
         .then(data => {
@@ -174,7 +181,6 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(() => Swal.fire('Erro!', 'Erro ao processar o cancelamento.', 'error'));
     } 
-
     setAvailableDates();
     fetchReservedTimes();
 });
