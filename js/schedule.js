@@ -86,9 +86,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const userHasBooking = reservedTimes.some(reserved => 
-            reserved.client_name === name && formatDate(reserved.date) === selectedDate
+            reserved.client_name === name &&
+            formatDate(reserved.date) === selectedDate &&
+            reserved.whatsapp === whatsapp
         );
-
+        
         if (userHasBooking) {
             Swal.fire({
                 title: 'Você já tem um agendamento!',
@@ -99,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cancelButtonText: 'Não'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    cancelAppointment(name, selectedDate);
+                    cancelAppointment(name, selectedDate, whatsapp);
                 }
             });
             return;
@@ -150,15 +152,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    function cancelAppointment(name, date) {
-        fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/appointments?client_name=${name}&date=${date}`, {
+    function cancelAppointment(name, date, whatsapp) {
+        fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/appointments?client_name=${name}&date=${date}&whatsapp=${whatsapp}`, {
             method: 'DELETE',
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 Swal.fire('Cancelado!', 'Seu agendamento foi cancelado.', 'success');
-                reservedTimes = reservedTimes.filter(appt => appt.client_name !== name || formatDate(appt.date) !== date);
+                reservedTimes = reservedTimes.filter(appt => 
+                    appt.client_name !== name || 
+                    formatDate(appt.date) !== date || 
+                    appt.whatsapp !== whatsapp
+                );
                 updateAvailableTimes();
                 fetchReservedTimes();
             } else {

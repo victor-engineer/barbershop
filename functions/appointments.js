@@ -135,20 +135,6 @@ exports.handler = async (event) => {
                 }
             }
 
-            // Verifica se o cliente já tem um agendamento no mesmo dia (independente do horário)
-            const queryCheckClient = 'SELECT * FROM appointments WHERE client_name = $1 AND date = $2';
-            const existingAppointments = await client.query(queryCheckClient, [formattedData.client_name, formattedData.date]);
-
-            // Se já tiver um agendamento no mesmo dia, exclui o agendamento anterior
-            if (existingAppointments.rows.length > 0) {
-                for (const appointment of existingAppointments.rows) {
-                    const deleteResult = await deleteAppointment(appointment.client_name, appointment.date, appointment.time);
-                    if (!deleteResult.success) {
-                        return { statusCode: 400, headers, body: JSON.stringify(deleteResult) };
-                    }
-                }
-            }
-
             const result = await createAppointment(
                 formattedData.client_name,
                 formattedData.date,
