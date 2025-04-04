@@ -53,12 +53,15 @@ async function deleteAppointment(clientName, date, time) {
     const queryDelete = 'DELETE FROM appointments WHERE client_name = $1 AND date = $2 AND time = $3 RETURNING id';
     
     try {
+        console.log('Executando query de exclusão:', queryDelete);
         const result = await client.query(queryDelete, [clientName, date, time]);
+        console.log('Resultado da exclusão:', result);
 
         if (result.rowCount > 0) {
             console.log('Agendamento excluído com sucesso.');
             return { success: true, message: 'Agendamento excluído com sucesso.' };
         } else {
+            console.warn('Nenhum agendamento encontrado para excluir.');
             return { success: false, error: 'Nenhum agendamento encontrado para excluir.' };
         }
     } catch (error) {
@@ -72,11 +75,15 @@ async function cancelAppointment(clientName, date, time) {
     console.log(`Cancelando agendamento para ${clientName} no dia ${date} às ${time}...`);
 
     try {
+        console.log('Chamando função deleteAppointment...');
         const result = await deleteAppointment(clientName, date, time);
+        console.log('Resultado do cancelamento:', result);
+
         if (result.success) {
             console.log('Agendamento cancelado com sucesso!');
             return { success: true, message: 'Agendamento cancelado com sucesso!' };
         } else {
+            console.warn('Erro ao cancelar o agendamento:', result.error);
             return { success: false, error: 'Erro ao cancelar o agendamento.' };
         }
     } catch (error) {
@@ -114,6 +121,7 @@ exports.handler = async (event) => {
     if (event.httpMethod === 'POST' && event.headers['content-type']?.includes('application/json')) {
         try {
             const data = JSON.parse(event.body);
+            console.log('Dados recebidos para criar agendamento:', data);
             const formattedData = {
                 client_name: data.client_name?.trim() || '',
                 date: data.date?.trim() || '',
@@ -125,26 +133,11 @@ exports.handler = async (event) => {
             const requiredFields = ['client_name', 'date', 'time', 'whatsapp', 'service'];
             for (const field of requiredFields) {
                 if (!formattedData[field]) {
+                    console.warn(`Campo inválido ou ausente: ${field}`);
                     return { statusCode: 400, headers, body: JSON.stringify({ error: `Campo inválido ou ausente: ${field}` }) };
                 }
             }
     
-            // Verifica se o cliente já possui um agendamento no mesmo dia
-            const queryCheckClient = 'SELECT * FROM appointments WHERE client_name = $1 AND date = $2';
-            const existingAppointments = await client.query(queryCheckClient, [formattedData.client_name, formattedData.date]);
-    
-            if (existingAppointments.rows.length > 0) {
-                return {
-                    statusCode: 409, // Conflito
-                    headers,
-                    body: JSON.stringify({
-                        error: 'Você já tem um agendamento nesse dia. Deseja excluir antes de marcar outro?',
-                        existingAppointments: existingAppointments.rows
-                    })
-                };
-            }
-    
-            // Se não tiver agendamento, pode prosseguir normalmente
             const result = await createAppointment(
                 formattedData.client_name,
                 formattedData.date,
@@ -155,6 +148,7 @@ exports.handler = async (event) => {
     
             return { statusCode: result.success ? 200 : 400, headers, body: JSON.stringify(result) };
         } catch (error) {
+            console.error('Erro ao processar a reserva:', error);
             return { statusCode: 500, headers, body: JSON.stringify({ error: 'Erro ao processar a reserva.', details: error.message }) };
         }
     }
