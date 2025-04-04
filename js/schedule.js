@@ -54,11 +54,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function fetchReservedTimes() {
-        console.log("Buscando horários reservados...");
         fetch('https://franciscobarbearia.com.br/.netlify/functions/appointments')
             .then(response => response.json())
             .then(data => {
-                console.log("Dados recebidos:", data);
                 if (Array.isArray(data)) {
                     reservedTimes = data.map(appointment => ({
                         client_name: appointment.client_name,
@@ -66,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         date: appointment.date,
                         whatsapp: appointment.whatsapp
                     }));
-                    updateAvailableTimes();
                 }
             })
             .catch(error => console.error('Erro ao buscar horários reservados:', error));
@@ -87,6 +84,28 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Preencha todos os campos corretamente.");
             return;
         }
+        /*
+        const userHasBooking = reservedTimes.some(reserved => 
+            reserved.client_name === name &&
+            formatDate(reserved.date) === selectedDate &&
+            reserved.whatsapp === whatsapp
+        );
+        
+        if (userHasBooking) {
+            Swal.fire({
+                title: 'Você já tem um agendamento!',
+                text: 'Deseja cancelar o agendamento atual?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sim, cancelar',
+                cancelButtonText: 'Não'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    cancelAppointment(name, selectedDate, whatsapp);
+                }
+            });
+            return;
+        } */
 
         Swal.fire({
             title: 'Confirme seu agendamento',
@@ -112,61 +131,39 @@ document.addEventListener("DOMContentLoaded", () => {
                     service: selectedService
                 };
 
-                console.log("Enviando solicitação de agendamento:", appointmentData);
-
                 fetch('https://franciscobarbearia.com.br/.netlify/functions/appointments', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(appointmentData)
                 })
-                .then(response => response.json().then(data => ({ status: response.status, body: data })))
-                .then(({ status, body }) => {
-                    console.log("Resposta do servidor:", status, body);
-                    if (status === 409) {
-                        Swal.fire({
-                            title: 'Você já tem um agendamento!',
-                            text: 'Deseja cancelar o agendamento atual antes de marcar outro?',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonText: 'Sim, cancelar',
-                            cancelButtonText: 'Não'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                console.log("Solicitando cancelamento do agendamento...");
-                                cancelAppointment(name, selectedDate, whatsapp);
-                            }
-                        });
-                    } else if (body.success) {
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
                         Swal.fire('Sucesso!', 'Agendamento confirmado.', 'success');
                         reservedTimes.push({ time: selectedTime, date: selectedDate, client_name: name });
                         updateAvailableTimes();
                         fetchReservedTimes();
                     } else {
-                        Swal.fire('Erro!', body.error || 'Erro ao agendar.', 'error');
+                        Swal.fire('Erro!', data.error || 'Erro ao agendar.', 'error');
                     }
                 })
-                .catch(error => {
-                    console.error("Erro ao processar a reserva:", error);
-                    Swal.fire('Erro!', 'Erro ao processar a reserva.', 'error');
-                });
+                .catch(() => Swal.fire('Erro!', 'Erro ao processar a reserva.', 'error'));
             }
         });
     });
-
-    function cancelAppointment(name, date, whatsapp) {  
-        console.log(`Tentando cancelar agendamento para ${name} no dia ${date} com WhatsApp ${whatsapp}`);
-
-        fetch(`https://franciscobarbearia.com.br/.netlify/functions/appointments?client_name=${name}&date=${date}&whatsapp=${whatsapp}`, { 
+/*
+    function cancelAppointment(name, date, time, whatsapp) {  
+        fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/appointments?client_name=${name}&date=${date}&time=${time}&whatsapp=${whatsapp}`, { 
             method: 'DELETE',
         })
         .then(response => response.json())
         .then(data => {
-            console.log("Resposta do servidor ao cancelar:", data);
             if (data.success) {
                 Swal.fire('Cancelado!', 'Seu agendamento foi cancelado.', 'success');
                 reservedTimes = reservedTimes.filter(appt => 
                     appt.client_name !== name || 
                     formatDate(appt.date) !== date || 
+                    formatTime(appt.time) !== time || 
                     appt.whatsapp !== whatsapp
                 );
                 updateAvailableTimes();
@@ -175,11 +172,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 Swal.fire('Erro!', data.error || 'Erro ao cancelar.', 'error');
             }
         })
-        .catch(error => {
-            console.error("Erro ao processar o cancelamento:", error);
-            Swal.fire('Erro!', 'Erro ao processar o cancelamento.', 'error');
-        });
-    }
+        .catch(() => Swal.fire('Erro!', 'Erro ao processar o cancelamento.', 'error'));
+    } */
 
     setAvailableDates();
     fetchReservedTimes();
