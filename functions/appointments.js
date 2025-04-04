@@ -121,23 +121,30 @@ exports.handler = async (event) => {
                 whatsapp: data.whatsapp?.trim() || '',
                 service: data.service?.trim() || ''
             };
-
+    
             const requiredFields = ['client_name', 'date', 'time', 'whatsapp', 'service'];
             for (const field of requiredFields) {
                 if (!formattedData[field]) {
                     return { statusCode: 400, headers, body: JSON.stringify({ error: `Campo inválido ou ausente: ${field}` }) };
                 }
             }
-
+    
+            // Verifica se o cliente já possui um agendamento no mesmo dia
             const queryCheckClient = 'SELECT * FROM appointments WHERE client_name = $1 AND date = $2';
             const existingAppointments = await client.query(queryCheckClient, [formattedData.client_name, formattedData.date]);
-
+    
             if (existingAppointments.rows.length > 0) {
-                for (const appointment of existingAppointments.rows) {
-                    await deleteAppointment(appointment.client_name, appointment.date, appointment.time);
-                }
+                return {
+                    statusCode: 409, // Conflito
+                    headers,
+                    body: JSON.stringify({
+                        error: 'Você já tem um agendamento nesse dia. Deseja excluir antes de marcar outro?',
+                        existingAppointments: existingAppointments.rows
+                    })
+                };
             }
-
+    
+            // Se não tiver agendamento, pode prosseguir normalmente
             const result = await createAppointment(
                 formattedData.client_name,
                 formattedData.date,
@@ -145,26 +152,10 @@ exports.handler = async (event) => {
                 formattedData.whatsapp,
                 formattedData.service
             );
-
+    
             return { statusCode: result.success ? 200 : 400, headers, body: JSON.stringify(result) };
         } catch (error) {
             return { statusCode: 500, headers, body: JSON.stringify({ error: 'Erro ao processar a reserva.', details: error.message }) };
         }
     }
-
-    if (event.httpMethod === 'DELETE' && event.headers['content-type']?.includes('application/json')) {
-        try {
-            const data = JSON.parse(event.body);
-            if (!data.client_name || !data.date || !data.time) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Nome do cliente, data e horário são obrigatórios para cancelar um agendamento.' }) };
-            }
-
-            const result = await cancelAppointment(data.client_name, data.date, data.time);
-            return { statusCode: result.success ? 200 : 400, headers, body: JSON.stringify(result) };
-        } catch (error) {
-            return { statusCode: 500, headers, body: JSON.stringify({ error: 'Erro ao cancelar a reserva.', details: error.message }) };
-        }
-    }
-
-    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Método não permitido!' }) };
 };
