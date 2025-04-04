@@ -8,7 +8,7 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
     };
 
     try {
-        const response = await fetch('https://franciscobarbearia.netlify.app/.netlify/functions/admin-login', {
+        const response = await fetch('https://franciscobarbearia.com.br/.netlify/functions/admin-login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

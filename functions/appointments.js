@@ -89,7 +89,7 @@ async function cancelAppointment(clientName, date, time) {
 exports.handler = async (event) => {
     console.log('Requisição recebida:', event);
 
-    const allowedOrigins = ['http://localhost:5501', 'https://franciscobarbearia.netlify.app', 'http://localhost:8888'];
+    const allowedOrigins = ['https://franciscobarbearia.com.br', 'https://franciscobarbearia.netlify.app', 'http://localhost:8888'];
     const origin = event.headers.origin;
     const headers = {
         'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : 'null',

@@ -104,7 +104,7 @@ async function deleteAppointment(clientName, date, time, whatsapp, service) {
   const data = { clientName, date, time, whatsapp, service };
 
   try {
-    const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment", {
+    const response = await fetch("https://franciscobarbearia.com.br/.netlify/functions/delete_appointment", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
@@ -128,7 +128,7 @@ async function deleteAppointment(clientName, date, time, whatsapp, service) {
 // Carregar os agendamentos ao carregar a página
 window.addEventListener("DOMContentLoaded", async function () {
   try {
-    const response = await fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments");
+    const response = await fetch("https://franciscobarbearia.com.br/.netlify/functions/appointments");
     const result = await response.json();
 
     console.log("Resposta da API:", result); // Depuração

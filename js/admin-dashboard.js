@@ -1,7 +1,7 @@
 $(document).ready(function () {
     // Função para carregar os agendamentos via AJAX
     function loadAppointments() {
-        fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments")  // Atualize para o endpoint da API RESTful configurado em appointments.js
+        fetch("https://franciscobarbearia.com.br/.netlify/functions/appointments")  // Atualize para o endpoint da API RESTful configurado em appointments.js
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
@@ -45,7 +45,7 @@ $(document).ready(function () {
 
     // Função para excluir um agendamento
     function deleteAppointment(appointmentId) {
-        fetch(`https://franciscobarbearia.netlify.app/delete_appointment?id=${appointmentId}`, {
+        fetch(`https://franciscobarbearia.com.br/delete_appointment?id=${appointmentId}`, {
             method: "DELETE",
         })
             .then((response) => response.json())
@@ -83,7 +83,7 @@ $(document).ready(function () {
                     // Se o horário estiver disponível, envia o agendamento
                     const data = { client_name: clientName, date, time };
 
-                    fetch("https://franciscobarbearia.netlify.app/.netlify/functions/appointments", {
+                    fetch("https://franciscobarbearia.com.br/.netlify/functions/appointments", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(data),
@@ -121,7 +121,7 @@ $(document).ready(function () {
     // Função para verificar a disponibilidade do horário
     function checkAvailability(date, time) {
         return new Promise((resolve, reject) => {
-            fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/appointments?date=${date}&time=${time}`)
+            fetch(`https://franciscobarbearia.com.br/.netlify/functions/appointments?date=${date}&time=${time}`)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.success) {
@@ -144,7 +144,7 @@ $(document).on("click", ".btn-danger", function (event) {
     const appointmentId = $(this).attr("href").split("=")[1]; // Pega o ID da URL
 
     if (confirm("Tem certeza que deseja excluir este agendamento?")) {
-        fetch(`https://franciscobarbearia.netlify.app/.netlify/functions/delete_appointment?id=${appointmentId}`, {
+        fetch(`https://franciscobarbearia.com.br/.netlify/functions/delete_appointment?id=${appointmentId}`, {
             method: "DELETE", // Método DELETE
         })
         .then((response) => response.json())
