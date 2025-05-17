@@ -9,92 +9,87 @@ function encryptPassword(inputPassword, storedPasswordHash) {
 
 // Função principal da Netlify Function
 exports.handler = async (event) => {
-  // Configurações do banco de dados para o Railway
+  // Tratamento de requisição OPTIONS (pré-vôo CORS)
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': 'https://franciscobarbearia.com.br', // ou '*' para testes
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      },
+      body: '',
+    };
+  }
+
+  // Configurações do banco de dados Railway
   const client = new Client({
-    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway',  // URL de conexão do Railway
-    ssl: {
-      rejectUnauthorized: false,  // Necessário para conexões SSL
-    },
+    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway',
+    ssl: { rejectUnauthorized: false },
   });
 
   try {
-    // Conectar ao banco de dados
     await client.connect();
 
-    // Verifica se o método HTTP é POST
     if (event.httpMethod === 'POST') {
-      const { username, password } = JSON.parse(event.body);
+      const { username, password } = JSON.parse(event.body || '{}');
 
       if (!username || !password) {
         return {
           statusCode: 400,
-          body: JSON.stringify({
-            success: false,
-            error: 'Usuário ou senha ausentes.',
-          }),
+          headers: {
+            'Access-Control-Allow-Origin': 'https://franciscobarbearia.com.br',
+          },
+          body: JSON.stringify({ success: false, error: 'Usuário ou senha ausentes.' }),
         };
       }
 
-      // Prepara a consulta para buscar o usuário no banco de dados
       const query = 'SELECT * FROM admin_users WHERE username = $1';
       const res = await client.query(query, [username]);
 
       if (res.rows.length === 1) {
         const user = res.rows[0];
-
-        // Verifica a senha usando a criptografia
         const passwordMatch = encryptPassword(password, user.password);
 
         if (passwordMatch) {
-          // Se o login for bem-sucedido, armazena a sessão (Netlify não suporta sessões, então simulamos com um JWT)
           const token = jwt.sign({ userId: user.id }, 'your-secret-key', { expiresIn: '1h' });
 
           return {
             statusCode: 200,
-            body: JSON.stringify({
-              success: true,
-              token,  // Retorna o JWT como token de autenticação
-            }),
-          };
-        } else {
-          return {
-            statusCode: 401,
-            body: JSON.stringify({
-              success: false,
-              error: 'Usuário ou senha inválidos.',
-            }),
+            headers: {
+              'Access-Control-Allow-Origin': 'https://franciscobarbearia.com.br',
+            },
+            body: JSON.stringify({ success: true, token }),
           };
         }
-      } else {
-        return {
-          statusCode: 401,
-          body: JSON.stringify({
-            success: false,
-            error: 'Usuário ou senha inválidos.',
-          }),
-        };
       }
+
+      return {
+        statusCode: 401,
+        headers: {
+          'Access-Control-Allow-Origin': 'https://franciscobarbearia.com.br',
+        },
+        body: JSON.stringify({ success: false, error: 'Usuário ou senha inválidos.' }),
+      };
     }
 
     return {
       statusCode: 405,
-      body: JSON.stringify({
-        success: false,
-        error: 'Método não permitido.',
-      }),
+      headers: {
+        'Access-Control-Allow-Origin': 'https://franciscobarbearia.com.br',
+      },
+      body: JSON.stringify({ success: false, error: 'Método não permitido.' }),
     };
   } catch (error) {
     console.error(error);
-
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        success: false,
-        error: 'Erro interno do servidor. Tente novamente mais tarde.',
-      }),
+      headers: {
+        'Access-Control-Allow-Origin': 'https://franciscobarbearia.com.br',
+      },
+      body: JSON.stringify({ success: false, error: 'Erro interno do servidor.' }),
     };
   } finally {
-    // Fecha a conexão com o banco
     await client.end();
   }
 };
