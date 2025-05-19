@@ -2,7 +2,7 @@ const { Client } = require('pg');
 
 // Configuração da conexão com o banco de dados PostgreSQL no Railway
 const client = new Client({
-    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway', // URL de conexão fornecida pelo Railway
+    connectionString: 'postgresql://postgres:UMCdlnDVxeJwdWCIDwLbBQLihuXAwILY@shortline.proxy.rlwy.net:18696/railway', // URL de conexão fornecida pelo Railway
     ssl: {
         rejectUnauthorized: false,  // Necessário para conexões SSL
     }

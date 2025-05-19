@@ -2,7 +2,7 @@ const { Client } = require('pg'); // Importa o cliente PostgreSQL
 
 console.log('Iniciando conexão com o banco de dados...');
 const client = new Client({
-    connectionString: 'postgresql://postgres:mEhTBvMQxOhgHFtnlJfssbcoWrmVlHIx@viaduct.proxy.rlwy.net:49078/railway', 
+    connectionString: 'postgresql://postgres:UMCdlnDVxeJwdWCIDwLbBQLihuXAwILY@shortline.proxy.rlwy.net:18696/railway', 
     ssl: { rejectUnauthorized: false }
 });
 
