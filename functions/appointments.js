@@ -2,7 +2,7 @@ const { Pool } = require('pg'); // Usa Pool em vez de Client
 
 console.log('Inicializando pool de conexões com o banco de dados...');
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: 'postgresql://postgres:UMCdlnDVxeJwdWCIDwLbBQLihuXAwILY@shortline.proxy.rlwy.net:18696/railway',
   ssl: { rejectUnauthorized: false },
   max: 5,
   idleTimeoutMillis: 30000,

@@ -3,7 +3,7 @@ const { Client } = require('pg');
 // Função que será chamada pelo Netlify Function
 exports.handler = async (event) => {
   const client = new Client({
-    connectionString: process.env.DATABASE_URL, // URL do banco de dados PostgreSQL no Railway
+    connectionString: 'postgresql://postgres:UMCdlnDVxeJwdWCIDwLbBQLihuXAwILY@shortline.proxy.rlwy.net:18696/railway', // URL do banco de dados PostgreSQL no Railway
     ssl: { rejectUnauthorized: false }, // Necessário para Railway
   });
 
