@@ -11,7 +11,7 @@ function isValidWhatsApp(whatsapp) {
 
 exports.handler = async (event) => {
   const client = new Client({
-    connectionString: 'postgresql://postgres:UMCdlnDVxeJwdWCIDwLbBQLihuXAwILY@shortline.proxy.rlwy.net:18696/railway',
+    connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },
   });
 

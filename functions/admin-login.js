@@ -4,7 +4,7 @@ const { Pool } = require('pg');
 
 // Pool de conexões global para evitar reconexões desnecessárias
 const pool = new Pool({
-  connectionString: 'postgresql://postgres:UMCdlnDVxeJwdWCIDwLbBQLihuXAwILY@shortline.proxy.rlwy.net:18696/railway',
+  connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
   max: 5, // Limita conexões simultâneas
   idleTimeoutMillis: 30000, // Fecha conexões ociosas após 30s
